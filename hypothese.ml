@@ -9,3 +9,9 @@ type hypothesis = {
     name: string;
     prop: proposition;
   };;
+
+type proof = {
+    hypos: hypothesis list;
+    remainder: proposition list;
+  };;
+
