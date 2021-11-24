@@ -3,10 +3,11 @@
 type proposition = Name of string
   | Implies of proposition * proposition
   | True
-  | False;;
+  | False
+  | Negation of proposition;;
 
 type hypothesis = {
-    name: string;
+    id: int;
     prop: proposition;
   };;
 
