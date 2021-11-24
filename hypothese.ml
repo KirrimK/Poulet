@@ -15,4 +15,3 @@ type proof = {
     hypos: hypothesis list;
     remainder: proposition list;
   };;
-

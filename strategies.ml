@@ -2,6 +2,7 @@
 
 open Hypothese;;
 
+(* intro : proof -> bool * proof = <fun> *)
 let intro = fun proo ->
   let nexthypid = if proo.hypos != [] then (List.hd proo.hypos).id + 1 else 0 in
   match List.hd proo.remainder with
