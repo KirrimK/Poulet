@@ -6,7 +6,7 @@ type proposition = Name of string
   | False;;
 
 type hypothesis = {
-    name: string;
+    id: int;
     prop: proposition;
   };;
 
