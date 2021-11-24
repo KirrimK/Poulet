@@ -15,15 +15,15 @@ let intro = fun proo ->
       (true, newproo)
   | _ -> (false, proo);;
 
-let estCeLaBonneHypothese = fun hypo hypoId ->
+let estCeLaBonneHypothese = fun hypoId hypo ->
   hypo.id = hypoId
 
 let exact = fun preuve hypoId ->
   (* Verifie si la proposition à prouver est l'hypothèse hypoId *)
   match preuve.remainder with
     propos::[] -> 
-      if propos = (List.find preuve.hypos hypoId).prop then 
-        let nouvellePreuve = {hypos=preuve.hypos;remainder = True} in
+      if propos = (List.find (estCeLaBonneHypothese hypoId) preuve.hypos).prop then 
+        let nouvellePreuve = {hypos=preuve.hypos;remainder = [True]} in
         (true,nouvellePreuve)
       else (false,preuve)
   | _ -> (false,preuve)
