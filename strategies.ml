@@ -13,3 +13,10 @@ let intro = fun proo ->
       let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
       (true, newproo)
   | _ -> (false, proo);;
+
+let exact = fun preuve hypoId ->
+  match preuve.remainder with
+    propos::[] -> 
+      if propos = hypoId then 
+        let nouvellePreuve = {hypos=preuve.hypos;remainder = []}
+  | propos::remainder -> (false,preuve)
