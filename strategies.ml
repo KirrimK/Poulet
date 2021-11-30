@@ -27,3 +27,8 @@ let exact = fun preuve hypoId ->
         (true,nouvellePreuve)
       else (false,preuve)
   | _ -> (false,preuve)
+
+(* Placeholder: à implémenter *)
+(* apply: proof -> int -> bool*proof = <fun> *)
+let apply = fun proof hypoId ->
+  (false, proof)
