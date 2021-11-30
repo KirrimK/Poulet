@@ -26,6 +26,7 @@ let exact = fun preuve hypoId ->
         let nouvellePreuve = {hypos=preuve.hypos;remainder = [True]} in
         (true,nouvellePreuve)
       else (false,preuve)
+<<<<<<< HEAD
   | _ -> (false,preuve);;
 
 let assumption = fun preuve ->
@@ -40,3 +41,11 @@ let assumption = fun preuve ->
           then (cond, nouvellePreuve)
           else iterateurLocal reste  in
   iterateurLocal preuve.hypos;;
+=======
+  | _ -> (false,preuve)
+
+(* Placeholder: à implémenter *)
+(* apply: proof -> int -> bool*proof = <fun> *)
+let apply = fun proof hypoId ->
+  (false, proof)
+>>>>>>> eb49aa380cd292b7711a35e014af86c64d8f5405
