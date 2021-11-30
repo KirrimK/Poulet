@@ -1,5 +1,5 @@
-main.exe : backtrack.cmo main.cmo
-		ocamlc -o main.exe  main.cmo 
+main : backtrack.cmo main.cmo
+		ocamlc -o main_exe  main.cmo 
 
 %.cmi : %.mli
 		ocamlc $<
@@ -15,3 +15,6 @@ strategies.cmo : strategies.cmi hypothese.cmi strategies.ml
 
 backtrack.cmo : backtrack.cmi strategies.cmi backtrack.ml
 		ocamlc -c backtrack.ml
+
+main.cmo : main.ml backtrack.cmi
+		ocamlc -c main.ml
