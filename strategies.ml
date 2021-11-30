@@ -26,4 +26,17 @@ let exact = fun preuve hypoId ->
         let nouvellePreuve = {hypos=preuve.hypos;remainder = [True]} in
         (true,nouvellePreuve)
       else (false,preuve)
-  | _ -> (false,preuve)
+  | _ -> (false,preuve);;
+
+let assumption = fun preuve ->
+  (* Vérifie si la proposition à prouver n'est pas présente dans la liste des hypothèses. *)
+  let rec iterateurLocal = fun listeHypothese ->
+    match listeHypothese with 
+      [] -> (false, preuve)
+    | hypot :: reste ->
+        let numeroHypothese = hypot.id in
+        let (cond, nouvellePreuve) = exact preuve numeroHypothese in
+        if cond 
+          then (cond, nouvellePreuve)
+          else iterateurLocal reste  in
+  iterateurLocal preuve.hypos;;
