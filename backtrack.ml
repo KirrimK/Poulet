@@ -1,7 +1,5 @@
 (* Backtrack.ml *)
 
-(* open Hypothese;; *)
+open Hypothese;;
 open Strategies;;
 
-let backtrack = fun proof ->
-  
