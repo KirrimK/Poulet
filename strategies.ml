@@ -20,14 +20,14 @@ let estCeLaBonneHypothese = fun hypoId hypo ->
 
 let exact = fun preuve hypoId ->
   (* Verifie si la proposition à prouver est l'hypothèse hypoId *)
-  let rec iterateurLocal = fun listeResteAProuver listeNonProuvée ->
+  let rec iterateurLocal = fun listeResteAProuver listeNonProuvée result ->
     match listeResteAProuver with
       propos::reste -> 
-        if propos = (List.find (estCeLaBonneHypothese hypoId) preuve.hypos).prop then 
-          let nouvellePreuve = {hypos=preuve.hypos;remainder = listeNonProuvée :: True :: reste} in
-          (true,nouvellePreuve)
-        else iterateurLocal reste
-    | _ -> (false,preuve) in
+        if propos = (List.find (estCeLaBonneHypothese hypoId) preuve.hypos).prop 
+          then iterateurLocal reste (True :: listeNonProuvée) (result || true)
+          else iterateurLocal reste (propos :: listeNonProuvée) (result || false)
+    | [] -> let nouvellePreuve = {hypos=preuve.hypos ; remainder = listeNonProuvée}
+        (result,nouvellePreuve) in
   iterateurLocal preuve.remainder [];;
 
 let assumption = fun preuve ->
