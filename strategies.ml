@@ -32,20 +32,18 @@ let exact = fun hypoId preuve ->
 
 let assumption = fun preuve ->
   (* Vérifie si la proposition à prouver n'est pas présente dans la liste des hypothèses. *)
-  let rec iterateurLocal = fun listeHypothese ->
+  let rec iterateurLocal = fun listeHypothese preuveInterne result->
     match listeHypothese with 
-      [] -> (false, preuve)
+      [] -> (result, preuveInterne)
     | hypot :: reste ->
         let numeroHypothese = hypot.id in
-        let (cond, nouvellePreuve) = exact numeroHypothese preuve in
-        if cond 
-          then (cond, nouvellePreuve)
-          else iterateurLocal reste  in
-  iterateurLocal preuve.hypos;;
+        let (cond, nouvellePreuve) = exact numeroHypothese preuveInterne in
+        iterateurLocal reste nouvellePreuve (cond||result) in
+  iterateurLocal preuve.hypos preuve false;;
 
 (* Placeholder: à implémenter *)
 (* apply: proof -> int -> bool*proof = <fun> *)
-let apply = fun proof hypoId ->
+let apply = fun hypoId proof ->
   (* Fonction qui applique l'hypothèse selectionée par hypoId à la proposition à prouver *)
 
   (false, proof)
