@@ -20,10 +20,10 @@ let createstratlist = fun proof ->
 
 let backtrack = fun proo ->
   let makenode = fun proof funcandfuncname ->
-    let (func, funcname) = funcanduncname in
+    let (func, funcname) = funcandfuncname in
     let (newok, newst) = func proof in
     {state=newst; cmdhasok=newok; cmdname=funcname; children=[]} in
-  let expandnode = fun node ->
+  let rec expandnode = fun node ->
     if not node.cmdhasok then
       node
     else
@@ -32,5 +32,5 @@ let backtrack = fun proo ->
       let childlist = List.map (makenode state) stratlist in
       let expandedchildlist = List.map expandnode childlist in
       {state=state; cmdhasok=node.cmdhasok; cmdname=node.cmdname; children=expandedchildlist} in
-  expandnode (makenode proo ((fun x->true),""));;
+  expandnode (makenode proo ((fun x->(true, proo)),""));;
 

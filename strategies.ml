@@ -46,4 +46,4 @@ let assumption = fun preuve ->
 let apply = fun hypoId proof ->
   (* Fonction qui applique l'hypothèse selectionée par hypoId à la proposition à prouver *)
 
-  (false, proof)
+  (false, proof);;
