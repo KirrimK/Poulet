@@ -18,7 +18,7 @@ let intro = fun proo ->
 let estCeLaBonneHypothese = fun hypoId hypo ->
   hypo.id = hypoId
 
-let exact = fun preuve hypoId ->
+let exact = fun hypoId preuve ->
   (* Verifie si la proposition à prouver est l'hypothèse hypoId *)
   let rec iterateurLocal = fun listeResteAProuver listeNonProuvée result ->
     match listeResteAProuver with
@@ -37,7 +37,7 @@ let assumption = fun preuve ->
       [] -> (false, preuve)
     | hypot :: reste ->
         let numeroHypothese = hypot.id in
-        let (cond, nouvellePreuve) = exact preuve numeroHypothese in
+        let (cond, nouvellePreuve) = exact numeroHypothese preuve in
         if cond 
           then (cond, nouvellePreuve)
           else iterateurLocal reste  in
