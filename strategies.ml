@@ -15,7 +15,17 @@ let intro = fun proo ->
       (true, newproo)
   | _ -> (false, proo);;
 
+let nettoyer = fun preuve ->
+  let iterateurLocal = fun listeANettoyer listePropre result->
+    match listeANettoyer with
+      True :: reste -> iterateurLocal reste listePropre (result || true)
+    | propos :: reste -> iterateurLocal reste (propos :: listePropre) (result || false)
+    | [] -> (result listePropre) in
+  let (aMarche,nouveauResteAProuver) = iterateurLocal preuve.remainder [] in
+  (aMarche, {hypos = preuve.hypos; remainder = nouveauResteAProuver})
+
 let estCeLaBonneHypothese = fun hypoId hypo ->
+  (* Fonction privée sensée être utilisée exclusivement par exact *)
   hypo.id = hypoId;;
 
 let exact = fun hypoId preuve ->
