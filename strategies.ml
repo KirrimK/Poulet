@@ -16,17 +16,17 @@ let intro = fun proo ->
   | _ -> (false, proo);;
 
 let estCeLaBonneHypothese = fun hypoId hypo ->
-  hypo.id = hypoId
+  hypo.id = hypoId;;
 
 let exact = fun hypoId preuve ->
   (* Verifie si la proposition à prouver est l'hypothèse hypoId *)
   let rec iterateurLocal = fun listeResteAProuver listeNonProuvee result ->
     match listeResteAProuver with
       propos::reste -> 
-        if propos = (List.find (estCeLaBonneHypothese hypoId) preuve.hypos).prop 
+        if (propos = (List.find (estCeLaBonneHypothese hypoId) preuve.hypos).prop)
           then iterateurLocal reste (True :: listeNonProuvee) (result || true)
           else iterateurLocal reste (propos :: listeNonProuvee) (result || false)
-    | [] -> let nouvellePreuve = {hypos=preuve.hypos ; remainder = listeNonProuvee}
+    | [] -> let nouvellePreuve = {hypos=preuve.hypos ; remainder = listeNonProuvee}in
         (result,nouvellePreuve) in
   iterateurLocal preuve.remainder [] false;;
 
