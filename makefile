@@ -1,5 +1,5 @@
 main : backtrack.cmo main.cmo
-		ocamlc -o main_exe  main.cmo 
+		ocamlc -o poulet  main.cmo 
 
 %.cmi : %.mli
 		ocamlc $<
