@@ -28,7 +28,7 @@ let exact = fun hypoId preuve ->
           else iterateurLocal reste (propos :: listeNonProuvee) (result || false)
     | [] -> let nouvellePreuve = {hypos=preuve.hypos ; remainder = listeNonProuvee}
         (result,nouvellePreuve) in
-  iterateurLocal preuve.remainder [];;
+  iterateurLocal preuve.remainder [] false;;
 
 let assumption = fun preuve ->
   (* Vérifie si la proposition à prouver n'est pas présente dans la liste des hypothèses. *)
