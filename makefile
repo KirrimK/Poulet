@@ -13,7 +13,7 @@ hypothese.cmo : hypothese.cmi hypothese.ml
 strategies.cmo : strategies.cmi hypothese.cmi strategies.ml
 		ocamlc -c strategies.ml
 
-backtrack.cmo : backtrack.cmi strategies.cmi backtrack.ml
+backtrack.cmo : backtrack.cmi strategies.cmi backtrack.ml hypothese.cmi
 		ocamlc -c backtrack.ml
 
 main.cmo : main.ml backtrack.cmi
