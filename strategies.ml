@@ -15,18 +15,30 @@ let intro = fun proo ->
       (true, newproo)
   | _ -> (false, proo);;
 
+let estCeQueLHypotheseEstDansLaListe = fun hypoProp hypo ->
+  (* Fonction privée sensée être appelée exclusivement par nettoyer *)
+  hypo.prop = hypoProp;;
+
 let nettoyer = fun preuve ->
-  let rec iterateurLocal = fun listeANettoyer listePropre result nbPropLaisses->
+  let rec iterateurLocalReste = fun listeANettoyer listePropre result nbPropLaisses->
     match listeANettoyer with
-      True :: [] -> iterateurLocal [] listePropre (result || false) nbPropLaisses
-    | True :: reste -> iterateurLocal reste listePropre (result || true) nbPropLaisses
-    | propos :: reste -> iterateurLocal reste (propos :: listePropre) (result || false) (nbPropLaisses+1)
+      True :: [] -> iterateurLocalReste [] listePropre (result || false) nbPropLaisses
+    | True :: reste -> iterateurLocalReste reste listePropre (result || true) nbPropLaisses
+    | propos :: reste -> iterateurLocalReste reste (propos :: listePropre) (result || false) (nbPropLaisses+1)
     | [] -> 
         if (nbPropLaisses >0) 
           then (result, listePropre) 
-          else (result, [True]) in 
-  let (aMarche,nouveauResteAProuver) = iterateurLocal preuve.remainder [] false 0 in
-  (aMarche, {hypos = preuve.hypos; remainder = nouveauResteAProuver})
+          else (result, [True]) in
+  let rec iterateurLocalHippo = fun listeANettoyer listePropre result ->
+    match listeANettoyer with
+      [] -> (result,listePropre)
+    | hippo :: reste -> 
+      if ((List.find_opt (estCeQueLHypotheseEstDansLaListe hippo.prop) listePropre)=None)
+        then iterateurLocalHippo reste (hippo::listePropre) (result || false)
+        else iterateurLocalHippo reste listePropre (result||true) in
+  let (aMarche1,nouveauResteAProuver) = iterateurLocalReste preuve.remainder [] false 0 in
+  let (aMarche2,nouvellesHippos) = iterateurLocalHippo preuve.hypos [] false in
+  ((aMarche1||aMarche2), {hypos = nouvellesHippos; remainder = nouveauResteAProuver})
 
 let estCeLaBonneHypothese = fun hypoId hypo ->
   (* Fonction privée sensée être utilisée exclusivement par exact *)
