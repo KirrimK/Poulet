@@ -18,6 +18,7 @@ let createstratlist = fun proof ->
   let autrelist = [(intro, "intro")] in
   List.concat [applylist; exactlist; autrelist];;
 
+(* penser à retourner si une branche retourne [True] *)
 let backtrack = fun proo ->
   let makenode = fun proof funcandfuncname ->
     let (func, funcname) = funcandfuncname in
