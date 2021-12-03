@@ -24,10 +24,10 @@ let backtrack = fun proo ->
     let (newok, newst) = func proof in
     {state=newst; cmdhasok=newok; cmdname=funcname; children=[]} in
   let rec expandnode = fun node ->
-    if not node.cmdhasok then
+    let state = node.state in
+    if (not node.cmdhasok or state=[True]) then
       node
     else
-      let state = node.state in
       let stratlist = createstratlist state in
       let childlist = List.map (makenode state) stratlist in
       let expandedchildlist = List.map expandnode childlist in

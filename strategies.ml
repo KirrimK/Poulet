@@ -16,7 +16,7 @@ let intro = fun proo ->
   | _ -> (false, proo);;
 
 let nettoyer = fun preuve ->
-  let iterateurLocal = fun listeANettoyer listePropre result->
+  let rec iterateurLocal = fun listeANettoyer listePropre result->
     match listeANettoyer with
       True :: reste -> iterateurLocal reste listePropre (result || true)
     | propos :: reste -> iterateurLocal reste (propos :: listePropre) (result || false)
