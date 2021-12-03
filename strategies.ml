@@ -18,14 +18,14 @@ let intro = fun proo ->
 let nettoyer = fun preuve ->
   let rec iterateurLocal = fun listeANettoyer listePropre result nbPropLaisses->
     match listeANettoyer with
-      True :: [] -> iterateurLocal reste listePropre (result || false) nbPropLaisses
+      True :: [] -> iterateurLocal [] listePropre (result || false) nbPropLaisses
     | True :: reste -> iterateurLocal reste listePropre (result || true) nbPropLaisses
     | propos :: reste -> iterateurLocal reste (propos :: listePropre) (result || false) (nbPropLaisses+1)
     | [] -> 
         if (nbPropLaisses >0) 
           then (result, listePropre) 
           else (result, [True]) in 
-  let (aMarche,nouveauResteAProuver) = iterateurLocal preuve.remainder [] in
+  let (aMarche,nouveauResteAProuver) = iterateurLocal preuve.remainder [] false 0 in
   (aMarche, {hypos = preuve.hypos; remainder = nouveauResteAProuver})
 
 let estCeLaBonneHypothese = fun hypoId hypo ->
