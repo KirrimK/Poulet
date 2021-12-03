@@ -25,7 +25,7 @@ let backtrack = fun proo ->
     {state=newst; cmdhasok=newok; cmdname=funcname; children=[]} in
   let rec expandnode = fun node ->
     let state = node.state in
-    if (not node.cmdhasok or state=[True]) then
+    if (not node.cmdhasok || state.remainder=[True]) then
       node
     else
       let stratlist = createstratlist state in
