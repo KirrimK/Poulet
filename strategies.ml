@@ -24,7 +24,7 @@ let nettoyer = fun preuve ->
     | [] -> 
         if (nbPropLaisses >0) 
           then (result, listePropre) 
-          else (result, [True])
+          else (result, [True]) in 
   let (aMarche,nouveauResteAProuver) = iterateurLocal preuve.remainder [] in
   (aMarche, {hypos = preuve.hypos; remainder = nouveauResteAProuver})
 
