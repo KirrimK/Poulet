@@ -16,11 +16,15 @@ let intro = fun proo ->
   | _ -> (false, proo);;
 
 let nettoyer = fun preuve ->
-  let iterateurLocal = fun listeANettoyer listePropre result->
+  let rec iterateurLocal = fun listeANettoyer listePropre result nbPropLaisses->
     match listeANettoyer with
-      True :: reste -> iterateurLocal reste listePropre (result || true)
-    | propos :: reste -> iterateurLocal reste (propos :: listePropre) (result || false)
-    | [] -> (result listePropre) in
+      True :: [] -> iterateurLocal reste listePropre (result || false) nbPropLaisses
+      True :: reste -> iterateurLocal reste listePropre (result || true) nbPropLaisses
+    | propos :: reste -> iterateurLocal reste (propos :: listePropre) (result || false) (nbPropLaisses+1)
+    | [] -> 
+        if (nbPropLaisses >0) 
+          then (result, listePropre) 
+          else (result, [True])
   let (aMarche,nouveauResteAProuver) = iterateurLocal preuve.remainder [] in
   (aMarche, {hypos = preuve.hypos; remainder = nouveauResteAProuver})
 
