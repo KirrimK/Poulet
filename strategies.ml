@@ -19,7 +19,7 @@ let nettoyer = fun preuve ->
   let rec iterateurLocal = fun listeANettoyer listePropre result nbPropLaisses->
     match listeANettoyer with
       True :: [] -> iterateurLocal reste listePropre (result || false) nbPropLaisses
-      True :: reste -> iterateurLocal reste listePropre (result || true) nbPropLaisses
+    | True :: reste -> iterateurLocal reste listePropre (result || true) nbPropLaisses
     | propos :: reste -> iterateurLocal reste (propos :: listePropre) (result || false) (nbPropLaisses+1)
     | [] -> 
         if (nbPropLaisses >0) 
