@@ -13,13 +13,13 @@ let intro = fun proo ->
         let nextremainder = b::(List.tl proo.remainder) in
         let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
         (true, newproo)
-    | ImplyChain(True::_) -> (false, proo)
+    (*| ImplyChain(True::_) -> (false, proo)
     | ImplyChain(False::_) -> (false, proo)
     | ImplyChain(a::rest) ->
         let nexthyp = {id=nexthypid; prop=a} in
         let nextremainder = ImplyChain(rest)::List.tl proo.remainder) in
         let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
-        (true, newproo)
+        (true, newproo)*)
     | _ -> (false, proo)
 
 let estCeQueLHypotheseEstDansLaListe = fun hypoProp hypo ->

@@ -2,7 +2,7 @@
 
 type proposition = Name of string
   | Implies of proposition * proposition
-  | ImplyChain of proposition list
+  (*| ImplyChain of proposition list*)
   | True
   | False
   | Negation of proposition;;
