@@ -4,3 +4,5 @@ a.out
 main_exe
 dune-project
 .merlin
+.vscode
+_build
