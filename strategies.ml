@@ -42,7 +42,9 @@ let splitProblem = fun proof ->
 (* intro : proof -> bool * proof = <fun> *)
 let intro = fun proo ->
   let nexthypid = fun () ->
-    (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1 in
+    if (getAllHypoIds proo != []) then
+      (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1
+    else 0 in
   match List.hd proo.remainder with
     Implies(True, _) -> (false, proo)
   | Implies(False, _) -> (false, proo)
