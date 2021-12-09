@@ -17,7 +17,7 @@ let backtrack2 = fun proof ->
     let funcnamelist = buildfunclist proo in
     let rec explorePossibilities = fun fnlist ->
       let funcname = List.hd fnlist in
-      ()
+      
 
 (* Vieux Code à dégager *)
 type node = {
