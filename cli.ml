@@ -8,7 +8,7 @@ let show_id_hypo h = Printf.printf "%d"  h.id;;
 
 
 
-let prop_iter = fun c_n c_t c_f f_neg f_imply f_ic  prop ->
+let prop_iter = fun c_n c_t c_f f_neg f_imply  prop ->
 let rec prop_to_string = fun p ->
 match p with
   |Name n -> c_n n
