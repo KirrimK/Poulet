@@ -2,6 +2,24 @@
 
 open Strategies;;
 
+(* Nouveau Code *)
+
+let buildfunclist = fun proof ->
+  let funclist = fun func funcname hypolist ->
+    List.map (fun id -> (func id, String.concat " " [funcname;(string_of_int id)])) hypolist in
+  let applylist = funclist apply "apply" (getAllHypoIds proof) in
+  let exactlist = funclist exact "exact" (getAllHypoIds proof) in
+  let autrelist = if (getRootOfProp (getFirstRemainder proof) = "Implies") then [(intro, "intro")] else [] in
+  List.concat [applylist; exactlist; autrelist];;
+
+let backtrack2 = fun proof ->
+  let rec recback = fun proo nameacc ->
+    let funcnamelist = buildfunclist proo in
+    let rec explorePossibilities = fun fnlist ->
+      let funcname = List.hd fnlist in
+      ()
+
+(* Vieux Code à dégager *)
 type node = {
     state: proof;
     cmdhasok: bool;
@@ -9,7 +27,7 @@ type node = {
     children: node list;
 };;
 
-let createstratlist = fun proof ->
+let buildfunclist = fun proof ->
   let funclist = fun func funcname hypolist ->
     List.map (fun hypo -> (func hypo.id, String.concat " " [funcname;(string_of_int hypo.id)])) hypolist in
   let applylist = funclist apply "apply" proof.hypos in

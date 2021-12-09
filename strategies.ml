@@ -17,20 +17,45 @@ type proof = {
     remainder: proposition list;
   };;
 
+(* Fonctions méthodes sur les types définis plus haut *)
+
+let getAllHypoIds = fun proof ->
+  List.map (fun hypo -> hypo.id) proof.hypos;;
+
+let getRootOfProp = fun prop ->
+  match prop with
+    Implies(_, _) -> "Implies"
+  | Negation _ -> "Negation"
+  | _ -> "Other";;
+
+let remainderLines = fun proof ->
+  List.length proof.remainder;;
+
+let getFirstRemainder = fun proof ->
+  List.hd proof.remainder;;
+
+let splitProblem = fun proof ->
+  List.map (fun remline -> {hypos=proof.hypos; remainder=[remline]}) proof.remainder;;
+
 (* Stratégies à appliquer *)
 
 (* intro : proof -> bool * proof = <fun> *)
 let intro = fun proo ->
-  let nexthypid = if proo.hypos != [] then (List.hd proo.hypos).id + 1 else 0 in
-    match List.hd proo.remainder with
-      Implies(True, _) -> (false, proo)
-    | Implies(False, _) -> (false, proo)
-    | Implies(a, b) -> 
-        let nexthyp = {id=nexthypid; prop=a} in
-        let nextremainder = b::(List.tl proo.remainder) in
-        let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
-        (true, newproo)
-    | _ -> (false, proo)
+  let nexthypid =
+    let i = ref 0 in
+    fun () ->
+      let id = !i in
+      incr i;
+      id in
+  match List.hd proo.remainder with
+    Implies(True, _) -> (false, proo)
+  | Implies(False, _) -> (false, proo)
+  | Implies(a, b) -> 
+      let nexthyp = {id=nexthypid (); prop=a} in
+      let nextremainder = b::(List.tl proo.remainder) in
+      let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
+      (true, newproo)
+  | _ -> (false, proo)
 
 let estCeQueLHypotheseEstDansLaListe = fun hypoProp hypo ->
   (* Fonction privée sensée être appelée exclusivement par nettoyer *)
