@@ -45,7 +45,7 @@ let intro = fun proo ->
     let i = ref 0 in
     fun () ->
       let id = !i in
-      i != !i +1;
+      i := !i +1;
       id in
   match List.hd proo.remainder with
     Implies(True, _) -> (false, proo)
