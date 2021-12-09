@@ -1,6 +1,5 @@
 (* Tests.ml *)
 
-open Hypothese;;
 open Strategies;;
 
 let h1 = {hypos=[];remainder=[Implies(Name("A"),Name("B"))]} ;;
