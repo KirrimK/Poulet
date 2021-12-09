@@ -1,6 +1,23 @@
 (* Strategies.ml *)
 
-open Hypothese;;
+(* Définitions de types *)
+type proposition = Name of string
+  | Implies of proposition * proposition
+  | True
+  | False
+  | Negation of proposition;;
+
+type hypothesis = {
+    id: int;
+    prop: proposition;
+  };;
+
+type proof = {
+    hypos: hypothesis list;
+    remainder: proposition list;
+  };;
+
+(* Stratégies à appliquer *)
 
 (* intro : proof -> bool * proof = <fun> *)
 let intro = fun proo ->
@@ -13,13 +30,6 @@ let intro = fun proo ->
         let nextremainder = b::(List.tl proo.remainder) in
         let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
         (true, newproo)
-    (*| ImplyChain(True::_) -> (false, proo)
-    | ImplyChain(False::_) -> (false, proo)
-    | ImplyChain(a::rest) ->
-        let nexthyp = {id=nexthypid; prop=a} in
-        let nextremainder = ImplyChain(rest)::List.tl proo.remainder) in
-        let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
-        (true, newproo)*)
     | _ -> (false, proo)
 
 let estCeQueLHypotheseEstDansLaListe = fun hypoProp hypo ->

@@ -1,6 +1,6 @@
 (* cli.ml interface*)
 
-open Hypothese;;
+open Strategies;;
 open String;;
 
 
