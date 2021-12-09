@@ -41,12 +41,8 @@ let splitProblem = fun proof ->
 
 (* intro : proof -> bool * proof = <fun> *)
 let intro = fun proo ->
-  let nexthypid =
-    let i = ref 0 in
-    fun () ->
-      let id = !i in
-      i := !i +1;
-      id in
+  let nexthypid = fun () ->
+    (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1 in
   match List.hd proo.remainder with
     Implies(True, _) -> (false, proo)
   | Implies(False, _) -> (false, proo)
@@ -55,7 +51,7 @@ let intro = fun proo ->
       let nextremainder = b::(List.tl proo.remainder) in
       let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
       (true, newproo)
-  | _ -> (false, proo)
+  | _ -> (false, proo);;
 
 let estCeQueLHypotheseEstDansLaListe = fun hypoProp hypo ->
   (* Fonction privée sensée être appelée exclusivement par nettoyer *)
