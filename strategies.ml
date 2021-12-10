@@ -116,7 +116,7 @@ let apply = fun hypoId proof ->
   let propHippo = (List.find (estCeLaBonneHypothese hypoId) proof.hypos).prop in
   match propHippo with
     Implies (partie1,partie2) -> 
-      if partie2 = proof.remainder[0]
+      if (partie2 = List.hd proof.remainder)
         then (true, {hypos=proof.hypos ; remainder = partie1})
         else (false, proof)
   | _ -> (false, proof);;
