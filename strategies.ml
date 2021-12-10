@@ -5,7 +5,8 @@ type proposition = Name of string
   | Implies of proposition * proposition
   | True
   | False
-  | Negation of proposition;;
+  | Negation of proposition
+  | And of proposition * proposition;;
 
 type hypothesis = {
     id: int;
@@ -26,6 +27,7 @@ let getRootOfProp = fun prop ->
   match prop with
     Implies(_, _) -> "Implies"
   | Negation _ -> "Negation"
+  | And(_, _) -> "And"
   | _ -> "Other";;
 
 let remainderLines = fun proof ->
@@ -41,6 +43,14 @@ let splitProblem = fun proof ->
   List.map (fun remline -> {hypos=proof.hypos; remainder=[remline]}) proof.remainder;;
 
 (* Stratégies à appliquer *)
+
+(* andsplit: proof -> bool * proof = <fun> *)
+let andsplit = fun proof ->
+  match List.hd proof.remainder with
+    And(a, b) -> 
+      let newremainder = a :: (b::List.tl proof.remainder) in
+      (true, {hypos=proof.hypos; remainder=newremainder})
+  | _ -> (false, proof);;
 
 (* intro : proof -> bool * proof = <fun> *)
 let intro = fun proo ->
