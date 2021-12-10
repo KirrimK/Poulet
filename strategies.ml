@@ -34,6 +34,9 @@ let remainderLines = fun proof ->
 let getFirstRemainder = fun proof ->
   List.hd proof.remainder;;
 
+let isRemainderTrue = fun proof ->
+  (proof.remainder = [True]);;
+
 let splitProblem = fun proof ->
   List.map (fun remline -> {hypos=proof.hypos; remainder=[remline]}) proof.remainder;;
 

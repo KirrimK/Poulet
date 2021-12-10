@@ -12,43 +12,26 @@ let buildfunclist = fun proof ->
   let autrelist = if (getRootOfProp (getFirstRemainder proof) = "Implies") then [(intro, "intro")] else [] in
   List.concat [applylist; exactlist; autrelist];;
 
-let backtrack2 = fun proof ->
+let backtrack = fun proof ->
   let rec recback = fun proo nameacc ->
     let funcnamelist = buildfunclist proo in
     let rec explorePossibilities = fun fnlist ->
-      let funcname = List.hd fnlist in
-      
-
-(* Vieux Code à dégager *)
-type node = {
-    state: proof;
-    cmdhasok: bool;
-    cmdname: string;
-    children: node list;
-};;
-
-let buildfunclist = fun proof ->
-  let funclist = fun func funcname hypolist ->
-    List.map (fun hypo -> (func hypo.id, String.concat " " [funcname;(string_of_int hypo.id)])) hypolist in
-  let applylist = funclist apply "apply" proof.hypos in
-  let exactlist = funclist exact "exact" proof.hypos in
-  let autrelist = [(intro, "intro")] in
-  List.concat [applylist; exactlist; autrelist];;
-
-(* penser à retourner si une branche retourne [True] *)
-let backtrack = fun proo ->
-  let makenode = fun proof funcandfuncname ->
-    let (func, funcname) = funcandfuncname in
-    let (newok, newst) = func proof in
-    {state=newst; cmdhasok=newok; cmdname=funcname; children=[]} in
-  let rec expandnode = fun node ->
-    let state = node.state in
-    if (not node.cmdhasok || state.remainder=[True]) then
-      node
-    else
-      let stratlist = createstratlist state in
-      let childlist = List.map (makenode state) stratlist in
-      let expandedchildlist = List.map expandnode childlist in
-      {state=state; cmdhasok=node.cmdhasok; cmdname=node.cmdname; children=expandedchildlist} in
-  expandnode (makenode proo ((fun x->(true, proo)),""));;
-
+      let (func, funcname) = List.hd fnlist in
+      (* tester fonction *)
+      let newnameacc = String.concat ">" [nameacc;funcname] in
+      let () = Printf.printf "%s\n" newnameacc in
+      let (result, resproof) = func proo in
+      if result then
+        if isRemainderTrue resproof then
+          (* fin du backtrack, TH prouvé *)
+          true
+        else
+          (* continuer à tester les fonctions à cet étage *)
+          recback resproof newnameacc
+      else
+        if (List.tl fnlist) != [] then
+          explorePossibilities (List.tl fnlist)
+        else
+          false in
+    explorePossibilities funcnamelist in
+  recback proof "";;
