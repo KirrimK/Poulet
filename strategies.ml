@@ -111,5 +111,11 @@ let assumption = fun preuve ->
 (* apply: proof -> int -> bool*proof = <fun> *)
 let apply = fun hypoId proof ->
   (* Fonction qui applique l'hypothèse selectionée par hypoId à la proposition à prouver *)
-
+  let propHippo = (List.find (estCeLaBonneHypothese hypoId) preuve.hypos).prop in
+  match propHippo with
+    Implies (partie1,partie2) -> 
+      if partie2 = proof.remainder[0]
+        then (true, {hypos=proof.hypos ; remainder = partie1})
+        else (false, proof)
+  | _ -> (false, proof)
   (false, proof);;
