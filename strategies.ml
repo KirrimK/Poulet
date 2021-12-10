@@ -113,7 +113,7 @@ let assumption = fun preuve ->
 (* apply: int -> proof -> bool*proof = <fun> *)
 let apply = fun hypoId proof ->
   (* Fonction qui applique l'hypothèse selectionée par hypoId à la proposition à prouver *)
-  let propHippo = (List.find (estCeLaBonneHypothese hypoId) preuve.hypos).prop in
+  let propHippo = (List.find (estCeLaBonneHypothese hypoId) proof.hypos).prop in
   match propHippo with
     Implies (partie1,partie2) -> 
       if partie2 = proof.remainder[0]
