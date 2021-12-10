@@ -110,7 +110,6 @@ let assumption = fun preuve ->
         iterateurLocal reste nouvellePreuve (cond||result) in
   iterateurLocal preuve.hypos preuve false;;
 
-
 (* apply: proof -> int -> bool*proof = <fun> *)
 let apply = fun hypoId proof ->
   (* Fonction qui applique l'hypothèse selectionée par hypoId à la proposition à prouver *)
