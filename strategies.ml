@@ -110,7 +110,7 @@ let assumption = fun preuve ->
         iterateurLocal reste nouvellePreuve (cond||result) in
   iterateurLocal preuve.hypos preuve false;;
 
-(* Placeholder: à implémenter *)
+
 (* apply: proof -> int -> bool*proof = <fun> *)
 let apply = fun hypoId proof ->
   (* Fonction qui applique l'hypothèse selectionée par hypoId à la proposition à prouver *)
@@ -120,5 +120,4 @@ let apply = fun hypoId proof ->
       if partie2 = proof.remainder[0]
         then (true, {hypos=proof.hypos ; remainder = partie1})
         else (false, proof)
-  | _ -> (false, proof)
-  (false, proof);;
+  | _ -> (false, proof);;
