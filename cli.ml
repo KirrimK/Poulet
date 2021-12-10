@@ -15,7 +15,8 @@ let prop_iter = fun c_n c_t c_f f_neg f_imply  prop ->
       |True  ->  c_t 
       |False  -> c_f 
       |Negation neg -> f_neg (prop_to_string neg) 
-      |Implies (p1,p2) -> f_imply (prop_to_string  p1)  (prop_to_string  p2) in 
+      |Implies (p1,p2) -> f_imply (prop_to_string  p1)  (prop_to_string  p2)  
+      |And (p1,p2) -> f_and (prop_to_string p1) (prop_to_string p2) in
   prop_to_string  prop
 
 
@@ -29,6 +30,8 @@ let c_false = "False" ;;
 let f_implies=fun s1 s2 -> String.concat "" ["(";s1;"=>";s2;")"];; 
 
 let f_negation=fun s -> String.concat "" ["Not";"(";s;")"];;
+
+let f_and = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;"/\\";sProp2;")"];;
 
 let show_prop = fun propo -> prop_iter c_name c_true c_false f_negation f_implies propo;;
 
