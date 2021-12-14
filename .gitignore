@@ -6,3 +6,4 @@ dune-project
 .merlin
 .vscode
 _build
+*~
