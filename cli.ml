@@ -8,7 +8,7 @@ let show_id_hypo h = Printf.printf "%d"  h.id;;
 
 
 
-let prop_iter = fun c_n c_t c_f f_neg f_imply  prop ->
+let prop_iter = fun c_n c_t c_f f_neg f_imply f_and  prop ->
   let rec prop_to_string = fun p ->
     match p with
       |Name n -> c_n n
@@ -33,7 +33,7 @@ let f_negation=fun s -> String.concat "" ["Not";"(";s;")"];;
 
 let f_and = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;"/\\";sProp2;")"];;
 
-let show_prop = fun propo -> prop_iter c_name c_true c_false f_negation f_implies propo;;
+let show_prop = fun propo -> prop_iter c_name c_true c_false f_negation f_implies f_and  propo;;
 
 let print_prop  propo =  Printf.printf "%s" (show_prop propo);;
 
