@@ -19,7 +19,7 @@ let prop_iter = fun c_n c_t c_f f_neg f_imply f_and  prop ->
   prop_to_string  prop
 
 
- (* On peut utiliser le module Uchar pour avoir les caractï¿½res unicode mathï¿½matiques*)
+ (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
 
 let c_name = fun n -> n ;;
