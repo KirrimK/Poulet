@@ -26,3 +26,7 @@ val intro : proof -> bool * proof
 val exact : int -> proof -> bool * proof
 
 val apply : int -> proof -> bool * proof
+
+val prop_iter : (string -> 'a) -> 'a -> 'a -> ('a -> 'a) -> ('a -> 'a -> 'a) -> ('a -> 'a -> 'a) -> proposition -> 'a
+
+val foncgen_hypo : (int -> 'a) -> (proposition -> 'b) -> hypothesis -> 'a * 'b
