@@ -23,5 +23,3 @@ let f_and = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;"^";sProp2;")"];;
 let show_prop = fun propo -> prop_iter c_name c_true c_false f_negation f_implies f_and  propo;;
 
 let print_prop = fun propo -> Printf.printf "%s" (show_prop propo);;
-
-

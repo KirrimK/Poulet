@@ -52,7 +52,7 @@ let andsplit = fun proof ->
       (true, {hypos=proof.hypos; remainder=newremainder})
   | _ -> (false, proof);;
 
-  let nexthypid = fun proo ->
+let nexthypid = fun proo ->
     if (getAllHypoIds proo != []) then
       (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1
     else 0;; 
