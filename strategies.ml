@@ -52,6 +52,19 @@ let andsplit = fun proof ->
       (true, {hypos=proof.hypos; remainder=newremainder})
   | _ -> (false, proof);;
 
+let andSplitHypo = fun hypoId proof ->
+  let iterateurLocal = fun listeHyposAVider listeHypoARemplir result ->
+    match listeHyposAVider with
+      [] -> (listeHypoARemplir, result)
+    | hypo :: suite -> 
+        if hypo.id = hypoId 
+          then match hypo.prop with
+            And (prop1,prop2) -> iterateurLocal suite ({id=;prop=prop1}::{id=;prop=prop2}::listeHypoARemplir) true
+          | _ -> iterateurLocal suite (hypo::listeHypoARemplir) false
+        else iterateurLocal suite (hypo::listeHypoARemplir) (result||false) in
+  let (newListHippos result) = iterateurLocal proof.hypos [] false in
+  (result {hypos = newListHippos; remainder = proof.remainder})
+
 (* intro : proof -> bool * proof = <fun> *)
 let intro = fun proo ->
   let nexthypid = fun () ->
