@@ -74,9 +74,9 @@ let andSplitHypo = fun hypoId proof ->
 (* intro : proof -> bool * proof = <fun> *)
 let intro = fun proo ->
   match List.hd proo.remainder with
-    Implies(True, _) -> (false, proo)
+    Implies(True, _)
   | Implies(False, _) -> (false, proo)
-  | Implies(a, b) -> 
+  | Implies(a, b) ->
       let nexthyp = {id=(nexthypid proo); prop=a} in
       let nextremainder = b::(List.tl proo.remainder) in
       let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
