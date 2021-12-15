@@ -6,7 +6,7 @@ open String;;
 let show_id_hypo = fun hypo ->
   foncgen_hypo (Printf.printf "%d") (fun x -> ()) hypo;;
 
-(* On peut utiliser le module Uchar pour avoir les caractï¿½res unicode mathï¿½matiques*)
+(* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
 let c_name = fun n -> n ;;
 let c_true = "True";;
