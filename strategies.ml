@@ -52,30 +52,32 @@ let andsplit = fun proof ->
       (true, {hypos=proof.hypos; remainder=newremainder})
   | _ -> (false, proof);;
 
+  let nexthypid = fun proo ->
+    if (getAllHypoIds proo != []) then
+      (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1
+    else 0;; 
+
 let andSplitHypo = fun hypoId proof ->
-  let iterateurLocal = fun listeHyposAVider listeHypoARemplir result ->
+  let rec iterateurLocal = fun listeHyposAVider listeHypoARemplir result ->
     match listeHyposAVider with
       [] -> (listeHypoARemplir, result)
     | hypo :: suite -> 
         if hypo.id = hypoId 
           then match hypo.prop with
-            And (prop1,prop2) -> iterateurLocal suite ({id=;prop=prop1}::{id=;prop=prop2}::listeHypoARemplir) true
+            And (prop1,prop2) -> iterateurLocal suite ({id=(nexthypid proof);prop=prop1}::{id=(nexthypid proof);prop=prop2}::listeHypoARemplir) true
           | _ -> iterateurLocal suite (hypo::listeHypoARemplir) false
         else iterateurLocal suite (hypo::listeHypoARemplir) (result||false) in
-  let (newListHippos result) = iterateurLocal proof.hypos [] false in
-  (result {hypos = newListHippos; remainder = proof.remainder})
+  let (newListHippos, result) = iterateurLocal proof.hypos [] false in
+  (result, {hypos = newListHippos; remainder = proof.remainder})
+
 
 (* intro : proof -> bool * proof = <fun> *)
 let intro = fun proo ->
-  let nexthypid = fun () ->
-    if (getAllHypoIds proo != []) then
-      (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1
-    else 0 in
   match List.hd proo.remainder with
     Implies(True, _) -> (false, proo)
   | Implies(False, _) -> (false, proo)
   | Implies(a, b) -> 
-      let nexthyp = {id=nexthypid (); prop=a} in
+      let nexthyp = {id=(nexthypid proo); prop=a} in
       let nextremainder = b::(List.tl proo.remainder) in
       let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
       (true, newproo)
