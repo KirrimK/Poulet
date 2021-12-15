@@ -52,17 +52,18 @@ let andsplit = fun proof ->
       (true, {hypos=proof.hypos; remainder=newremainder})
   | _ -> (false, proof);;
 
+let nexthypid = fun proo ->
+  if (getAllHypoIds proo != []) then
+    (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1
+  else 0;;
+
 (* intro : proof -> bool * proof = <fun> *)
 let intro = fun proo ->
-  let nexthypid = fun () ->
-    if (getAllHypoIds proo != []) then
-      (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1
-    else 0 in
   match List.hd proo.remainder with
     Implies(True, _) -> (false, proo)
   | Implies(False, _) -> (false, proo)
   | Implies(a, b) -> 
-      let nexthyp = {id=nexthypid (); prop=a} in
+      let nexthyp = {id=(nexthypid proo); prop=a} in
       let nextremainder = b::(List.tl proo.remainder) in
       let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
       (true, newproo)
