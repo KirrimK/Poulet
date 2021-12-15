@@ -82,13 +82,8 @@ let intro = fun proo ->
   match List.hd proo.remainder with
     Implies(True, _)
   | Implies(False, _) -> (false, proo)
-<<<<<<< HEAD
   | Implies(a, b) -> 
       let nexthyp = {id=(nextHypId proo); prop=a} in
-=======
-  | Implies(a, b) ->
-      let nexthyp = {id=(nexthypid proo); prop=a} in
->>>>>>> eac31c62b7f69c662f4a4dbac2a34e843d0a7751
       let nextremainder = b::(List.tl proo.remainder) in
       let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
       (true, newproo)
