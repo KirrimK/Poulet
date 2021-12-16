@@ -31,6 +31,12 @@ val splitProblem : proof -> proof list
 (* Stratégies appliquables à un problème mathématique *)
 val andsplit : proof -> bool * proof
 
+val andSplitHypo : int -> proof -> bool * proof
+
+val orSplit : bool -> proof -> bool * proof
+
+val orSplitHypo : bool -> int -> proof -> bool * proof
+
 val intro : proof -> bool * proof
 
 val exact : int -> proof -> bool * proof
