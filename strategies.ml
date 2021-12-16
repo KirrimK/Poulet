@@ -18,6 +18,62 @@ type proof = {
     remainder: proposition list;
   };;
 
+
+exception Invalid_Input;;
+(* Makers de type, à partir de listes de string*)
+let make_prop = fun strlist->
+  let rec iter_loc = fun list acc ->
+    match list with
+      ""::rest -> iter_loc rest acc
+    | "=>"::rest ->
+        begin
+          match acc with
+            first::ac when ac != [] ->
+              begin
+                match ac with
+                  second::a when a != [] ->
+                    let newacc = Implies(second, first)::a in
+                    iter_loc rest newacc
+                | _ -> raise Invalid_Input
+              end
+          | _ -> raise Invalid_Input
+        end
+    | "^"::rest ->
+        begin        
+          match acc with
+            first::ac when ac != [] ->
+              begin
+                match ac with
+                  second::a when a != [] ->
+                    let newacc = And(first, second)::a in
+                    iter_loc rest newacc
+                | _ -> raise Invalid_Input
+              end
+          | _ -> raise Invalid_Input
+        end
+    | "v"::rest ->
+        begin
+          match acc with
+            first::ac when ac != [] ->
+              begin
+                match ac with
+                  second::a when a != [] ->
+                    let newacc = Or(first, second)::a in
+                    iter_loc rest newacc
+                | _ -> raise Invalid_Input
+              end
+          | _ -> raise Invalid_Input
+        end
+    | a::rest when a != ""->
+        let newacc = Name(a)::acc in
+        iter_loc rest newacc
+    | _::rest ->
+        iter_loc rest acc
+    | [] ->
+        let (elt::rest) = acc in
+        elt in
+  iter_loc strlist [];;
+
 (* Fonctions méthodes sur les types définis plus haut *)
 
 let getAllHypoIds = fun proof ->
