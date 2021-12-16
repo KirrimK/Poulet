@@ -6,6 +6,16 @@ type hypothesis
 
 type proof
 
+val empty_proof: proof
+
+exception Invalid_Input
+
+val make_prop : string list -> proposition
+
+val add_hyp : proof -> proposition -> proof
+
+val add_remainder : proof -> proposition -> proof
+
 val getAllHypoIds : proof -> int list
 
 val getRootOfProp : proposition -> string
