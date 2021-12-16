@@ -19,6 +19,7 @@ type proof = {
     remainder: proposition list;
   };;
 
+let empty_proof = {hypos=[]; remainder=[]};;
 
 exception Invalid_Input;;
 (* Makers de type, à partir de listes de string*)
@@ -27,44 +28,42 @@ let make_prop = fun strlist->
     match list with
       ""::rest -> iter_loc rest acc
     | "=>"::rest ->
-        begin
-          match acc with
-            first::ac when ac != [] ->
-              begin
-                match ac with
-                  second::a when a != [] ->
-                    let newacc = Implies(second, first)::a in
-                    iter_loc rest newacc
-                | _ -> raise Invalid_Input
-              end
-          | _ -> raise Invalid_Input
-        end
+        if acc != [] then
+          let (second::ac) = acc in
+          if ac != [] then
+            let (first::a) = ac in
+            let newacc = Implies(first, second)::a in
+            iter_loc rest newacc
+          else
+            raise Invalid_Input
+        else
+          raise Invalid_Input
     | "^"::rest ->
-        begin        
-          match acc with
-            first::ac when ac != [] ->
-              begin
-                match ac with
-                  second::a when a != [] ->
-                    let newacc = And(first, second)::a in
-                    iter_loc rest newacc
-                | _ -> raise Invalid_Input
-              end
-          | _ -> raise Invalid_Input
-        end
+        if acc != [] then
+          let (second::ac) = acc in
+          if ac != [] then
+            let (first::a) = ac in
+            let newacc = And(first, second)::a in
+            iter_loc rest newacc
+          else
+            raise Invalid_Input
+        else
+          raise Invalid_Input
     | "v"::rest ->
-        begin
-          match acc with
-            first::ac when ac != [] ->
-              begin
-                match ac with
-                  second::a when a != [] ->
-                    let newacc = Or(first, second)::a in
-                    iter_loc rest newacc
-                | _ -> raise Invalid_Input
-              end
-          | _ -> raise Invalid_Input
-        end
+        if acc != [] then
+          let (second::ac) = acc in
+          if ac != [] then
+            let (first::a) = ac in
+            let newacc = Or(first, second)::a in
+            iter_loc rest newacc
+          else
+            raise Invalid_Input
+        else
+          raise Invalid_Input
+    | "True"::rest ->
+        iter_loc rest (True::acc)
+    | "False"::rest ->
+        iter_loc rest (False::acc)
     | a::rest when a != ""->
         let newacc = Name(a)::acc in
         iter_loc rest newacc
@@ -74,6 +73,20 @@ let make_prop = fun strlist->
         let (elt::rest) = acc in
         elt in
   iter_loc strlist [];;
+
+(* nextHypId : proof -> int *)
+let nextHypId = fun proo ->
+    (* Fonction privée qui donne un numéro libre pour une hypothèse *)
+    if (getAllHypoIds proo != []) then
+      (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1
+    else 0;;
+
+let add_hyp = fun proof prp ->
+   let nexthyp = {id=(nextHypId proof); prop=prp} in
+   {hypos=(nexthyp::proof.hypos); remainder=proof.remainder};;
+
+let add_remainder = fun proof prp ->
+   {hypos=proof.hypos; remainder=prp::proof.remainder};;
 
 (* Fonctions méthodes sur les types définis plus haut *)
 
@@ -111,13 +124,6 @@ let andsplit = fun proof ->
       let newremainder = a :: (b::List.tl proof.remainder) in
       (true, {hypos=proof.hypos; remainder=newremainder})
   | _ -> (false, proof);;
-
-(* nextHypId : proof -> int *)
-let nextHypId = fun proo ->
-    (* Fonction privée qui donne un numéro libre pour une hypothèse *)
-    if (getAllHypoIds proo != []) then
-      (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1
-    else 0;; 
 
 (* andSplitHypo : int -> proof -> bool*proof = <fun> *)
 let andSplitHypo = fun hypoId proof ->
