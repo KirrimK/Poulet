@@ -268,10 +268,9 @@ let prop_iter = fun c_n c_t c_f f_neg f_imply f_and f_or prop ->
       |False -> c_f
       |Negation neg -> f_neg (iter_local neg)
       |Implies (p1,p2) -> f_imply (iter_local p1) (iter_local p2)
-      |And (p1,p2) -> f_and (iter_local p1) (iter_local p2) 
+      |And (p1,p2) -> f_and (iter_local p1) (iter_local p2)
       |Or (p1, p2) -> f_or (iter_local p1) (iter_local p2) in
   iter_local prop;;
 
 let foncgen_hypo = fun f_id f_prop hypo ->
   (f_id hypo.id, f_prop hypo.prop);;
-
