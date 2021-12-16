@@ -19,10 +19,79 @@ type proof = {
     remainder: proposition list;
   };;
 
-(* Fonctions méthodes sur les types définis plus haut *)
+let empty_proof = {hypos=[]; remainder=[]};;
+
+exception Invalid_Input;;
+(* Makers de type, à partir de listes de string*)
+let make_prop = fun strlist->
+  let rec iter_loc = fun list acc ->
+    match list with
+      ""::rest -> iter_loc rest acc
+    | "=>"::rest ->
+        if acc != [] then
+          let (second::ac) = acc in
+          if ac != [] then
+            let (first::a) = ac in
+            let newacc = Implies(first, second)::a in
+            iter_loc rest newacc
+          else
+            raise Invalid_Input
+        else
+          raise Invalid_Input
+    | "^"::rest ->
+        if acc != [] then
+          let (second::ac) = acc in
+          if ac != [] then
+            let (first::a) = ac in
+            let newacc = And(first, second)::a in
+            iter_loc rest newacc
+          else
+            raise Invalid_Input
+        else
+          raise Invalid_Input
+    | "v"::rest ->
+        if acc != [] then
+          let (second::ac) = acc in
+          if ac != [] then
+            let (first::a) = ac in
+            let newacc = Or(first, second)::a in
+            iter_loc rest newacc
+          else
+            raise Invalid_Input
+        else
+          raise Invalid_Input
+    | "True"::rest ->
+        iter_loc rest (True::acc)
+    | "False"::rest ->
+        iter_loc rest (False::acc)
+    | a::rest when a != ""->
+        let newacc = Name(a)::acc in
+        iter_loc rest newacc
+    | _::rest ->
+        iter_loc rest acc
+    | [] ->
+        let (elt::rest) = acc in
+        elt in
+  iter_loc strlist [];;
 
 let getAllHypoIds = fun proof ->
   List.map (fun hypo -> hypo.id) proof.hypos;;
+
+(* nextHypId : proof -> int *)
+let nextHypId = fun proo ->
+    (* Fonction privée qui donne un numéro libre pour une hypothèse *)
+    if (getAllHypoIds proo != []) then
+      (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1
+    else 0;;
+
+let add_hyp = fun proof prp ->
+   let nexthyp = {id=(nextHypId proof); prop=prp} in
+   {hypos=(nexthyp::proof.hypos); remainder=proof.remainder};;
+
+let add_remainder = fun proof prp ->
+   {hypos=proof.hypos; remainder=prp::proof.remainder};;
+
+(* Fonctions méthodes sur les types définis plus haut *)
 
 let getRootOfProp = fun prop ->
   match prop with
@@ -55,13 +124,6 @@ let andsplit = fun proof ->
       let newremainder = a :: (b::List.tl proof.remainder) in
       (true, {hypos=proof.hypos; remainder=newremainder})
   | _ -> (false, proof);;
-
-(* nextHypId : proof -> int *)
-let nextHypId = fun proo ->
-    (* Fonction privée qui donne un numéro libre pour une hypothèse *)
-    if (getAllHypoIds proo != []) then
-      (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1
-    else 0;; 
 
 (* andSplitHypo : int -> proof -> bool*proof = <fun> *)
 let andSplitHypo = fun hypoId proof ->
