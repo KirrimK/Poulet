@@ -18,7 +18,9 @@ let f_implies = fun s1 s2 -> String.concat "" ["(";s1;"=>";s2;")"];;
 
 let f_negation = fun s -> String.concat "" ["Not";"(";s;")"];;
 
-let f_and = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;"^";sProp2;")"];;
+let f_and = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∧ ";sProp2;")"];;
+
+let f_or = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∨ ";sProp2;")"];;
 
 let show_prop = fun propo -> prop_iter c_name c_true c_false f_negation f_implies f_and  propo;;
 

@@ -6,7 +6,8 @@ type proposition = Name of string
   | True
   | False
   | Negation of proposition
-  | And of proposition * proposition;;
+  | And of proposition * proposition
+  | Or of proposition * proposition;;
 
 type hypothesis = {
     id: int;
@@ -28,6 +29,7 @@ let getRootOfProp = fun prop ->
     Implies(_, _) -> "Implies"
   | Negation _ -> "Negation"
   | And(_, _) -> "And"
+  | Or (_, _) -> "Or"
   | _ -> "Other";;
 
 let remainderLines = fun proof ->
@@ -159,7 +161,7 @@ let apply = fun hypoId proof ->
         else (false, proof)
   | _ -> (false, proof);;
 
-let prop_iter = fun c_n c_t c_f f_neg f_imply f_and prop ->
+let prop_iter = fun c_n c_t c_f f_neg f_imply f_and f_or prop ->
   let rec iter_local = fun p ->
     match p with
       |Name n -> c_n n
@@ -167,7 +169,8 @@ let prop_iter = fun c_n c_t c_f f_neg f_imply f_and prop ->
       |False -> c_f
       |Negation neg -> f_neg (iter_local neg)
       |Implies (p1,p2) -> f_imply (iter_local p1) (iter_local p2)
-      |And (p1,p2) -> f_and (iter_local p1) (iter_local p2) in
+      |And (p1,p2) -> f_and (iter_local p1) (iter_local p2) 
+      |Or (p1, p2) -> f_or (iter_local p1) (iter_local p2) in
   iter_local prop;;
 
 let foncgen_hypo = fun f_id f_prop hypo ->
