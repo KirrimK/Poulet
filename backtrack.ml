@@ -7,11 +7,15 @@ let buildfunclist = fun proof ->
     List.map (fun id -> (func id, String.concat " " [funcname;(string_of_int id)])) hypolist in
   let applylist = funclist apply "apply" (getAllHypoIds proof) in
   let exactlist = funclist exact "exact" (getAllHypoIds proof) in
+  (* TODO: ajouter les listes des hypothèses splittables, filtrées avec une fonction dans strategies pour avoir la root d'une hypo *)
   let autrelist = if (getRootOfProp (getFirstRemainder proof) = "Implies") then [(intro, "intro")] else [] in
   let autrelist = if (getRootOfProp (getFirstRemainder proof) = "And") then
     (andsplit, "andsplit") :: autrelist else autrelist in
   List.concat [applylist; exactlist; autrelist];;
 
+
+(* TODO: changer la façon dont les splits sont faits:
+ utiliser l'idée de victor sur le orsplit avec le andsplit *)
 let backtrack = fun proof ->
   let rec recback = fun proo nameacc ->
     let funcnamelist = buildfunclist proo in

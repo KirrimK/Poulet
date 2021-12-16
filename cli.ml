@@ -27,3 +27,19 @@ let show_prop = fun propo -> prop_iter c_name c_true c_false f_negation f_implie
 let print_prop = fun propo -> Printf.printf "%s" (show_prop propo);;
 
 let string_to_list = fun str -> String.split_on_char ' ' str;;
+
+(* idées pour l'interface: si une commande à une nature à splitter le pb, proposer de switcher de problème avec "switch <nb probl>", et indiquer sur la ligne avant l'entrée utilisateur les infos ex.
+
+0: A => B
+1: C
+---
+C => B
+/1\ [2]
+> switch 2
+0: A => B
+1: C
+---
+D => A
+[1] /2\
+>
+*)
