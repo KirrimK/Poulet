@@ -19,3 +19,7 @@ let h3 = {hypos=[{id=0;prop=Name("A")}];remainder=[Implies(Name("B"),Name("C"))]
 if (intro h3) = (true,{hypos=[{id=1;prop=Name("B")};{id=0;prop=Name("A")}];remainder=[Name("C")]}) then Printf.printf "intro test 3 success\n" else Printf.printf "intro test 3 fail\n";;
 
 if (assumption h3) = (false,h3) then Printf.printf "assumption test 3 success\n" else Printf.printf "assumption test 3 fail\n";;
+
+let h4 = {hypos=[{id=0;prop=Implies(Name("A"),Name("B"))}];remainder=[Name("B")]};;
+
+if (apply 0 h4) = (true,{hypos=[{id=0;prop=Implies(Name("A"),Name("B"))}];remainder=[Name("A")]}) then Printf.printf "apply test success\n" else Printf.printf "apply test fail\n";;
