@@ -85,12 +85,14 @@ let orSplit = fun dejaPasse proof ->
   dejaPasse sert à indiquer quelle partie du Or fait partie de la preuve.*)
   match proof.remainder with
     prop :: reste -> 
+      begin
       match prop with 
         Or (p1, p2) -> 
           if dejaPasse
             then (true, {hypos = proof.hypos; remainder= p2::reste}) 
             else (true, {hypos = proof.hypos; remainder = p1::reste})
       | _ -> (false, proof)
+      end
   | [] -> (false, proof)
 
 (* orSplit : bool int proof -> bool*proof *)
@@ -102,10 +104,14 @@ let orSplitHypo = fun dejaPasse idHypo proof ->
       []->(result,listeHypoARemplir)
     | hypot::reste ->
         if hypot.id = idHypo then 
+          begin
           match hypot.prop with
-            Or (p1, p2) ->iterateurLocal reste {id=(nextHypId proof);prop=p1}::listeHypoARemplir true
-          | _ -> iterateurLocal reste hypot::listeHypoARemplir (result||false)
-        else iterateurLocal reste hypot::listeHypoARemplir (result||false) in
+            Or (p1, p2) ->
+              if  dejaPasse then iterateurLocal reste ({id=(nextHypId proof);prop=p2}::listeHypoARemplir) true
+              else iterateurLocal reste ({id=(nextHypId proof);prop=p1}::listeHypoARemplir) true
+          | _ -> iterateurLocal reste (hypot::listeHypoARemplir) (result||false)
+          end
+        else iterateurLocal reste (hypot::listeHypoARemplir) (result||false) in
   let (rem, res) = iterateurLocal proof.hypos [] false in
   (rem, {hypos=res;remainder=proof.remainder})
 
