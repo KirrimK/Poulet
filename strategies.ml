@@ -78,6 +78,37 @@ let andSplitHypo = fun hypoId proof ->
   let (newListHippos, result) = iterateurLocal proof.hypos [] false in
   (result, {hypos = newListHippos; remainder = proof.remainder})
 
+(* orSplit : bool proof -> bool*proof = <fun> *)
+let orSplit = fun dejaPasse proof ->
+  (* Fonction qui découpe le problème en deux sous problèmes si la 1ère proposition du remainder 
+  est un Or
+  dejaPasse sert à indiquer quelle partie du Or fait partie de la preuve.*)
+  match proof.remainder with
+    prop :: reste -> 
+      match prop with 
+        Or (p1, p2) -> 
+          if dejaPasse
+            then (true, {hypos = proof.hypos; remainder= p2::reste}) 
+            else (true, {hypos = proof.hypos; remainder = p1::reste})
+      | _ -> (false, proof)
+  | [] -> (false, proof)
+
+(* orSplit : bool int proof -> bool*proof *)
+let orSplitHypo = fun dejaPasse idHypo proof ->
+  (*Fonction qui découpe l'hypothèse idHypo en deux partie si sa proposition est un Or.
+  dejaPasse sert à préciser quelle partie du Or est considérée dans la preuve.*)
+  let rec iterateurLocal =fun listeHyposAVider listeHypoARemplir result ->
+    match listeHyposAVider with 
+      []->(result,listeHypoARemplir)
+    | hypot::reste ->
+        if hypot.id = idHypo then 
+          match hypot.prop with
+            Or (p1, p2) ->iterateurLocal reste {id=(nextHypId proof);prop=p1}::listeHypoARemplir true
+          | _ -> iterateurLocal reste hypot::listeHypoARemplir (result||false)
+        else iterateurLocal reste hypot::listeHypoARemplir (result||false) in
+  let (rem, res) = iterateurLocal proof.hypos [] false in
+  (rem, {hypos=res;remainder=proof.remainder})
+
 
 (* intro : proof -> bool * proof = <fun> *)
 let intro = fun proo ->
