@@ -74,6 +74,9 @@ let make_prop = fun strlist->
         elt in
   iter_loc strlist [];;
 
+let getAllHypoIds = fun proof ->
+  List.map (fun hypo -> hypo.id) proof.hypos;;
+
 (* nextHypId : proof -> int *)
 let nextHypId = fun proo ->
     (* Fonction privée qui donne un numéro libre pour une hypothèse *)
@@ -89,9 +92,6 @@ let add_remainder = fun proof prp ->
    {hypos=proof.hypos; remainder=prp::proof.remainder};;
 
 (* Fonctions méthodes sur les types définis plus haut *)
-
-let getAllHypoIds = fun proof ->
-  List.map (fun hypo -> hypo.id) proof.hypos;;
 
 let getRootOfProp = fun prop ->
   match prop with
@@ -147,12 +147,14 @@ let orSplit = fun dejaPasse proof ->
   dejaPasse sert à indiquer quelle partie du Or fait partie de la preuve.*)
   match proof.remainder with
     prop :: reste -> 
-      match prop with 
-        Or (p1, p2) -> 
-          if dejaPasse
+      begin
+        match prop with 
+          Or (p1, p2) -> 
+            if dejaPasse
             then (true, {hypos = proof.hypos; remainder= p2::reste}) 
             else (true, {hypos = proof.hypos; remainder = p1::reste})
-      | _ -> (false, proof)
+        | _ -> (false, proof)
+      end
   | [] -> (false, proof)
 
 (* orSplit : bool int proof -> bool*proof *)
