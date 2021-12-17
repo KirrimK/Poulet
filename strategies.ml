@@ -28,38 +28,41 @@ let make_prop = fun strlist->
     match list with
       ""::rest -> iter_loc rest acc
     | "=>"::rest ->
-        if acc != [] then
-          let (second::ac) = acc in
-          if ac != [] then
-            let (first::a) = ac in
-            let newacc = Implies(first, second)::a in
-            iter_loc rest newacc
-          else
-            raise Invalid_Input
-        else
-          raise Invalid_Input
+        begin
+          match acc with
+            second::ac when ac != [] ->
+              begin
+                match ac with
+                  first::a ->
+                    iter_loc rest (Implies(first, second)::a)
+                | _ -> Printf.printf "e";raise Invalid_Input
+              end
+          | _ -> Printf.printf "f";raise Invalid_Input
+        end
     | "^"::rest ->
-        if acc != [] then
-          let (second::ac) = acc in
-          if ac != [] then
-            let (first::a) = ac in
-            let newacc = And(first, second)::a in
-            iter_loc rest newacc
-          else
-            raise Invalid_Input
-        else
-          raise Invalid_Input
+        begin
+          match acc with
+            second::ac when ac != [] ->
+              begin
+                match ac with
+                  first::a ->
+                    iter_loc rest (And(first, second)::a)
+                | _ -> Printf.printf "c";raise Invalid_Input
+              end
+          | _ -> Printf.printf "d";raise Invalid_Input
+        end
     | "v"::rest ->
-        if acc != [] then
-          let (second::ac) = acc in
-          if ac != [] then
-            let (first::a) = ac in
-            let newacc = Or(first, second)::a in
-            iter_loc rest newacc
-          else
-            raise Invalid_Input
-        else
-          raise Invalid_Input
+        begin
+          match acc with
+            second::ac when ac != [] ->
+              begin
+                match ac with
+                  first::a ->
+                    iter_loc rest (Or(first, second)::a)
+                | _ -> Printf.printf "a";raise Invalid_Input
+              end
+          | _ -> Printf.printf "b";raise Invalid_Input
+        end
     | "True"::rest ->
         iter_loc rest (True::acc)
     | "False"::rest ->
@@ -70,8 +73,11 @@ let make_prop = fun strlist->
     | _::rest ->
         iter_loc rest acc
     | [] ->
-        let (elt::rest) = acc in
-        elt in
+        begin
+          match acc with
+            elt::rest -> elt
+          | _ -> Printf.printf "g";raise Invalid_Input
+        end in
   iter_loc strlist [];;
 
 let getAllHypoIds = fun proof ->
@@ -112,6 +118,8 @@ let isRemainderTrue = fun proof ->
 
 let splitProblem = fun proof ->
   List.map (fun remline -> {hypos=proof.hypos; remainder=[remline]}) proof.remainder;;
+
+(* getPropOfHyp *)
 
 (* Stratégies à appliquer *)
 
