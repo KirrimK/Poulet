@@ -11,24 +11,20 @@ let test = fun name funct dep arr ->
 
 test "intro 1" intro test1 test1_res;;
 
-(*
-if (intro test1) = (true,{hypos=[{id=0;prop=Name("A")}];remainder=[Name("B")]}) then Printf.printf "intro test 1 success\n" else Printf.printf "intro test 1 fail\n";;
+let test2 = add_hyp (add_remainder empty_proof (make_prop ["A"])) (make_prop ["A"]);;
 
-if (assumption {hypos=[{id=0;prop=Name("A")}];remainder=[Name("B")]}) = (false,{hypos=[{id=0;prop=Name("A")}];remainder=[Name("B")]}) then Printf.printf "assumption test 1 success\n" else Printf.printf "assumption test 1 fail\n";;
+let test2_res = add_hyp (add_remainder empty_proof (make_prop ["True"])) (make_prop ["A"]);;
 
-let h2 = {hypos=[{id=0;prop=Name("A")}];remainder=[Name("A")]};;
+test "assumption 1" assumption test2 test2_res;;
 
-if (intro h2) = (false,h2) then Printf.printf "intro test 2 success\n" else Printf.printf "intro test 2 fail\n";;
+let test3 = add_hyp (add_remainder empty_proof (make_prop ["B"; "C"; "=>"])) (make_prop ["A"]);;
 
-if (assumption h2) = (true,{hypos=[{id=0;prop=Name("A")}];remainder=[True]}) then Printf.printf "assumption test 2 success\n" else Printf.printf "assumption test 2 fail\n";;
+let test3_res = add_hyp (add_hyp (add_remainder empty_proof (make_prop ["C"])) (make_prop ["A"])) (make_prop ["B"]);;
 
-let h3 = {hypos=[{id=0;prop=Name("A")}];remainder=[Implies(Name("B"),Name("C"))]};;
+test "intro 2" intro test3 test3_res;;
 
-if (intro h3) = (true,{hypos=[{id=1;prop=Name("B")};{id=0;prop=Name("A")}];remainder=[Name("C")]}) then Printf.printf "intro test 3 success\n" else Printf.printf "intro test 3 fail\n";;
+let test4 = add_hyp (add_remainder empty_proof (make_prop ["B"])) (make_prop ["A"; "B"; "=>"]);;
 
-if (assumption h3) = (false,h3) then Printf.printf "assumption test 3 success\n" else Printf.printf "assumption test 3 fail\n";;
+let test4_res = add_hyp (add_remainder empty_proof (make_prop ["A"])) (make_prop ["A"; "B"; "=>"]);;
 
-let h4 = {hypos=[{id=0;prop=Implies(Name("A"),Name("B"))}];remainder=[Name("B")]};;
-
-if (apply 0 h4) = (true,{hypos=[{id=0;prop=Implies(Name("A"),Name("B"))}];remainder=[Name("A")]}) then Printf.printf "apply test success\n" else Printf.printf "apply test fail\n";;
-*)
+test "apply 1" (fun dep -> apply 0 dep) test4 test4_res;;
