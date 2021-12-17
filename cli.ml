@@ -22,9 +22,9 @@ let f_and = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∧ ";sProp2;")"
 
 let f_or = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∨ ";sProp2;")"];;
 
-let show_prop = fun propo -> prop_iter c_name c_true c_false f_negation f_implies f_and  propo;;
+let prop_to_string = fun propo -> prop_iter c_name c_true c_false f_negation f_implies f_and  propo;;
 
-let print_prop = fun propo -> Printf.printf "%s" (show_prop propo);;
+let print_prop = fun propo -> Printf.printf "%s" (prop_to_string propo);;
 
 let string_to_list = fun str -> String.split_on_char ' ' str;;
 
