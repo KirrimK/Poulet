@@ -12,6 +12,7 @@ let buildfunclist = fun proof ->
   let autrelist = if (getRootOfProp (getFirstRemainder proof) = "Implies") then [((fun x y -> intro x), "intro")] else [] in
   (*let autrelist = if (getRootOfProp (getFirstRemainder proof) = "And") then
     ((fun x y z -> andsplit x y z), "andsplit") :: autrelist else autrelist in*)
+  (* TBD: rajouter orsplit, modifier andsplit dans strategies et ajouter andsplithypo (qui ne doit pas retourner cote gauche ou droit) *)
   List.concat [applylist; exactlist; autrelist;orsplithypolist];;
 
 (* TODO: changer la façon dont les splits sont faits:
