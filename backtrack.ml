@@ -15,8 +15,6 @@ let buildfunclist = fun proof ->
   (* TBD: rajouter orsplit, modifier andsplit dans strategies et ajouter andsplithypo (qui ne doit pas retourner cote gauche ou droit) *)
   List.concat [applylist; exactlist; autrelist;orsplithypolist];;
 
-(* TODO: changer la façon dont les splits sont faits:
- utiliser l'idée de victor sur le orsplit avec le andsplit *)
 (*let backtrack = fun proof ->
   let rec recback = fun proo nameacc ->
     let funcnamelist = buildfunclist proo in
