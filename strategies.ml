@@ -5,7 +5,7 @@ type proposition = Name of string
   | Implies of proposition * proposition
   | True
   | False
-  | Negation of proposition
+  | Negation of proposition (* à virer *)
   | And of proposition * proposition
   | Or of proposition * proposition;;
 
