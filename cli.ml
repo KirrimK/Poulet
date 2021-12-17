@@ -9,20 +9,20 @@ let show_id_hypo = fun hypo ->
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
 let c_name = fun n -> n ;;
-let c_true = "True";;
-let c_false = "False" ;;
+let c_true = "⊤";;
+let c_false = "⊥" ;;
 
 (*let and_symbol = Uchar.type  0x02C4;;*)
 
-let f_implies = fun s1 s2 -> String.concat "" ["(";s1;"=>";s2;")"];; 
+let f_implies = fun s1 s2 -> String.concat "" ["(";s1;"⇒";s2;")"];; 
 
-let f_negation = fun s -> String.concat "" ["Not";"(";s;")"];;
+let f_negation = fun s -> String.concat "" ["¬";"(";s;")"];;
 
 let f_and = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∧ ";sProp2;")"];;
 
 let f_or = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∨ ";sProp2;")"];;
 
-let prop_to_string = fun propo -> prop_iter c_name c_true c_false f_negation f_implies f_and  propo;;
+let prop_to_string = fun propo -> prop_iter c_name c_true c_false f_negation f_implies f_and f_or  propo;;
 
 let print_prop = fun propo -> Printf.printf "%s" (prop_to_string propo);;
 
