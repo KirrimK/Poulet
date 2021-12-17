@@ -5,18 +5,18 @@ open Strategies;;
 let buildfunclist = fun proof ->
   let funclist = fun func funcname hypolist ->
     List.map (fun id -> (func id, String.concat " " [funcname;(string_of_int id)])) hypolist in
-  let applylist = funclist apply "apply" (getAllHypoIds proof) in
-  let exactlist = funclist exact "exact" (getAllHypoIds proof) in
+  let applylist = funclist (fun x y z -> apply x y) "apply" (getAllHypoIds proof) in
+  let exactlist = funclist (fun x y z -> exact x y) "exact" (getAllHypoIds proof) in
+  let orsplithypolist = funclist orSplitHypo "orsplithypo" (getAllHypoIds proof) in
   (* TODO: ajouter les listes des hypothèses splittables, filtrées avec une fonction dans strategies pour avoir la root d'une hypo *)
-  let autrelist = if (getRootOfProp (getFirstRemainder proof) = "Implies") then [(intro, "intro")] else [] in
-  let autrelist = if (getRootOfProp (getFirstRemainder proof) = "And") then
-    (andsplit, "andsplit") :: autrelist else autrelist in
-  List.concat [applylist; exactlist; autrelist];;
-
+  let autrelist = if (getRootOfProp (getFirstRemainder proof) = "Implies") then [((fun x y -> intro x), "intro")] else [] in
+  (*let autrelist = if (getRootOfProp (getFirstRemainder proof) = "And") then
+    ((fun x y z -> andsplit x y z), "andsplit") :: autrelist else autrelist in*)
+  List.concat [applylist; exactlist; autrelist;orsplithypolist];;
 
 (* TODO: changer la façon dont les splits sont faits:
  utiliser l'idée de victor sur le orsplit avec le andsplit *)
-let backtrack = fun proof ->
+(*let backtrack = fun proof ->
   let rec recback = fun proo nameacc ->
     let funcnamelist = buildfunclist proo in
     let rec explorePossibilities = fun fnlist ->
@@ -53,11 +53,11 @@ let backtrack = fun proof ->
       let () = Printf.printf "%s (No strategies available)\n" nameacc in
       false in
   recback proof "";;
-
+*)
 
 (* Nouveau code *)
 
-let backtrack2 = fun proof prints ->
+let backtrack = fun proof prints ->
   let rec recback = fun proo nameacc ->
     (* Déterminer la liste des stratégies potentiellement pertinentes à essayer *)
     (* Tester toutes les méthodes
@@ -81,5 +81,56 @@ let backtrack2 = fun proof prints ->
              > arrêter et passer à la prochaine stratégie
        (TBD: ecrire le reste de l'algo)
      *)
-    _ in
+    let funclist = buildfunclist proo in
+    let rec explore = fun funlist ->
+      match funlist with
+        hdfunc::rest ->
+          begin
+            let (func, funcname) = hdfunc in
+            (* créer le nouveau accumulateur de nom *)
+            let newnameacc = String.concat ">" [nameacc; funcname] in
+            if (funcname = "andsplit") then
+              let (res_left, resproof_left) = func proo true in
+              if (not res_left) then
+                (* la commande a échoué d'un des deux côtés, donc des deux*)
+                explore rest
+              else
+                if (recback resproof_left (String.concat "\n" [newnameacc; ""])) then
+                  (* le côté gauche a été réussi, essayer le droit *)
+                  let (res_right, resproof_right) = func proo false in
+                  if (recback resproof_right (String.concat "\n" [newnameacc; ""])) then
+                    (* le côté gauche ET le côté droit on prouvé, donc on a prouvé le TH *)
+                    let () = Printf.printf "Success\n" in
+                    true
+                  else
+                    explore rest
+                else
+                  explore rest
+            else if (funcname == "orsplit") then
+              let (res_left, resproof_left) = func proo true in
+              let (res_right, resproof_right) = func proo false in
+              if (res_left || res_right) then
+                if (recback resproof_left (String.concat "\n" [newnameacc; ""]) || recback resproof_left (String.concat "\n" [newnameacc; ""])) then
+                  true
+                else
+                  explore rest
+              else
+                explore rest
+            else
+              (* calculer le résultat de la stratégie *)
+              let (result, resproof) = func proo false in
+              (* print conditionnel (de debug) *)
+              let () = if prints then (Printf.printf "%s (%s)\n" newnameacc (if result then "ok" else "fail")) else () in
+              if result then
+                if isRemainderTrue resproof then
+                  (* Si résolution du ss-pb réussie: print *)
+                  let () = Printf.printf "%s (%s)\n" newnameacc (if result then "ok" else "fail") in
+                  true
+                else
+                  recback resproof newnameacc
+              else
+                explore rest
+          end
+      | _ -> false in
+    explore funclist in
   recback proof "";;

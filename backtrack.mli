@@ -1,3 +1,3 @@
 (* backtrack.mli *)
 
-val backtrack: Strategies.proof -> bool
+val backtrack: Strategies.proof -> bool -> bool

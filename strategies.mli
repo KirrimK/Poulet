@@ -33,9 +33,9 @@ val andsplit : proof -> bool * proof
 
 val andSplitHypo : int -> proof -> bool * proof
 
-val orSplit : bool -> proof -> bool * proof
+val orSplit :  proof -> bool -> bool * proof
 
-val orSplitHypo : bool -> int -> proof -> bool * proof
+val orSplitHypo : int -> proof -> bool -> bool * proof
 
 val intro : proof -> bool * proof
 
