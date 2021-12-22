@@ -19,17 +19,17 @@ let getStratList = fun proof ->
   (* Liste des stratégies ne dépendant que du but*)
   let goalStratlist =
     addStratToList rootIsImplies (intro, "intro")
-      (addStratToList rootIsAnd (andsplit, "andsplit")
-         (addStratToList rootIsOr (orSplit false, "left")
-            (addStratToList rootIsOr (orSplit true, "right") []))) in
+      (addStratToList rootIsAnd (andsplit, "andSplit")
+         (addStratToList rootIsOr (orSplit false, "orSplit-left")
+            (addStratToList rootIsOr (orSplit true, "orSplit-right") []))) in
 
   (* Liste des stratégies prenant des hypothèses en paramètres *)
   (* Séparation d'une hypothèse "And" en deux *)
-  let andSplitHypList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "And") andSplitHypo "andSplit-Hypo" (getAllHypoIds proof) in
+  let andSplitHypList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "And") andSplitHypo "andSplitHypo" (getAllHypoIds proof) in
 
   (* Séparation d'une hypothèse "Or" en deux sous-pbs *)
-  let orSplitHypLeftList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo true) "orSplit-Hypo(left)" (getAllHypoIds proof) in
-  let orSplitHypRightList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo false) "orSplit-Hypo(right)" (getAllHypoIds proof) in
+  let orSplitHypLeftList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo true) "orSplitHypo-left" (getAllHypoIds proof) in
+  let orSplitHypRightList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo false) "orSplitHypo-right" (getAllHypoIds proof) in
 
   (* Application d'une hypothèse à une autre
    Ne pas utiliser si le applyhypo crée de nouvelles hypothèses plutot que modifier*)
