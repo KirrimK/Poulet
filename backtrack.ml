@@ -1,12 +1,13 @@
 (* Backtrack.ml *)
 
 open Strategies;;
+open Cli;;
 
 (* Génération des stratégies applicables pour une état de la preuve donné *)
 let getStratList = fun proof ->
   (* Fonction locale qui génère une liste de stratégies appliquables sur les hypothèses, et ne propose leur application que si la strategie est compatible avec l'hypothèse *)
   let forAllApplicableHypos = fun predicat func funcname hypoIdsList ->
-    List.map (fun id -> (func id, String.concat " " [funcname; (string_of_int id)])) (List.filter predicat hypoIdsList) in
+    List.map (fun id -> (func id, String.concat " " [funcname; prop_to_string (getPropOfHyp id proof)])) (List.filter predicat hypoIdsList) in
   let addStratToList = fun predicat stratandstratname stratlist ->
     if predicat then
       stratandstratname::stratlist
@@ -70,7 +71,7 @@ let backtrack = fun proof prints->
             (strat, stratname)::rest -> (* Encore des stratégies à tester *)
               let (result, resproof) = strat norm_proo in (* Tester la stratégie *)
               let norm_resproof = nettoyer resproof in (* Nettoyer et normaliser *)
-              let newnameacc = String.concat ">" [nameacc;stratname] in
+              let newnameacc = String.concat " > " [nameacc;stratname] in
               if result then (* La stratégie à fait progresser la preuve*)
                 if isProven norm_resproof then (* Est-ce que la preuve est finie *)
                   let () = Printf.printf "%s | Preuve finie\n" newnameacc in
@@ -91,4 +92,4 @@ let backtrack = fun proof prints->
               false in
         explore stratList
       end in
-  backrec proof "";;
+  backrec proof "backtrack";;
