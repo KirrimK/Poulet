@@ -28,3 +28,9 @@ let test4 = add_hyp (add_remainder empty_proof (make_prop ["B"])) (make_prop ["A
 let test4_res = add_hyp (add_remainder empty_proof (make_prop ["A"])) (make_prop ["A"; "B"; "=>"]);;
 
 test "apply 1" (fun dep -> apply 0 dep) test4 test4_res;;
+
+let test5 = add_remainder empty_proof (make_prop ["A"; "B"; "^"]);;
+
+let test5_res = add_remainder (add_remainder empty_proof (make_prop ["B"])) (make_prop ["A"]);;
+
+test "andsplit" andsplit test5 test5_res;;
