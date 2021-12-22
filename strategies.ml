@@ -212,30 +212,6 @@ let estCeQueLHypotheseEstDansLaListe = fun hypoProp hypo ->
   (* Fonction privée sensée être appelée exclusivement par nettoyer *)
   hypo.prop = hypoProp;;
 
-(*(* nettoyer : proof -> bool* proof *)
-let nettoyer = fun preuve ->
-  (* fonction qui supprime les doublons dans les hypothèses et enlève les True dans le remainder
-  si il y a des doublons*)
-  let rec iterateurLocalReste = fun listeANettoyer listePropre result nbPropLaisses->
-    match listeANettoyer with
-      True :: [] -> iterateurLocalReste [] listePropre (result || false) nbPropLaisses
-    | True :: reste -> iterateurLocalReste reste listePropre (result || true) nbPropLaisses
-    | propos :: reste -> iterateurLocalReste reste (propos :: listePropre) (result || false) (nbPropLaisses+1)
-    | [] ->
-        if (nbPropLaisses >0)
-          then (result, listePropre)
-          else (result, [True]) in
-  let rec iterateurLocalHippo = fun listeANettoyer listePropre result ->
-    match listeANettoyer with
-      [] -> (result,listePropre)
-    | hippo :: reste ->
-      if ((List.find_opt (estCeQueLHypotheseEstDansLaListe hippo.prop) listePropre)=None)
-        then iterateurLocalHippo reste (hippo::listePropre) (result || false)
-        else iterateurLocalHippo reste listePropre (result||true) in
-  let (aMarche1,nouveauResteAProuver) = iterateurLocalReste preuve.remainder [] false 0 in
-  let (aMarche2,nouvellesHippos) = iterateurLocalHippo preuve.hypos [] false in
-  ((aMarche1||aMarche2), {hypos = nouvellesHippos; remainder = nouveauResteAProuver})*)
-
 (* nettoyer: proof -> proof *)
 (* Une fonction qui normalise un état de preuve *)
 let nettoyer = fun preuve->
