@@ -5,7 +5,6 @@ type proposition = Name of string
   | Implies of proposition * proposition
   | True
   | False
-  | Negation of proposition (* à virer en remplaçant par sucre syntaxique*)
   | And of proposition * proposition
   | Or of proposition * proposition;;
 
@@ -63,6 +62,13 @@ let make_prop = fun strlist->
               end
           | _ -> Printf.printf "b";raise Invalid_Input
         end
+    | "Not"::rest ->
+        begin
+          match acc with
+            thing::ac ->
+              iter_loc rest (Implies(thing, False)::ac)
+          | _ -> raise Invalid_Input
+        end
     | "True"::rest ->
         iter_loc rest (True::acc)
     | "False"::rest ->
@@ -102,7 +108,6 @@ let add_remainder = fun proof prp ->
 let getRootOfProp = fun prop ->
   match prop with
     Implies(_, _) -> "Implies"
-  | Negation _ -> "Negation"
   | And(_, _) -> "And"
   | Or (_, _) -> "Or"
   | _ -> "Other";;
@@ -272,7 +277,7 @@ let exact = fun hypoId preuve ->
   (* Verifie si la proposition à prouver est l'hypothèse hypoId *)
   let rec iterateurLocal = fun listeResteAProuver listeNonProuvee result ->
     match listeResteAProuver with
-      propos::reste -> 
+      propos::reste ->
         if (propos = (List.find (estCeLaBonneHypothese hypoId) preuve.hypos).prop)
           then iterateurLocal reste (True :: listeNonProuvee) (result || true)
           else iterateurLocal reste (propos :: listeNonProuvee) (result || false)
@@ -280,11 +285,11 @@ let exact = fun hypoId preuve ->
         (result,nouvellePreuve) in
   iterateurLocal preuve.remainder [] false;;
 
-(* assumption : proof -> bool * proof = <fun> *)  
+(* assumption : proof -> bool * proof = <fun> *)
 let assumption = fun preuve ->
   (* Vérifie si la proposition à prouver n'est pas présente dans la liste des hypothèses. *)
   let rec iterateurLocal = fun listeHypothese preuveInterne result->
-    match listeHypothese with 
+    match listeHypothese with
       [] -> (result, preuveInterne)
     | hypot :: reste ->
         let numeroHypothese = hypot.id in
@@ -297,19 +302,18 @@ let apply = fun hypoId proof ->
   (* Fonction qui applique l'hypothèse selectionée par hypoId à la proposition à prouver *)
   let propHippo = (List.find (estCeLaBonneHypothese hypoId) proof.hypos).prop in
   match propHippo with
-    Implies (partie1,partie2) -> 
+    Implies (partie1,partie2) ->
       if (partie2 = List.hd proof.remainder)
         then (true, {hypos=proof.hypos ; remainder = [partie1]})
         else (false, proof)
   | _ -> (false, proof);;
 
-let prop_iter = fun c_n c_t c_f f_neg f_imply f_and f_or prop ->
+let prop_iter = fun c_n c_t c_f f_imply f_and f_or prop ->
   let rec iter_local = fun p ->
     match p with
       |Name n -> c_n n
       |True -> c_t
       |False -> c_f
-      |Negation neg -> f_neg (iter_local neg)
       |Implies (p1,p2) -> f_imply (iter_local p1) (iter_local p2)
       |And (p1,p2) -> f_and (iter_local p1) (iter_local p2)
       |Or (p1, p2) -> f_or (iter_local p1) (iter_local p2) in

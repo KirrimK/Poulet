@@ -10,8 +10,6 @@ val c_false: string;;
 
 val f_implies: string -> string -> string;;
 
-val f_negation: string -> string;;
-
 val f_and: string -> string -> string;;
 
 val f_or: string -> string -> string;;
