@@ -28,6 +28,18 @@ let print_prop = fun propo -> Printf.printf "%s" (prop_to_string propo);;
 
 let string_to_list = fun str -> String.split_on_char ' ' str;;
 
+let hyp_to_string = fun hypo ->
+  let (strid, strprop) = foncgen_hypo (fun x -> string_of_int x) (fun x -> prop_to_string x) hypo in
+  String.concat ": "  [strid; strprop];;
+
+let proof_to_string = fun proof->
+  (* Afficher les hypothèses *)
+  let hypStrings = List.map (fun x -> hyp_to_string x) (getHypList proof) in
+  let hypsString = String.concat "\n" hypStrings in
+  let remainderStrings = List.map (prop_to_string) (getRemainder proof) in
+  let remainderString = String.concat "\n" remainderStrings in
+  String.concat "\n" [hypsString; "-----"; remainderString];;
+
 (* idées pour l'interface: si une commande à une nature à splitter le pb, proposer de switcher de problème avec "switch <nb probl>", et indiquer sur la ligne avant l'entrée utilisateur les infos ex.
 
 0: A => B

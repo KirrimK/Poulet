@@ -20,22 +20,28 @@ val getAllHypoIds : proof -> int list
 
 val getRootOfProp : proposition -> string
 
+val getHypList : proof -> hypothesis list
+
+val getRemainder : proof -> proposition list
+
 val remainderLines : proof -> int
 
 val getFirstRemainder : proof -> proposition
 
-val isRemainderTrue : proof -> bool
+val getPropOfHyp : int -> proof -> proposition
 
-val splitProblem : proof -> proof list
+val isProven : proof -> bool
+
+val nettoyer : proof -> proof
 
 (* Stratégies appliquables à un problème mathématique *)
 val andsplit : proof -> bool * proof
 
 val andSplitHypo : int -> proof -> bool * proof
 
-val orSplit :  proof -> bool -> bool * proof
+val orSplit : bool -> proof -> bool * proof
 
-val orSplitHypo : int -> proof -> bool -> bool * proof
+val orSplitHypo : bool -> int -> proof -> bool * proof
 
 val intro : proof -> bool * proof
 

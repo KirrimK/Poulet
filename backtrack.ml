@@ -2,134 +2,93 @@
 
 open Strategies;;
 
-let buildfunclist = fun proof ->
-  let funclist = fun func funcname hypolist ->
-    List.map (fun id -> (func id, String.concat " " [funcname;(string_of_int id)])) hypolist in
-  let applylist = funclist (fun x y z -> apply x y) "apply" (getAllHypoIds proof) in
-  let exactlist = funclist (fun x y z -> exact x y) "exact" (getAllHypoIds proof) in
-  let orsplithypolist = funclist orSplitHypo "orsplithypo" (getAllHypoIds proof) in
-  (* TODO: ajouter les listes des hypothèses splittables, filtrées avec une fonction dans strategies pour avoir la root d'une hypo *)
-  let autrelist = if (getRootOfProp (getFirstRemainder proof) = "Implies") then [((fun x y -> intro x), "intro")] else [] in
-  (*let autrelist = if (getRootOfProp (getFirstRemainder proof) = "And") then
-    ((fun x y z -> andsplit x y z), "andsplit") :: autrelist else autrelist in*)
-  (* TBD: rajouter orsplit, modifier andsplit dans strategies et ajouter andsplithypo (qui ne doit pas retourner cote gauche ou droit) *)
-  List.concat [applylist; exactlist; autrelist;orsplithypolist];;
-
-(*let backtrack = fun proof ->
-  let rec recback = fun proo nameacc ->
-    let funcnamelist = buildfunclist proo in
-    let rec explorePossibilities = fun fnlist ->
-      let (func, funcname) = List.hd fnlist in
-      (* tester fonction *)
-      let newnameacc = String.concat ">" [nameacc;funcname] in
-      let (result, resproof) = func proo in
-      let () = Printf.printf "%s (%s)\n" newnameacc (if remainderLines resproof > 1 then "split" else if result then "ok" else "fail") in
-      if result then
-        if isRemainderTrue resproof then
-          (* fin du backtrack, TH prouvé *)
-          let () = Printf.printf "(true)\n" in
-          true
-        else
-          if remainderLines resproof > 1 then
-            (* Séparer le pb en plusieurs *)
-            let pblist = splitProblem resproof in
-            let backlist = List.map (fun proo -> let () = Printf.printf "\n" in recback proo newnameacc) pblist in
-            let splitResult = List.fold_left (fun x y -> x && y) true backlist in
-            let () = Printf.printf "\n%s (split %s: [%s])\n" newnameacc (if splitResult then "ok" else "failed") (String.concat "; " (List.map (fun x -> if x then "true" else "false") backlist)) in
-            splitResult
-          else
-            (* continuer à tester les fonctions à cet étage *)
-            recback resproof newnameacc
-      else
-        if (List.tl fnlist) != [] then
-          explorePossibilities (List.tl fnlist)
-        else
-          let () = Printf.printf "(false)\n" in
-          false in
-    if funcnamelist != [] then
-      explorePossibilities funcnamelist
+(* Génération des stratégies applicables pour une état de la preuve donné *)
+let getStratList = fun proof ->
+  (* Fonction locale qui génère une liste de stratégies appliquables sur les hypothèses, et ne propose leur application que si la strategie est compatible avec l'hypothèse *)
+  let forAllApplicableHypos = fun predicat func funcname hypoIdsList ->
+    List.map (fun id -> (func id, String.concat " " [funcname; (string_of_int id)])) (List.filter predicat hypoIdsList) in
+  let addStratToList = fun predicat stratandstratname stratlist ->
+    if predicat then
+      stratandstratname::stratlist
     else
-      let () = Printf.printf "%s (No strategies available)\n" nameacc in
-      false in
-  recback proof "";;
-*)
+      stratlist in
+  let rootIsImplies = (getRootOfProp (getFirstRemainder proof) = "Implies") in
+  let rootIsAnd = (getRootOfProp (getFirstRemainder proof) = "And") in
+  let rootIsOr = (getRootOfProp (getFirstRemainder proof) = "Or") in
 
-(* Nouveau code *)
+  (* Liste des stratégies ne dépendant que du but*)
+  let goalStratlist =
+    addStratToList rootIsImplies (intro, "intro")
+      (addStratToList rootIsAnd (andsplit, "andsplit")
+         (addStratToList rootIsOr (orSplit false, "left")
+            (addStratToList rootIsOr (orSplit true, "right") []))) in
 
-let backtrack = fun proof prints ->
-  let rec recback = fun proo nameacc ->
-    (* Déterminer la liste des stratégies potentiellement pertinentes à essayer *)
-    (* Tester toutes les méthodes
-       > regarder le nom de la stratégie actuelle
-       > si cette stratégie qui peut split
-         > backtracker le côté gauche
-         > backtracker le côté droit
-         > le theoreme est prouvé si les deux côtés sont prouvés
-         > si le theoreme est prouvé
-           > arrêter backtrack
-         > sinon
-           > passer à la stratégie suivante
-       > sinon
-         > exécuter la stratégie
-         > si le theoreme est prouvé
-           > arrêter le backtrack
-         > sinon
-           > si cette stratégie a changé le probleme
-             > backtracker sur le nouveau probleme restant
-           > sinon
-             > arrêter et passer à la prochaine stratégie
-       (TBD: ecrire le reste de l'algo)
-     *)
-    let funclist = buildfunclist proo in
-    let rec explore = fun funlist ->
-      match funlist with
-        hdfunc::rest ->
-          begin
-            let (func, funcname) = hdfunc in
-            (* créer le nouveau accumulateur de nom *)
-            let newnameacc = String.concat ">" [nameacc; funcname] in
-            if (funcname = "andsplit") then
-              let (res_left, resproof_left) = func proo true in
-              if (not res_left) then
-                (* la commande a échoué d'un des deux côtés, donc des deux*)
-                explore rest
-              else
-                if (recback resproof_left (String.concat "\n" [newnameacc; ""])) then
-                  (* le côté gauche a été réussi, essayer le droit *)
-                  let (res_right, resproof_right) = func proo false in
-                  if (recback resproof_right (String.concat "\n" [newnameacc; ""])) then
-                    (* le côté gauche ET le côté droit on prouvé, donc on a prouvé le TH *)
-                    let () = Printf.printf "Success\n" in
+  (* Liste des stratégies prenant des hypothèses en paramètres *)
+  (* Séparation d'une hypothèse "And" en deux *)
+  let andSplitHypList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "And") andSplitHypo "andSplit-Hypo" (getAllHypoIds proof) in
+
+  (* Séparation d'une hypothèse "Or" en deux sous-pbs *)
+  let orSplitHypLeftList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo true) "orSplit-Hypo(left)" (getAllHypoIds proof) in
+  let orSplitHypRightList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo false) "orSplit-Hypo(right)" (getAllHypoIds proof) in
+
+  (* Application d'une hypothèse à une autre
+   Ne pas utiliser si le applyhypo crée de nouvelles hypothèses plutot que modifier*)
+  (* Hyp à modifier en premier, Hyp à appliquer en seconde *)
+  (* let applyHypList = List.concat (List.map (fun x -> forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "And") (applyhypo x) "andSplit-Hypo" getAllHypoIds) getAllHypoIds) in *)
+
+  (* Application d'une hypothèse au but *)
+  let applyList = if rootIsImplies then
+    forAllApplicableHypos (fun x -> true) apply "apply" (getAllHypoIds proof)
+  else
+    [] in
+
+  (* Exacts des hypothèses au but *)
+  let exactList = forAllApplicableHypos (fun x -> true) exact "exact" (getAllHypoIds proof) in
+
+  (* Agrégation des listes *)
+  List.concat [goalStratlist; applyList; exactList; orSplitHypLeftList; orSplitHypRightList; andSplitHypList];;
+
+(* Algorithme du backtrack *)
+let backtrack = fun proof prints->
+  let stateMemory = ref [] in (* Mémoire de tous les états déjà visités *)
+  (* *)
+  let rec backrec = fun proo nameacc->
+    (* Nettoyer l'objet preuve et normaliser *)
+    let norm_proo = nettoyer proo in
+    (* Vérifier appartenance à la liste des états déjà visités *)
+    if List.mem norm_proo !stateMemory then (* L'état a déjà été visité *)
+      let () = if prints then Printf.printf "%s | Déjà visité.\n" nameacc else () in
+      false
+    else (* L'état n'a jamais été visité *)
+      begin
+        (* Ajouter l'état à la liste des états visités *)
+        stateMemory := (norm_proo::!stateMemory);
+        let stratList = getStratList norm_proo in (* Récupérer la liste des stratégies applicables à ce stade *)
+        (* Explorer toutes les stratégies dans la liste *)
+        let rec explore = fun stratlist->
+          match stratlist with
+            (strat, stratname)::rest -> (* Encore des stratégies à tester *)
+              let (result, resproof) = strat norm_proo in (* Tester la stratégie *)
+              let norm_resproof = nettoyer resproof in (* Nettoyer et normaliser *)
+              let newnameacc = String.concat ">" [nameacc;stratname] in
+              if result then (* La stratégie à fait progresser la preuve*)
+                if isProven norm_resproof then (* Est-ce que la preuve est finie *)
+                  let () = Printf.printf "%s | Preuve finie\n" newnameacc in
+                  true
+                else (* La preuve n'est pas encore finie, explorer le nouveau noeud de l'arbre*)
+                  let () = if prints then (Printf.printf "%s (progrès)\n" newnameacc) else () in
+                  let backresult = backrec norm_resproof newnameacc in
+                  if backresult = true then (* Le backtrack a réussi à prouver à partir de cet état *)
                     true
-                  else
+                  else (* Le backtrack n'a pas réussi à prouver à partir de cet état *)
                     explore rest
-                else
-                  explore rest
-            else if (funcname == "orsplit") then
-              let (res_left, resproof_left) = func proo true in
-              let (res_right, resproof_right) = func proo false in
-              if (res_left || res_right) then
-                if (recback resproof_left (String.concat "\n" [newnameacc; ""]) || recback resproof_left (String.concat "\n" [newnameacc; ""])) then
-                  true
-                else
-                  explore rest
-              else
-                explore rest
-            else
-              (* calculer le résultat de la stratégie *)
-              let (result, resproof) = func proo false in
-              (* print conditionnel (de debug) *)
-              let () = if prints then (Printf.printf "%s (%s)\n" newnameacc (if result then "ok" else "fail")) else () in
-              if result then
-                if isRemainderTrue resproof then
-                  (* Si résolution du ss-pb réussie: print *)
-                  let () = Printf.printf "%s (%s)\n" newnameacc (if result then "ok" else "fail") in
-                  true
-                else
-                  recback resproof newnameacc
-              else
-                explore rest
-          end
-      | _ -> false in
-    explore funclist in
-  recback proof "";;
+              else (* La stratégie à échoué *)
+                let () = if prints then Printf.printf "%s (fail)\n" newnameacc else () in
+                explore rest (* Essayer le reste des stratégies à ce niveau *)
+          | [] -> (* Plus de stratégies à tester à ce stage *)
+              if prints then
+                (Printf.printf "%s | Plus de stratégies applicables.\n" nameacc);
+              false in
+        explore stratList
+      end in
+  backrec proof "";;

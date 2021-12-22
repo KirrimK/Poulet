@@ -113,22 +113,26 @@ let remainderLines = fun proof ->
 let getFirstRemainder = fun proof ->
   List.hd proof.remainder;;
 
-let isRemainderTrue = fun proof ->
-  (proof.remainder = [True]);;
+let isProven = fun proof ->
+  (proof.remainder = []);;
 
-let splitProblem = fun proof ->
-  List.map (fun remline -> {hypos=proof.hypos; remainder=[remline]}) proof.remainder;;
+let getPropOfHyp = fun hypoId proof ->
+  (List.find (fun hyp -> hyp.id = hypoId) proof.hypos).prop;;
 
-(* getPropOfHyp *)
+let getHypList = fun proof->
+  proof.hypos;;
+
+let getRemainder = fun proof->
+  proof.remainder;;
 
 (* Stratégies à appliquer *)
 
 (* andsplit: proof -> bool * proof = <fun> *)
 let andsplit = fun proof ->
-  (* Fonction qui découpe la première proposition du remainder en deux propositions 
+  (* Fonction qui découpe la première proposition du remainder en deux propositions
   si il s'agit d'un And*)
   match List.hd proof.remainder with
-    And(a, b) -> 
+    And(a, b) ->
       let newremainder = a :: (b::List.tl proof.remainder) in
       (true, {hypos=proof.hypos; remainder=newremainder})
   | _ -> (false, proof);;
@@ -139,8 +143,8 @@ let andSplitHypo = fun hypoId proof ->
   let rec iterateurLocal = fun listeHyposAVider listeHypoARemplir result ->
     match listeHyposAVider with
       [] -> (listeHypoARemplir, result)
-    | hypo :: suite -> 
-        if hypo.id = hypoId 
+    | hypo :: suite ->
+        if hypo.id = hypoId
           then match hypo.prop with
             And (prop1,prop2) -> iterateurLocal suite ({id=(nextHypId proof);prop=prop1}::{id=(nextHypId proof);prop=prop2}::listeHypoARemplir) true
           | _ -> iterateurLocal suite (hypo::listeHypoARemplir) false
@@ -148,32 +152,32 @@ let andSplitHypo = fun hypoId proof ->
   let (newListHippos, result) = iterateurLocal proof.hypos [] false in
   (result, {hypos = newListHippos; remainder = proof.remainder})
 
-(* orSplit : proof -> bool -> bool*proof = <fun> *)
-let orSplit = fun proof dejaPasse->
-  (* Fonction qui découpe le problème en deux sous problèmes si la 1ère proposition du remainder 
+(* orSplit : bool -> proof -> bool*proof = <fun> *)
+let orSplit = fun dejaPasse proof->
+  (* Fonction qui découpe le problème en deux sous problèmes si la 1ère proposition du remainder
   est un Or
   dejaPasse sert à indiquer quelle partie du Or fait partie de la preuve.*)
   match proof.remainder with
-    prop :: reste -> 
+    prop :: reste ->
       begin
-      match prop with 
-        Or (p1, p2) -> 
+      match prop with
+        Or (p1, p2) ->
           if dejaPasse
-            then (true, {hypos = proof.hypos; remainder= p2::reste}) 
+            then (true, {hypos = proof.hypos; remainder= p2::reste})
             else (true, {hypos = proof.hypos; remainder = p1::reste})
       | _ -> (false, proof)
       end
   | [] -> (false, proof)
 
-(* orSplit : int proof bool -> bool*proof *)
-let orSplitHypo = fun idHypo proof dejaPasse->
+(* orSplit : bool int proof -> bool*proof *)
+let orSplitHypo = fun dejaPasse idHypo proof->
   (*Fonction qui découpe l'hypothèse idHypo en deux partie si sa proposition est un Or.
   dejaPasse sert à préciser quelle partie du Or est considérée dans la preuve.*)
   let rec iterateurLocal =fun listeHyposAVider listeHypoARemplir result ->
-    match listeHyposAVider with 
+    match listeHyposAVider with
       []->(result,listeHypoARemplir)
     | hypot::reste ->
-        if hypot.id = idHypo then 
+        if hypot.id = idHypo then
           begin
           match hypot.prop with
             Or (p1, p2) ->
@@ -191,7 +195,7 @@ let intro = fun proo ->
   match List.hd proo.remainder with
     Implies(True, _)
   | Implies(False, _) -> (false, proo)
-  | Implies(a, b) -> 
+  | Implies(a, b) ->
       let nexthyp = {id=(nextHypId proo); prop=a} in
       let nextremainder = b::(List.tl proo.remainder) in
       let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
@@ -203,29 +207,60 @@ let estCeQueLHypotheseEstDansLaListe = fun hypoProp hypo ->
   (* Fonction privée sensée être appelée exclusivement par nettoyer *)
   hypo.prop = hypoProp;;
 
-(* nettoyer : proof -> bool* proof *)
+(*(* nettoyer : proof -> bool* proof *)
 let nettoyer = fun preuve ->
-  (* fonction qui supprime les doublons dans les hypothèses et enlève les True dans le remainder 
+  (* fonction qui supprime les doublons dans les hypothèses et enlève les True dans le remainder
   si il y a des doublons*)
   let rec iterateurLocalReste = fun listeANettoyer listePropre result nbPropLaisses->
     match listeANettoyer with
       True :: [] -> iterateurLocalReste [] listePropre (result || false) nbPropLaisses
     | True :: reste -> iterateurLocalReste reste listePropre (result || true) nbPropLaisses
     | propos :: reste -> iterateurLocalReste reste (propos :: listePropre) (result || false) (nbPropLaisses+1)
-    | [] -> 
-        if (nbPropLaisses >0) 
-          then (result, listePropre) 
+    | [] ->
+        if (nbPropLaisses >0)
+          then (result, listePropre)
           else (result, [True]) in
   let rec iterateurLocalHippo = fun listeANettoyer listePropre result ->
     match listeANettoyer with
       [] -> (result,listePropre)
-    | hippo :: reste -> 
+    | hippo :: reste ->
       if ((List.find_opt (estCeQueLHypotheseEstDansLaListe hippo.prop) listePropre)=None)
         then iterateurLocalHippo reste (hippo::listePropre) (result || false)
         else iterateurLocalHippo reste listePropre (result||true) in
   let (aMarche1,nouveauResteAProuver) = iterateurLocalReste preuve.remainder [] false 0 in
   let (aMarche2,nouvellesHippos) = iterateurLocalHippo preuve.hypos [] false in
-  ((aMarche1||aMarche2), {hypos = nouvellesHippos; remainder = nouveauResteAProuver})
+  ((aMarche1||aMarche2), {hypos = nouvellesHippos; remainder = nouveauResteAProuver})*)
+
+(* nettoyer: proof -> proof *)
+(* Une fonction qui normalise un état de preuve *)
+let nettoyer = fun preuve->
+  (* Suppression des True du but et des lignes en double *)
+  let rec iterLocRemai = fun nettList proprList->
+    match nettList with
+      True::[] -> iterLocRemai [] proprList
+    | True::rest -> iterLocRemai rest proprList
+    | prop::rest ->
+        if List.mem prop proprList then
+          iterLocRemai rest proprList
+        else
+          iterLocRemai rest (prop::proprList)
+    | [] -> proprList in
+  (* Tri des propositions dans ordre standard *)
+  let newremainder = List.sort compare (iterLocRemai preuve.remainder []) in
+  (* Suppression des doublons et des True dans les hypothèses*)
+  let rec iterLocHypos = fun nettList proprList->
+    match nettList with
+      [] -> proprList
+    | hyp::rest when hyp.prop = True ->
+        iterLocHypos rest proprList
+    | hyp::rest ->
+        if List.exists (estCeQueLHypotheseEstDansLaListe hyp.prop) proprList then
+          iterLocHypos rest proprList
+        else
+          iterLocHypos rest (hyp::proprList) in
+  let newHypList = List.sort compare (iterLocHypos preuve.hypos []) in
+  {hypos=newHypList; remainder=newremainder};;
+
 
 (* estCeLaBonneHypothese : int -> hypo -> bool*)
 let estCeLaBonneHypothese = fun hypoId hypo ->

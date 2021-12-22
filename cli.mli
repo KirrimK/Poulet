@@ -21,3 +21,5 @@ val prop_to_string: Strategies.proposition -> string;;
 val print_prop: Strategies.proposition -> unit;;
 
 val string_to_list: string -> string list;;
+
+val proof_to_string: Strategies.proof -> string;;
