@@ -130,6 +130,11 @@ let getHypList = fun proof->
 let getRemainder = fun proof->
   proof.remainder;;
 
+(* estCeLaBonneHypothese : int -> hypo -> bool*)
+let estCeLaBonneHypothese = fun hypoId hypo ->
+  (* Fonction privée sensée être utilisée exclusivement dans ce module *)
+  hypo.id = hypoId;;
+
 (* Stratégies à appliquer *)
 
 (* andsplit: proof -> bool * proof = <fun> *)
@@ -194,6 +199,14 @@ let orSplitHypo = fun dejaPasse idHypo proof->
   let (rem, res) = iterateurLocal proof.hypos [] false in
   (rem, {hypos=res;remainder=proof.remainder})
 
+(* falseHypo: int proof -> bool * proof *)
+(* Si Faux est une hypothèse, on peut tout prouver *)
+let falseHypo = fun id proof->
+  let propHypo = (List.find (estCeLaBonneHypothese id) proof.hypos).prop in
+  if propHypo = False then
+    (true, {hypos = proof.hypos; remainder = []})
+  else
+    (false, proof);;
 
 (* intro : proof -> bool * proof = <fun> *)
 let intro = fun proo ->
@@ -248,12 +261,6 @@ let nettoyer = fun preuve->
         renumerotation rest ({id=num; prop=hyp.prop}::outacc) (num+1) in
   let renumHypList = renumerotation newHypList [] 0 in
   {hypos=renumHypList; remainder=newremainder};;
-
-
-(* estCeLaBonneHypothese : int -> hypo -> bool*)
-let estCeLaBonneHypothese = fun hypoId hypo ->
-  (* Fonction privée sensée être utilisée exclusivement par exact *)
-  hypo.id = hypoId;;
 
 (* exact : int -> proof -> bool * proof = <fun> *)
 let exact = fun hypoId preuve ->

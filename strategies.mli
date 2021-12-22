@@ -35,6 +35,9 @@ val isProven : proof -> bool
 val nettoyer : proof -> proof
 
 (* Stratégies appliquables à un problème mathématique *)
+
+val falseHypo : int -> proof -> bool * proof
+
 val andsplit : proof -> bool * proof
 
 val andSplitHypo : int -> proof -> bool * proof

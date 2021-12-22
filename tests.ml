@@ -34,3 +34,9 @@ let test5 = add_remainder empty_proof (make_prop ["A"; "B"; "^"]);;
 let test5_res = add_remainder (add_remainder empty_proof (make_prop ["B"])) (make_prop ["A"]);;
 
 test "andsplit" andsplit test5 test5_res;;
+
+let test6 = add_hyp (add_remainder empty_proof (make_prop ["A"; "B"; "^"])) (make_prop ["False"]);;
+
+let test6_res = add_hyp empty_proof (make_prop ["False"]);;
+
+test "falseHyp" (falseHypo 0) test6 test6_res;;

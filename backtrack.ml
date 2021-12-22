@@ -6,6 +6,7 @@ open Cli;;
 (* Génération des stratégies applicables pour une état de la preuve donné *)
 let getStratList = fun proof ->
   (* Fonction locale qui génère une liste de stratégies appliquables sur les hypothèses, et ne propose leur application que si la strategie est compatible avec l'hypothèse *)
+  let hypIds = getAllHypoIds proof in
   let forAllApplicableHypos = fun predicat func funcname hypoIdsList ->
     List.map (fun id -> (func id, String.concat " " [funcname; prop_to_string (getPropOfHyp id proof)])) (List.filter predicat hypoIdsList) in
   let addStratToList = fun predicat stratandstratname stratlist ->
@@ -26,28 +27,31 @@ let getStratList = fun proof ->
 
   (* Liste des stratégies prenant des hypothèses en paramètres *)
   (* Séparation d'une hypothèse "And" en deux *)
-  let andSplitHypList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "And") andSplitHypo "andSplitHypo" (getAllHypoIds proof) in
+  let andSplitHypList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "And") andSplitHypo "andSplitHypo" hypIds in
 
   (* Séparation d'une hypothèse "Or" en deux sous-pbs *)
-  let orSplitHypLeftList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo true) "orSplitHypo-left" (getAllHypoIds proof) in
-  let orSplitHypRightList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo false) "orSplitHypo-right" (getAllHypoIds proof) in
+  let orSplitHypLeftList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo true) "orSplitHypo-left" hypIds in
+  let orSplitHypRightList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo false) "orSplitHypo-right" hypIds in
 
   (* Application d'une hypothèse à une autre
    Ne pas utiliser si le applyhypo crée de nouvelles hypothèses plutot que modifier*)
   (* Hyp à modifier en premier, Hyp à appliquer en seconde *)
-  (* let applyHypList = List.concat (List.map (fun x -> forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "And") (applyhypo x) "andSplit-Hypo" getAllHypoIds) getAllHypoIds) in *)
+  (* let applyHypList = List.concat (List.map (fun x -> forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "And") (applyhypo x) "andSplit-Hypo" hypIds) hypIds) in *)
 
   (* Application d'une hypothèse au but *)
   let applyList = if rootIsImplies then
-    forAllApplicableHypos (fun x -> true) apply "apply" (getAllHypoIds proof)
+    forAllApplicableHypos (fun x -> true) apply "apply" hypIds
   else
     [] in
 
   (* Exacts des hypothèses au but *)
   let exactList = forAllApplicableHypos (fun x -> true) exact "exact" (getAllHypoIds proof) in
 
+  (* Terminaison de la preuve si une hypothèse est "Faux" *)
+  let falseHypList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "False") falseHypo "hypos has" hypIds in
+
   (* Agrégation des listes *)
-  List.concat [goalStratlist; applyList; exactList; orSplitHypLeftList; orSplitHypRightList; andSplitHypList];;
+  List.concat [falseHypList; goalStratlist; applyList; exactList; orSplitHypLeftList; orSplitHypRightList; andSplitHypList];;
 
 (* Algorithme du backtrack *)
 let backtrack = fun proof prints->
