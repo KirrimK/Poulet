@@ -239,8 +239,15 @@ let nettoyer = fun preuve->
           iterLocHypos rest proprList
         else
           iterLocHypos rest (hyp::proprList) in
-  let newHypList = List.sort compare (iterLocHypos preuve.hypos []) in
-  {hypos=newHypList; remainder=newremainder};;
+  let newHypList = List.sort (fun x y -> compare x.prop y.prop) (iterLocHypos preuve.hypos []) in
+  (* renumérotation des hypothèses *)
+  let rec renumerotation = fun inacc outacc num->
+    match inacc with
+      [] -> outacc
+    | hyp::rest ->
+        renumerotation rest ({id=num; prop=hyp.prop}::outacc) (num+1) in
+  let renumHypList = renumerotation newHypList [] 0 in
+  {hypos=renumHypList; remainder=newremainder};;
 
 
 (* estCeLaBonneHypothese : int -> hypo -> bool*)
