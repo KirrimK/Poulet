@@ -1,14 +1,13 @@
 (* Backtrack.ml *)
 
 open Strategies;;
-open Cli;;
 
 (* Génération des stratégies applicables pour une état de la preuve donné *)
 let getStratList = fun proof ->
   (* Fonction locale qui génère une liste de stratégies appliquables sur les hypothèses, et ne propose leur application que si la strategie est compatible avec l'hypothèse *)
   let hypIds = getAllHypoIds proof in
   let forAllApplicableHypos = fun predicat func funcname hypoIdsList ->
-    List.map (fun id -> (func id, String.concat " " [funcname; prop_to_string (getPropOfHyp id proof)])) (List.filter predicat hypoIdsList) in
+    List.map (fun id -> (func id, String.concat " " [funcname; string_of_int id])) (List.filter predicat hypoIdsList) in
   let addStratToList = fun predicat stratandstratname stratlist ->
     if predicat then
       stratandstratname::stratlist
@@ -63,7 +62,7 @@ let backtrack = fun proof prints->
     (* Vérifier appartenance à la liste des états déjà visités *)
     if List.mem norm_proo !stateMemory then (* L'état a déjà été visité *)
       let () = if prints then Printf.printf "%s | Déjà visité.\n" nameacc else () in
-      false
+      (false, proo)
     else (* L'état n'a jamais été visité *)
       begin
         (* Ajouter l'état à la liste des états visités *)
@@ -79,21 +78,20 @@ let backtrack = fun proof prints->
               if result then (* La stratégie à fait progresser la preuve*)
                 if isProven norm_resproof then (* Est-ce que la preuve est finie *)
                   let () = Printf.printf "%s | Preuve finie\n" newnameacc in
-                  true
+                  (true, norm_resproof)
                 else (* La preuve n'est pas encore finie, explorer le nouveau noeud de l'arbre*)
                   let () = if prints then (Printf.printf "%s (progrès)\n" newnameacc) else () in
                   let backresult = backrec norm_resproof newnameacc in
-                  if backresult = true then (* Le backtrack a réussi à prouver à partir de cet état *)
-                    true
-                  else (* Le backtrack n'a pas réussi à prouver à partir de cet état *)
-                    explore rest
+                  match backresult with
+                    (true, backres) -> (true, backres) (* Le backtrack a réussi à prouver *)
+                  | (false, _) -> explore rest (* Essayer les autres possibilités *)
               else (* La stratégie à échoué *)
                 let () = if prints then Printf.printf "%s (fail)\n" newnameacc else () in
                 explore rest (* Essayer le reste des stratégies à ce niveau *)
           | [] -> (* Plus de stratégies à tester à ce stage *)
               if prints then
                 (Printf.printf "%s | Plus de stratégies applicables.\n" nameacc);
-              false in
+              (false, proo) in
         explore stratList
       end in
   backrec proof "backtrack";;
