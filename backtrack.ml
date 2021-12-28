@@ -38,10 +38,7 @@ let getStratList = fun proof ->
   (* let applyHypList = List.concat (List.map (fun x -> forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "And") (applyhypo x) "andSplit-Hypo" hypIds) hypIds) in *)
 
   (* Application d'une hypothèse au but *)
-  let applyList = if rootIsImplies then
-    forAllApplicableHypos (fun x -> true) apply "apply" hypIds
-  else
-    [] in
+  let applyList = forAllApplicableHypos (fun x -> true) apply "apply" hypIds in
 
   (* Exacts des hypothèses au but *)
   let exactList = forAllApplicableHypos (fun x -> true) exact "exact" (getAllHypoIds proof) in

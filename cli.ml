@@ -1,13 +1,15 @@
 (* cli.ml interface*)
 
 open Strategies;;
-open String;;
+(*open String;; unused d'après Dune*)
 open Backtrack;;
 
-let show_id_hypo = fun hypo ->
+(*let show_id_hypo = fun hypo ->
   foncgen_hypo (Printf.printf "%d") (fun x -> ()) hypo;;
-
+*)
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
+
+let version_code = "0.01b";;
 
 let c_name = fun n -> n ;;
 let c_true = "⊤";;
@@ -41,10 +43,46 @@ let proof_to_string = fun proof->
 
 exception InvalidArgument
 
-let traiter_cmde = fun str stateList shadd ->
+let print_help = fun () ->
+  Printf.printf "  Poulet v%s: REPL Help" version_code;
+  Printf.printf "
+  The current state of the proof is displayed like this:
+  (ids: hypotheses)
+  -----
+  (goals)
+
+  List of available commands:
+  - help: displays this help
+  - back: reverts to the previous state
+  - q: quits this program
+  - clean: reorders the hypotheses and goals and deletes duplicated items in the current proof state
+  - add_hyp <formula>
+  - add_goal <formula>
+
+  List of available proof strategies:
+  - intro
+  - split
+  - hyp_split <hyp id>
+  - left
+  - right
+  - hyp_left <hyp id>
+  - hyp_right <hyp id>
+  - apply <hyp id>
+  - exact <hyp id>
+  - assumption
+  - auto <verbose: optionnal>\n";;
+
+let traiter_cmde = fun str stateList shadd fin ->
   let split_str = string_to_list str in
   match split_str with
-    ["back"] ->
+    ["q"] ->
+      fin := true;
+      (fun x -> (true, x))
+  | ["help"] ->
+      let () = shadd := false in
+      print_help ();
+      (fun x -> (true, x))
+  | ["back"] ->
       begin
         match !stateList with
           [] ->
@@ -57,10 +95,16 @@ let traiter_cmde = fun str stateList shadd ->
             (fun x -> (true, smth))
       end
   | ["intro"] -> intro
-  | ["nettoyer"] -> (fun x -> (true, nettoyer x))
-  | ["andSplit"] -> andsplit
+  | ["clean"] -> (fun x -> (true, nettoyer x))
+  | ["split"] -> andsplit
   | ["assumption"] -> assumption
-  | "andSplitHypo"::rest->
+  | "auto"::rest ->
+      begin
+        match rest with
+          ["verbose"] -> (fun x -> backtrack x true)
+        | _ -> (fun x -> backtrack x false)
+      end
+  | "hyp_split"::rest->
       begin
         match rest with
           [arg] ->
@@ -74,7 +118,7 @@ let traiter_cmde = fun str stateList shadd ->
         (fun x -> (true, add_hyp x (make_prop rest)))
   | "add_goal"::rest ->
         (fun x -> (true, add_remainder x (make_prop rest)))
-  | "orSplitHypo-left"::rest ->
+  | "hyp_left"::rest ->
       begin
         match rest with
           [arg] ->
@@ -82,7 +126,7 @@ let traiter_cmde = fun str stateList shadd ->
             orSplitHypo false hyp_num
         | _ -> raise InvalidArgument
       end
-  | "orSplitHypo-right"::rest ->
+  | "hyp_right"::rest ->
       begin
         match rest with
           [arg] ->
@@ -117,20 +161,20 @@ let traiter_cmde = fun str stateList shadd ->
    Code assez moche (avec des pointeurs chelous), manque le backtrack *)
 let repl = fun () ->
   (* Mettre ici des prints lors du lancement du programme *)
-  let () = Printf.printf "Poulet v0.01 indev\nCopyright 2021 - 2022 Brévart, Courtadon, Dutau, de Crevoisier\n" in
+  let () = Printf.printf "Poulet v%s indev\nCopyright 2021 - 2022 Brévart, Courtadon, Dutau, de Crevoisier\n" version_code in
   let proof = ref empty_proof in
   let stateList = ref [] in
   let should_add = ref true in
   Printf.printf "%s\n" (proof_to_string !proof);
-  let finished = false in
-  while not finished do
+  let finished = ref false in
+  while not !finished do
     Printf.printf "> ";
     (* Récupérer l'entrée utilisateur *)
     let input = read_line () in
     (* Comprendre quelle commande à utiliser *)
     let () =
       try
-        let cmde = traiter_cmde input stateList should_add in
+        let cmde = traiter_cmde input stateList should_add finished in
         (* Evaluer la commande et mettre à jour l'état de preuve si aucune exception levée et commande réussie *)
         let () =
           try
@@ -152,6 +196,6 @@ let repl = fun () ->
         ()
       with _ ->
         Printf.printf "Commande incorrecte.\n" in
-    Printf.printf "%s\n" (proof_to_string !proof);
+    if not !finished then Printf.printf "%s\n" (proof_to_string !proof);
   done;;
 

@@ -1,7 +1,5 @@
 (* cli.mli *)
 
-val show_id_hypo : Strategies.hypothesis -> unit * unit;;
-
 val c_name : string -> string;;
 
 val c_true: string;;
