@@ -43,6 +43,9 @@ let proof_to_string = fun proof->
 
 exception InvalidArgument
 
+let hpf_cli = fun id proof ->
+  prop_to_string (getPropOfHyp id proof);;
+
 let print_help = fun () ->
   Printf.printf "  Poulet v%s: REPL Help" version_code;
   Printf.printf "
@@ -101,8 +104,8 @@ let traiter_cmde = fun str stateList shadd fin ->
   | "auto"::rest ->
       begin
         match rest with
-          ["verbose"] -> (fun x -> backtrack x true)
-        | _ -> (fun x -> backtrack x false)
+          ["verbose"] -> (fun x -> backtrack x true hpf_cli)
+        | _ -> (fun x -> backtrack x false hpf_cli)
       end
   | "hyp_split"::rest->
       begin
@@ -150,7 +153,7 @@ let traiter_cmde = fun str stateList shadd fin ->
             apply hyp_num
         | _ -> raise InvalidArgument
       end
-  | _ -> (fun x -> (false, x));;
+  | _ -> raise InvalidArgument;;
 
 (* REPL: Read-Eval-Print Loop
    Prendre une entrée, la parser pour en sortir une commande,

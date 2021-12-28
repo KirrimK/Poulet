@@ -2,12 +2,15 @@
 
 open Strategies;;
 
+let hpf_basic = fun id proof ->
+  string_of_int id;;
+
 (* Génération des stratégies applicables pour une état de la preuve donné *)
-let getStratList = fun proof ->
+let getStratList = fun proof hpf ->
   (* Fonction locale qui génère une liste de stratégies appliquables sur les hypothèses, et ne propose leur application que si la strategie est compatible avec l'hypothèse *)
   let hypIds = getAllHypoIds proof in
   let forAllApplicableHypos = fun predicat func funcname hypoIdsList ->
-    List.map (fun id -> (func id, String.concat " " [funcname; string_of_int id])) (List.filter predicat hypoIdsList) in
+    List.map (fun id -> (func id, String.concat " " [funcname; hpf id proof])) (List.filter predicat hypoIdsList) in
   let addStratToList = fun predicat stratandstratname stratlist ->
     if predicat then
       stratandstratname::stratlist
@@ -50,7 +53,7 @@ let getStratList = fun proof ->
   List.concat [falseHypList; goalStratlist; applyList; exactList; orSplitHypLeftList; orSplitHypRightList; andSplitHypList];;
 
 (* Algorithme du backtrack *)
-let backtrack = fun proof prints->
+let backtrack = fun proof prints hpf->
   let stateMemory = ref [] in (* Mémoire de tous les états déjà visités *)
   (* *)
   let rec backrec = fun proo nameacc->
@@ -64,7 +67,7 @@ let backtrack = fun proof prints->
       begin
         (* Ajouter l'état à la liste des états visités *)
         stateMemory := (norm_proo::!stateMemory);
-        let stratList = getStratList norm_proo in (* Récupérer la liste des stratégies applicables à ce stade *)
+        let stratList = getStratList norm_proo hpf in (* Récupérer la liste des stratégies applicables à ce stade *)
         (* Explorer toutes les stratégies dans la liste *)
         let rec explore = fun stratlist->
           match stratlist with
