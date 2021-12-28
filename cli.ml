@@ -161,10 +161,10 @@ let traiter_cmde = fun str stateList shadd fin ->
    recommencer jusqu'à quitter
 *)
 (* Fonctionne à peu près dans l'état actuel, ne peut être quittée proprement
-   Code assez moche (avec des pointeurs chelous), manque le backtrack *)
+   Code assez moche (avec des pointeurs chelous), manque le test de false dans les hypotheses *)
 let repl = fun () ->
   (* Mettre ici des prints lors du lancement du programme *)
-  let () = Printf.printf "Poulet v%s indev\nCopyright 2021 - 2022 Brévart, Courtadon, Dutau, de Crevoisier\n" version_code in
+  let () = Printf.printf "Poulet v%s indev\nCopyright 2021 - 2022 Brévart, Courtadon, Dutau, de Crevoisier\nType \"help\" for help.\n" version_code in
   let proof = ref empty_proof in
   let stateList = ref [] in
   let should_add = ref true in
