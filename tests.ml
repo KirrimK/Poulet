@@ -40,3 +40,15 @@ let test6 = add_hyp (add_remainder empty_proof (make_prop ["A"; "B"; "^"])) (mak
 let test6_res = add_hyp empty_proof (make_prop ["False"]);;
 
 test "falseHyp" (falseHypo 0) test6 test6_res;;
+
+let test7 = add_remainder empty_proof (make_prop ["A"; "B"; "v"]);;
+
+let test7_res1 = add_remainder empty_proof (make_prop ["B"]);;
+
+let test7_res2 = add_remainder empty_proof (make_prop ["A"]);;
+
+test "orsplit 1" (fun dep -> orSplit true dep) test7 test7_res1;;
+
+test "orsplit 2" (fun dep -> orSplit false dep) test7 test7_res2;;
+
+
