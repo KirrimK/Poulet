@@ -1,7 +1,5 @@
 (* cli.mli *)
 
-val show_id_hypo : Strategies.hypothesis -> unit * unit;;
-
 val c_name : string -> string;;
 
 val c_true: string;;
@@ -21,3 +19,5 @@ val print_prop: Strategies.proposition -> unit;;
 val string_to_list: string -> string list;;
 
 val proof_to_string: Strategies.proof -> string;;
+
+val repl: unit -> unit;;

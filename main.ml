@@ -1,1 +1,5 @@
-let ()=Printf.printf "HelloWorld\n"
+(* Main.ml *)
+
+open Cli;;
+
+repl ();;
