@@ -68,6 +68,8 @@ val exact : int -> proof -> bool * proof
 
 val apply : int -> proof -> bool * proof
 
+val applyInHyp : bool -> int -> int -> proof -> bool*proof
+
 val assumption : proof -> bool * proof
 
 val prop_iter : (string -> 'a) -> 'a -> 'a -> ('a -> 'a -> 'a) -> ('a -> 'a -> 'a) -> ('a -> 'a -> 'a) -> proposition -> 'a
