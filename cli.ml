@@ -181,14 +181,14 @@ let traiter_cmde = fun str stateList shadd fin ->
             falseHypo hyp_num
         | _ -> raise InvalidArgument
       end
-  | "add_random_goal"::rest ->
+  (*| "add_random_goal"::rest ->
       begin
         match rest with
           [arg] ->
             let num_arg = int_of_string arg in
             (fun x -> (true, add_remainder (propAleatoire num_arg) x))
         | _ -> raise InvalidArgument
-      end
+      end*)
   | _ -> raise InvalidArgument;;
 
 (* REPL: Read-Eval-Print Loop
