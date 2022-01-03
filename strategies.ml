@@ -18,7 +18,22 @@ type proof = {
     remainder: proposition list;
   };;
 
+(* Abstract de constructeurs *)
 let empty_proof = {hypos=[]; remainder=[]};;
+
+let p_true = True;;
+
+let p_false = False;;
+
+let ( => ) = fun a b -> Implies(a, b);;
+
+let p_name = fun a -> Name(a);;
+
+let ( ^ ) = fun a b -> And(a, b);;
+
+let ( $ ) = fun a b -> Or(a, b);;
+
+let p_not = fun a -> Implies(a, p_false);;
 
 exception Invalid_Input;;
 (* Makers de type, à partir de listes de string*)
@@ -127,11 +142,11 @@ let nextHypId = fun proo ->
       (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1
     else 0;;
 
-let add_hyp = fun proof prp ->
+let add_hyp = fun prp proof ->
    let nexthyp = {id=(nextHypId proof); prop=prp} in
    {hypos=(nexthyp::proof.hypos); remainder=proof.remainder};;
 
-let add_remainder = fun proof prp ->
+let add_remainder = fun prp proof ->
    {hypos=proof.hypos; remainder=prp::proof.remainder};;
 
 (* Fonctions méthodes sur les types définis plus haut *)
@@ -141,6 +156,8 @@ let getRootOfProp = fun prop ->
     Implies(_, _) -> "Implies"
   | And(_, _) -> "And"
   | Or (_, _) -> "Or"
+  | True -> "True"
+  | False -> "False"
   | _ -> "Other";;
 
 let remainderLines = fun proof ->
