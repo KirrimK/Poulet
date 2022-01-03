@@ -104,40 +104,6 @@ let make_prop = fun strlist->
 let getAllHypoIds = fun proof ->
   List.map (fun hypo -> hypo.id) proof.hypos;;
 
-(* propAleatoire : int -> prop *)
-let propAleatoire = fun profondeurMax->
-  (* Fonction qui génère une proposition de profondeur maximale déterminée. *)
-  let idLibre = ref 0 in 
-  if profondeurMax < 1 then raise Invalid_Input
-  else 
-  let rec iterateurLocal = fun profondeurMax ->
-    let rFloat = Random.float 1.0 in
-    if profondeurMax = 1
-      then if rFloat < 0.4 
-        then begin incr idLibre ; Name (Printf.sprintf ("P_%d") !idLibre) end
-        else if rFloat < 0.8
-          then Name (Printf.sprintf ("P_%d") (Random.int (!idLibre + 1)))
-          else if rFloat < 0.9 
-            then True
-            else False
-      else 
-        if rFloat < 0.04
-          then begin incr idLibre ; Name (Printf.sprintf "P_%d" !idLibre) end
-          else if rFloat < 0.08
-            then Name (Printf.sprintf ("P_%d") (Random.int (!idLibre + 1)))
-            else if rFloat<0.09
-              then True
-              else if rFloat <0.1
-                then False
-                else 
-                  let p1 = iterateurLocal (profondeurMax-1) in
-                  let p2 = iterateurLocal (profondeurMax-1) in
-                  if rFloat<0.4
-                  then Implies (p1, p2)
-                  else if rFloat < 0.7 
-                      then And (p1, p2)
-                      else Or (p1, p2) in
-  iterateurLocal profondeurMax;;
 
 (* nextHypId : proof -> int *)
 let nextHypId = fun proo ->
