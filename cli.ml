@@ -9,7 +9,7 @@ open Backtrack;;
 *)
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
-let version_code = "0.01b";;
+let version_code = "0.01c";;
 
 let c_name = fun n -> n ;;
 let c_true = "⊤";;
