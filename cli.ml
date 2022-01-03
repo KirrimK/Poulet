@@ -61,6 +61,7 @@ let print_help = fun () ->
   - clean: reorders the hypotheses and goals and deletes duplicated items in the current proof state
   - add_hyp <formula>
   - add_goal <formula>
+  - add_random_goal <depth>
 
   List of available proof strategies:
   - intro
@@ -72,9 +73,10 @@ let print_help = fun () ->
   - hyp_left <hyp id>
   - hyp_right <hyp id>
   - apply <hyp id>
+  - applyin <hyp id:to modify> <hyp id:to apply> <\"keep\": optionnal>
   - exact <hyp id>
   - assumption
-  - auto <verbose: optionnal>\n";;
+  - auto <\"verbose\": optionnal>\n";;
 
 let traiter_cmde = fun str stateList shadd fin ->
   let split_str = string_to_list str in
@@ -154,12 +156,37 @@ let traiter_cmde = fun str stateList shadd fin ->
             apply hyp_num
         | _ -> raise InvalidArgument
       end
+ | "applyin"::rest ->
+      begin
+        match rest with
+          arga::resta ->
+            let hyp_numa = int_of_string arga in
+            begin
+              match resta with
+                [argb] ->
+                  let hyp_numb = int_of_string argb in
+                  applyInHyp false hyp_numa hyp_numb
+              | argb::["keep"] ->
+                  let hyp_numb = int_of_string argb in
+                  applyInHyp true hyp_numa hyp_numb
+              | _ -> raise InvalidArgument
+            end
+        | _ -> raise InvalidArgument
+      end
   | "isfalse"::rest ->
       begin
         match rest with
           [arg] ->
             let hyp_num = int_of_string arg in
             falseHypo hyp_num
+        | _ -> raise InvalidArgument
+      end
+  | "add_random_goal"::rest ->
+      begin
+        match rest with
+          [arg] ->
+            let num_arg = int_of_string arg in
+            (fun x -> (true, add_remainder (propAleatoire num_arg) x))
         | _ -> raise InvalidArgument
       end
   | _ -> raise InvalidArgument;;
