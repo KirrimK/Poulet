@@ -8,6 +8,20 @@ type proof
 
 val empty_proof: proof
 
+val p_name : string -> proposition
+
+val p_true : proposition
+
+val p_false : proposition
+
+val ( => ) : proposition -> proposition -> proposition
+
+val ( ^ ) : proposition -> proposition -> proposition
+
+val ( $ ) : proposition -> proposition -> proposition
+
+val p_not : proposition -> proposition
+
 exception Invalid_Input
 
 val propAleatoire : int -> proposition

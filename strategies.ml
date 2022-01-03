@@ -21,17 +21,19 @@ type proof = {
 (* Abstract de constructeurs *)
 let empty_proof = {hypos=[]; remainder=[]};;
 
+let p_true = True;;
+
+let p_false = False;;
+
 let ( => ) = fun a b -> Implies(a, b);;
 
 let p_name = fun a -> Name(a);;
 
 let ( ^ ) = fun a b -> And(a, b);;
 
-let ( v ) = fun a b -> Or(a, b);;
+let ( $ ) = fun a b -> Or(a, b);;
 
-let p_true = True;;
-
-let p_false = False;;
+let p_not = fun a -> Implies(a, p_false);;
 
 exception Invalid_Input;;
 (* Makers de type, à partir de listes de string*)
