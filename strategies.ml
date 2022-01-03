@@ -208,7 +208,7 @@ let andSplitHypo = fun hypoId proof ->
     | hypo :: suite ->
         if hypo.id = hypoId
           then match hypo.prop with
-            And (prop1,prop2) -> iterateurLocal suite ({id=(nextHypId proof);prop=prop1}::{id=(nextHypId proof);prop=prop2}::listeHypoARemplir) true
+            And (prop1,prop2) -> iterateurLocal suite ({id=(hypo.id);prop=prop1}::{id=(nextHypId proof);prop=prop2}::listeHypoARemplir) true
           | _ -> iterateurLocal suite (hypo::listeHypoARemplir) false
         else iterateurLocal suite (hypo::listeHypoARemplir) (result||false) in
   let (newListHippos, result) = iterateurLocal proof.hypos [] false in
