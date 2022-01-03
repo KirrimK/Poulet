@@ -63,6 +63,7 @@ let print_help = fun () ->
   - add_hyp <formula>
   - add_goal <formula>
   - add_random_goal <depth>
+  - add_random_context <hyp depth> <hyp number>
 
   List of available proof strategies:
   - intro
