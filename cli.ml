@@ -3,6 +3,7 @@
 open Strategies;;
 (*open String;; unused d'après Dune*)
 open Backtrack;;
+open Notsoquickcheck;;
 
 (*let show_id_hypo = fun hypo ->
   foncgen_hypo (Printf.printf "%d") (fun x -> ()) hypo;;
@@ -186,7 +187,21 @@ let traiter_cmde = fun str stateList shadd fin ->
         match rest with
           [arg] ->
             let num_arg = int_of_string arg in
-            (fun x -> (true, add_remainder (propAleatoire num_arg) x))
+            add_rand_goal num_arg
+        | _ -> raise InvalidArgument
+      end
+  | "add_random_context"::rest ->
+      begin
+        match rest with
+          arga::resta ->
+            let hyp_numa = int_of_string arga in
+            begin
+              match resta with
+                [argb] ->
+                  let hyp_numb = int_of_string argb in
+                  add_rand_cont hyp_numa hyp_numb
+              | _ -> raise InvalidArgument
+            end
         | _ -> raise InvalidArgument
       end
   | _ -> raise InvalidArgument;;

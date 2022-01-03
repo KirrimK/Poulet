@@ -23,22 +23,22 @@ let getStratList = fun proof hpf ->
   (* Liste des stratégies ne dépendant que du but*)
   let goalStratlist =
     addStratToList rootIsImplies (intro, "intro")
-      (addStratToList rootIsAnd (andsplit, "andSplit")
-         (addStratToList rootIsOr (orSplit false, "orSplit-left")
-            (addStratToList rootIsOr (orSplit true, "orSplit-right") []))) in
+      (addStratToList rootIsAnd (andsplit, "split")
+         (addStratToList rootIsOr (orSplit false, "hyp_left")
+            (addStratToList rootIsOr (orSplit true, "hyp_right") []))) in
 
   (* Liste des stratégies prenant des hypothèses en paramètres *)
   (* Séparation d'une hypothèse "And" en deux *)
-  let andSplitHypList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "And") andSplitHypo "andSplitHypo" hypIds in
+  let andSplitHypList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "And") andSplitHypo "hyp_split" hypIds in
 
   (* Séparation d'une hypothèse "Or" en deux sous-pbs *)
-  let orSplitHypLeftList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo true) "orSplitHypo-left" hypIds in
-  let orSplitHypRightList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo false) "orSplitHypo-right" hypIds in
+  let orSplitHypLeftList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo true) "hyp_left" hypIds in
+  let orSplitHypRightList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Or") (orSplitHypo false) "hyp_right" hypIds in
 
   (* Application d'une hypothèse à une autre
    Ne pas utiliser si le applyhypo crée de nouvelles hypothèses plutot que modifier*)
   (* Hyp à modifier en premier, Hyp à appliquer en seconde *)
-  let applyHypList = List.concat (List.map (fun x -> forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Implies") (applyInHyp false x) (String.concat "" ["applyInHyp "; hpf x proof; " <-"]) hypIds) hypIds) in
+  let applyHypList = List.concat (List.map (fun x -> forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Implies") (applyInHyp false x) (String.concat "" ["applyhyp "; hpf x proof; " <-"]) hypIds) hypIds) in
 
   (* Application d'une hypothèse au but *)
   let applyList = forAllApplicableHypos (fun x -> true) apply "apply" hypIds in

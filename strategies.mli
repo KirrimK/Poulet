@@ -24,8 +24,6 @@ val p_not : proposition -> proposition
 
 exception Invalid_Input
 
-val propAleatoire : int -> proposition
-
 val make_prop : string list -> proposition
 
 val add_hyp : proposition -> proof -> proof
