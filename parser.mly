@@ -31,12 +31,12 @@ main:
 expr :
 | i = INT { i }
 | "(" e = expr ")" { e }
-| s = NAME { "s" } 
-| NOT "(" e = expr ")" { Implies(e,False) } (* NOT prop <=> prop => False *)
-| TRUE { True }
-| FALSE { False }
-| e1 = expr "=>" e2 = expr { Implies(e1,e2) }
-| e1 = expr "^" e2 = expr { And(e1,e2) }
-| e1 = expr "v" e2 = expr { Or(e1,e2) }
+| s = NAME { p_name s } 
+| NOT "(" e = expr ")" { p_not e } (* NOT prop <=> prop => False *)
+| TRUE { p_true }
+| FALSE { p_false }
+| e1 = expr "=>" e2 = expr { e1 => e2 }
+| e1 = expr "^" e2 = expr { e1 ^ e2 }
+| e1 = expr "v" e2 = expr { e1 $ e2 }
 
 
