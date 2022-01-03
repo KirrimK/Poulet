@@ -34,6 +34,8 @@ val getAllHypoIds : proof -> int list
 
 val getRootOfProp : proposition -> string
 
+val getProfOfProp : proposition -> int
+
 val getHypList : proof -> hypothesis list
 
 val getRemainder : proof -> proposition list

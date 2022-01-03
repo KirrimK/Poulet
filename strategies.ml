@@ -130,6 +130,13 @@ let getRootOfProp = fun prop ->
   | False -> "False"
   | _ -> "Other";;
 
+let getProfOfProp = fun prop ->
+  let rec iterateurLocal = fun prop niveau ->
+    match prop with 
+      True | False | Name (_) -> niveau
+    | And (p1,p2) | Or (p1,p2) | Implies (p1, p2) -> max (iterateurLocal p1 niveau+1) (iterateurLocal p2 niveau+1) in
+  iterateurLocal prop 1;;
+
 let remainderLines = fun proof ->
   List.length proof.remainder;;
 
