@@ -118,9 +118,9 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["left"] -> orSplit false
   | ["right"] -> orSplit true
   | "add_hyp"::rest ->
-        (fun x -> (true, add_hyp x (make_prop rest)))
+        (fun x -> (true, add_hyp (make_prop rest) x))
   | "add_goal"::rest ->
-        (fun x -> (true, add_remainder x (make_prop rest)))
+        (fun x -> (true, add_remainder (make_prop rest) x))
   | "hyp_left"::rest ->
       begin
         match rest with

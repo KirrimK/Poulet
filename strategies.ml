@@ -144,7 +144,7 @@ let add_hyp = fun prp proof ->
    let nexthyp = {id=(nextHypId proof); prop=prp} in
    {hypos=(nexthyp::proof.hypos); remainder=proof.remainder};;
 
-let add_remainder = fun prp remainder ->
+let add_remainder = fun prp proof ->
    {hypos=proof.hypos; remainder=prp::proof.remainder};;
 
 (* Fonctions méthodes sur les types définis plus haut *)
