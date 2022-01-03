@@ -38,7 +38,7 @@ let getStratList = fun proof hpf ->
   (* Application d'une hypothèse à une autre
    Ne pas utiliser si le applyhypo crée de nouvelles hypothèses plutot que modifier*)
   (* Hyp à modifier en premier, Hyp à appliquer en seconde *)
-  let applyHypList = List.concat (List.map (fun x -> forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "And") (applyInHyp false x) (String.concat "" ["applyInHyp "; hpf x proof]) hypIds) hypIds) in
+  let applyHypList = List.concat (List.map (fun x -> forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "Implies") (applyInHyp false x) (String.concat "" ["applyInHyp "; hpf x proof; " <-"]) hypIds) hypIds) in
 
   (* Application d'une hypothèse au but *)
   let applyList = forAllApplicableHypos (fun x -> true) apply "apply" hypIds in
@@ -50,7 +50,7 @@ let getStratList = fun proof hpf ->
   let falseHypList = forAllApplicableHypos (fun x -> getRootOfProp (getPropOfHyp x proof) = "False") falseHypo "hypos has" hypIds in
 
   (* Agrégation des listes *)
-  List.concat [falseHypList; goalStratlist; applyList; exactList; orSplitHypLeftList; orSplitHypRightList; andSplitHypList];;
+  List.concat [falseHypList; goalStratlist; applyList; exactList; orSplitHypLeftList; orSplitHypRightList; andSplitHypList; applyHypList];;
 
 (* Algorithme du backtrack *)
 let backtrack = fun proof prints hpf->
