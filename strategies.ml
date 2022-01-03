@@ -116,7 +116,7 @@ let propAleatoire = fun profondeurMax->
       then if rFloat < 0.4 
         then begin incr idLibre ; Name (Printf.sprintf ("P_%d") !idLibre) end
         else if rFloat < 0.8
-          then Name (Printf.sprintf ("P_%d") ((Random.int !idLibre) + 1))
+          then Name (Printf.sprintf ("P_%d") (Random.int (!idLibre + 1)))
           else if rFloat < 0.9 
             then True
             else False
@@ -124,7 +124,7 @@ let propAleatoire = fun profondeurMax->
         if rFloat < 0.04
           then begin incr idLibre ; Name (Printf.sprintf "P_%d" !idLibre) end
           else if rFloat < 0.08
-            then Name (Printf.sprintf ("P_%d") ((Random.int !idLibre) + 1))
+            then Name (Printf.sprintf ("P_%d") (Random.int (!idLibre + 1)))
             else if rFloat<0.09
               then True
               else if rFloat <0.1
