@@ -12,9 +12,9 @@ exception Invalid_Input
 
 val make_prop : string list -> proposition
 
-val add_hyp : proof -> proposition -> proof
+val add_hyp : proposition -> proof -> proof
 
-val add_remainder : proof -> proposition -> proof
+val add_remainder : proposition -> proof -> proof
 
 val getAllHypoIds : proof -> int list
 
