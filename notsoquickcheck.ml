@@ -50,7 +50,7 @@ let add_rand_cont = fun max_prop_depth hyp_quantity proof ->
   (true, proof);;
 
 let get_rand_cont = fun max_prp_dp hp->
-  add_rand_cont max_prp_dp hp empty_proof;;;
+  add_rand_cont max_prp_dp hp empty_proof;;
 
 (* Générer un but garanti prouvable à partir d'un contexte *)
 
