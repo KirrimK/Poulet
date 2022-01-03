@@ -37,7 +37,8 @@ let propAleatoire = fun profondeurMax->
   iterateurLocal profondeurMax;;
 
 (* Générer un but aléatoire *)
-
+let add_rand_goal = fun depth proof ->
+  (true, add_remainder (propAleatoire depth) proof);;
 
 (* Générer un contexte aléatoire *)
 let add_rand_cont = fun max_prop_depth hyp_quantity proof ->
@@ -47,7 +48,7 @@ let add_rand_cont = fun max_prop_depth hyp_quantity proof ->
     else
       acc in
   let new_proof = it hyp_quantity proof in
-  (true, proof);;
+  (true, new_proof);;
 
 let get_rand_cont = fun max_prp_dp hp->
   add_rand_cont max_prp_dp hp empty_proof;;
@@ -56,3 +57,5 @@ let get_rand_cont = fun max_prp_dp hp->
 
 
 (* Tester les performances du backtrack *)
+let test_backtrack_perfs = fun max_test_depth ->
+  ();;
