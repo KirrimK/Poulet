@@ -156,6 +156,8 @@ let getRootOfProp = fun prop ->
     Implies(_, _) -> "Implies"
   | And(_, _) -> "And"
   | Or (_, _) -> "Or"
+  | True -> "True"
+  | False -> "False"
   | _ -> "Other";;
 
 let remainderLines = fun proof ->

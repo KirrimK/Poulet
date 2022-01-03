@@ -9,7 +9,7 @@ open Backtrack;;
 *)
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
-let version_code = "0.01c";;
+let version_code = "0.01c indev";;
 
 let c_name = fun n -> n ;;
 let c_true = "⊤";;
@@ -65,6 +65,7 @@ let print_help = fun () ->
   List of available proof strategies:
   - intro
   - split
+  - isfalse <hyp id>
   - hyp_split <hyp id>
   - left
   - right
@@ -153,6 +154,14 @@ let traiter_cmde = fun str stateList shadd fin ->
             apply hyp_num
         | _ -> raise InvalidArgument
       end
+  | "isfalse"::rest ->
+      begin
+        match rest with
+          [arg] ->
+            let hyp_num = int_of_string arg in
+            falseHypo hyp_num
+        | _ -> raise InvalidArgument
+      end
   | _ -> raise InvalidArgument;;
 
 (* REPL: Read-Eval-Print Loop
@@ -164,7 +173,7 @@ let traiter_cmde = fun str stateList shadd fin ->
    Code assez moche (avec des pointeurs chelous), manque le test de false dans les hypotheses *)
 let repl = fun () ->
   (* Mettre ici des prints lors du lancement du programme *)
-  let () = Printf.printf "Poulet v%s indev\nCopyright 2021 - 2022 Brévart, Courtadon, Dutau, de Crevoisier\nType \"help\" for help.\n" version_code in
+  let () = Printf.printf "Poulet v%s\nCopyright 2021 - 2022 Brévart, Courtadon, Dutau, de Crevoisier\nType \"help\" for help.\n" version_code in
   let proof = ref empty_proof in
   let stateList = ref [] in
   let should_add = ref true in
