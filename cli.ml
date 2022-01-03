@@ -10,7 +10,7 @@ open Notsoquickcheck;;
 *)
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
-let version_code = "0.01c indev";;
+let version_code = "0.02a";;
 
 let c_name = fun n -> n ;;
 let c_true = "⊤";;
@@ -63,6 +63,7 @@ let print_help = fun () ->
   - add_hyp <formula>
   - add_goal <formula>
   - add_random_goal <depth>
+  - add_random_context <hyp depth> <hyp number>
 
   List of available proof strategies:
   - intro
