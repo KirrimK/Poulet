@@ -14,7 +14,7 @@ val get_hyp : int -> t -> Proposition.t
 
 val add_goal : Proposition.t -> t -> t
 
-val add_hyp : Proposition.t -> t
+val add_hyp : Proposition.t -> t ->t 
 
 val get_first_goal : t -> Proposition.t
 
