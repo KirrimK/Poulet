@@ -103,9 +103,9 @@ let prop_iter = fun c_n c_t c_f f_imply f_and f_or prop ->
 
 (* Récupérer le type du noeud le plus haut sous forme de string *)
 let prop_root = fun prop ->
-  prop_iter (fun x->"Name") "True" "False" (fun x y->"Implies") (fun x y->"And") (fun x y->"Or");;
+  prop_iter (fun x->"Name") "True" "False" (fun x y->"Implies") (fun x y->"And") (fun x y->"Or") prop;;
 
 let branch = fun x y -> 1 + (max x y);;
 
 let prop_depth = fun prop ->
-  prop_iter (fun x->1) 1 1 branch branch branch;;
+  prop_iter (fun x->1) 1 1 branch branch branch prop;;
