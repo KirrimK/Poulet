@@ -186,8 +186,8 @@ let exact = fun hypoId preuve ->
     match listeResteAProuver with
       propos::reste ->
         if (propos = getProp (List.find (estCeLaBonneHypothese hypoId) preuve.hypos))
-          then iterateurLocal reste (True :: listeNonProuvee) (result || true)
-          else iterateurLocal reste (propos :: listeNonProuvee) (result || false)
+          then iterateurLocal reste (True :: listeNonProuvee) true
+          else iterateurLocal reste (propos :: listeNonProuvee) result
     | [] -> let nouvellePreuve = {hypos=preuve.hypos ; remainder = listeNonProuvee}in
         (result,nouvellePreuve) in
   iterateurLocal preuve.remainder [] false;;
