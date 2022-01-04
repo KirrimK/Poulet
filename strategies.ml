@@ -79,13 +79,10 @@ let assumption = fun preuve ->
 (* apply: int -> proof -> bool*proof = <fun> *)
 let apply = fun hypoId proof ->
   (* Fonction qui applique l'hypothèse selectionée par hypoId à la proposition à prouver *)
-  let propHippo = getProp (List.find (estCeLaBonneHypothese hypoId) proof.hypos) in
-  match propHippo with
-    Implies (partie1,partie2) ->
-      if (partie2 = List.hd proof.remainder)
-        then (true, {hypos=proof.hypos ; remainder = [partie1]})
-        else (false, proof)
-  | _ -> (false, proof);;
+  let propHippo = get_hyp hypAAppId proof in
+  let reste = List.tl (get_goal proof in
+  let failed = failed proof in
+  prop_iter (fun n -> failed) failed failed (fun partie1 partie2 -> if (partie2 = (get_first_goal proof)) then (true, make_proof (get_hyps proof) (partie1::reste)) else failed) (fun p q -> failed) (fun p q -> failed) propHippo;;
 
 (* applyInHyp : bool -> int -> int -> proof -> bool*proof = <fun> *)
 let applyInHyp = fun keep hypTargetId hypAAppId proof ->
@@ -99,6 +96,6 @@ let applyInHyp = fun keep hypTargetId hypAAppId proof ->
           then iterateurLocal propToMatch propToReplace reste (hypo:: propToReplace ::listeARemplir) true (ind+1)
           else iterateurLocal propToMatch propToReplace reste (propToReplace::listeARemplir)  true (ind+1)
         else iterateurLocal propToMatch propToReplace reste (hypo::listeARemplir) aBouge (ind+1) in 
-  prop_iter (fun n -> failed) failed failed (fun p -> let (newHypos, result) = iterateurLocal part1 part2 proof.hypos [] false in
-  (result, make_proof newHypos (get_goal proof))) failed failed propAAppliquer;;
+  prop_iter (fun n -> failed) failed failed (fun part1 part2 -> let (newHypos, result) = iterateurLocal part1 part2 proof.hypos [] false in 
+                                                                (result, make_proof newHypos (get_goal proof))) (fun p1 p2 ->failed) (fun p1 p2 ->failed) propAAppliquer;;
  
