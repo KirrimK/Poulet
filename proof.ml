@@ -18,7 +18,7 @@ let get_goal = fun proof ->
 let hyp_ids = fun proof ->
   let rec it = fun nb acc->
     if nb > 0 then
-      it (nb-1) nb::acc
+      it (nb-1) (nb::acc)
     else
       acc in
   it (List.length (get_hyps proof)) [];;
