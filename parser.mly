@@ -1,7 +1,7 @@
 (* fichier parser.mly*)
 
 
-%{ open Strategies %}
+%{ open Proposition %}
 %token <string> NAME
 %token TRUE
 %token FALSE
