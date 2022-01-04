@@ -48,3 +48,14 @@ let get_first_goal = fun proof ->
 
 let is_proven = fun proof ->
   ((get_goal proof) = []);;
+
+let remove_hyp = fun id proof ->
+  let rec it = fun nb acc acc_ok->
+    match acc with
+      a::rest ->
+        if id = nb then
+          it (nb+1) rest acc_ok
+        else
+          it (nb+1) rest (a::acc_ok)
+    | _ -> failwith "l'id n'existe pas dans la liste" in
+  it 0 (get_hyps proof);;
