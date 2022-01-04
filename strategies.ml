@@ -75,7 +75,7 @@ let andSplitHypo = fun hypoId proof ->
           then match (getProp hypo) with
             And (prop1,prop2) -> iterateurLocal suite ({id=(getId hypo);prop=prop1}::{id=(nextHypId proof);prop=prop2}::listeHypoARemplir) true
           | _ -> iterateurLocal suite (hypo::listeHypoARemplir) false
-        else iterateurLocal suite (hypo::listeHypoARemplir) (result||false) in
+        else iterateurLocal suite (hypo::listeHypoARemplir) result in
   let (newListHippos, result) = iterateurLocal proof.hypos [] false in
   (result, {hypos = newListHippos; remainder = proof.remainder})
 
@@ -110,16 +110,16 @@ let orSplitHypo = fun dejaPasse idHypo proof->
             Or (p1, p2) ->
               if  dejaPasse then iterateurLocal reste ({id=(nextHypId proof);prop=p2}::listeHypoARemplir) true
               else iterateurLocal reste ({id=(nextHypId proof);prop=p1}::listeHypoARemplir) true
-          | _ -> iterateurLocal reste (hypot::listeHypoARemplir) (result||false)
+          | _ -> iterateurLocal reste (hypot::listeHypoARemplir) result
           end
-        else iterateurLocal reste (hypot::listeHypoARemplir) (result||false) in
+        else iterateurLocal reste (hypot::listeHypoARemplir) result in
   let (rem, res) = iterateurLocal proof.hypos [] false in
   (rem, {hypos=res;remainder=proof.remainder})
 
 (* falseHypo: int proof -> bool * proof *)
 (* Si Faux est une hypothèse, on peut tout prouver *)
 let falseHypo = fun id proof->
-  let propHypo = (List.find (estCeLaBonneHypothese id) proof.hypos).prop in
+  let propHypo = getProp (List.find (estCeLaBonneHypothese id) proof.hypos) in
   if propHypo = False then
     (true, {hypos = proof.hypos; remainder = []})
   else
@@ -200,8 +200,8 @@ let exact = fun hypoId preuve ->
     match listeResteAProuver with
       propos::reste ->
         if (propos = getProp (List.find (estCeLaBonneHypothese hypoId) preuve.hypos))
-          then iterateurLocal reste (True :: listeNonProuvee) (result || true)
-          else iterateurLocal reste (propos :: listeNonProuvee) (result || false)
+          then iterateurLocal reste (True :: listeNonProuvee) true
+          else iterateurLocal reste (propos :: listeNonProuvee) result
     | [] -> let nouvellePreuve = {hypos=preuve.hypos ; remainder = listeNonProuvee}in
         (result,nouvellePreuve) in
   iterateurLocal preuve.remainder [] false;;

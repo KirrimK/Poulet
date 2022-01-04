@@ -1,6 +1,6 @@
 (* Fichier définissant le type hypothèse. *)
 
-type hypothesis = {
+type t = {
     id: int;
     prop: proposition;
   };;
