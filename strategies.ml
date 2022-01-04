@@ -78,7 +78,7 @@ let apply = fun hypoId proof ->
 let applyInHyp = fun keep hypTargetId hypAAppId proof ->
   (* Fonction qui applique l'hypothèse n° hypAAppId dans l'hypothèse n° hypTargetId (si c'est faisable) *)
   let propAAppliquer = get_hyp hypAAppId proof in
-  let failed = fail proof
+  let failed = fail proof in
   let rec iterateurLocal =  fun propToMatch propToReplace listeAVider listeARemplir aBouge ind ->
     match listeAVider with 
       [] -> (listeARemplir, aBouge)
