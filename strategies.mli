@@ -1,12 +1,12 @@
 (* Strategies.mli *)
 
-val add_hyp : proposition -> Proof.t -> Proof.t
+val add_hyp : Proposition.t -> Proof.t -> Proof.t
 
-val add_remainder : proposition -> Proof.t -> Proof.t
+val add_remainder : Proposition.t -> Proof.t -> Proof.t
 
 val remainderLines : Proof.t -> int
 
-val getFirstRemainder : Proof.t -> proposition
+val getFirstRemainder : Proof.t -> Proposition.t
 
 val nettoyer : Proof.t -> Proof.t
 
@@ -30,4 +30,4 @@ val apply : int -> Proof.t -> bool * Proof.t
 
 val applyInHyp : bool -> int -> int -> Proof.t -> bool*Proof.t
 
-val assumption : Proof.t -> bool * Proof.type
+val assumption : Proof.t -> bool * Proof.t
