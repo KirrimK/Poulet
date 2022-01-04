@@ -1,5 +1,6 @@
 (* Module NotSoQuickCheck *)
 open Strategies;;
+open Proposition;;
 (* Générer une proposition aléatoire *)
 (* propAleatoire : int -> prop *)
 
