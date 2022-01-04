@@ -2,6 +2,9 @@
 open Strategies;;
 (* Générer une proposition aléatoire *)
 (* propAleatoire : int -> prop *)
+
+exception Invalid_Input;;
+
 let propAleatoire = fun profondeurMax->
   (* Fonction qui génère une proposition de profondeur maximale déterminée. *)
   let idLibre = ref 0 in
