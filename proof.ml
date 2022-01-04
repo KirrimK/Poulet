@@ -59,3 +59,6 @@ let remove_hyp = fun id proof ->
           it (nb+1) rest (a::acc_ok)
     | _ -> failwith "l'id n'existe pas dans la liste" in
   it 0 (get_hyps proof);;
+
+let clean = fun proof ->
+  make_proof (List.sort_uniq compare (List.filter (fun x -> x <> p_true) (get_hyps proof))) (List.sort_uniq compare (List.filter (fun x -> x <> p_true) (get_goal proof)));;
