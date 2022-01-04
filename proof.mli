@@ -22,4 +22,6 @@ val is_proven : t -> bool
 
 val remove_hyp : int -> t -> Proposition.t list
 
+val remove_item_list : int -> 'a list -> 'a list
+
 val clean : t -> t

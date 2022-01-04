@@ -37,7 +37,7 @@ let hyp_to_string = fun id prop ->
 
 let proof_to_string = fun proof->
   (* Afficher les hypothèses *)
-  let hypStrings = List.map2 (fun x y -> hyp_to_string x y) (hyp_ids proof) (get_hyps proof) in
+  let hypStrings = List.mapi (fun x y -> hyp_to_string x y) (get_hyps proof) in
   let hypsString = String.concat "\n" hypStrings in
   let goalStrings = List.map (prop_to_string) (get_goal proof) in
   let goalString = String.concat "\n" goalStrings in
@@ -72,12 +72,15 @@ let print_help = fun () ->
   List of available commands:
   - help: displays this help
   - back: reverts to the previous state
+  - empty: reset the proof to zero
   - q: quits this program
   - clean: reorders the hypotheses and goals and deletes duplicated items in the current proof state
   - add_hyp <formula>
   - add_goal <formula>
-  - add_random_goal <max depth>
-  - add_random_context <hyp max depth> <hyp number>
+  - add_random_goal <max_depth>
+  - add_random_context <hyp max_depth> <hyp_number>
+  - get_random_context <hyp max_depth> <hyp_number>
+  - reverse
 
   List of available proof strategies:
   - intro
@@ -120,6 +123,8 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["clean"] -> (fun x -> (true, clean x))
   | ["split"] -> split
   | ["assumption"] -> assumption
+  | ["reverse"] -> reverse
+  | ["empty"] -> (fun x -> (true, Proof.empty))
   | "auto"::rest ->
       begin
         match rest with
@@ -215,6 +220,20 @@ let traiter_cmde = fun str stateList shadd fin ->
                 [argb] ->
                   let hyp_numb = int_of_string argb in
                   add_rand_cont hyp_numa hyp_numb
+              | _ -> raise InvalidArgument
+            end
+        | _ -> raise InvalidArgument
+      end
+  | "get_random_context"::rest ->
+      begin
+        match rest with
+          arga::resta ->
+            let hyp_numa = int_of_string arga in
+            begin
+              match resta with
+                [argb] ->
+                  let hyp_numb = int_of_string argb in
+                  (fun x->get_rand_cont hyp_numa hyp_numb)
               | _ -> raise InvalidArgument
             end
         | _ -> raise InvalidArgument
