@@ -324,14 +324,14 @@ let apply = fun hypoId proof ->
 (* applyInHyp : bool -> int -> int -> proof -> bool*proof = <fun> *)
 let applyInHyp = fun keep hypTargetId hypAAppId proof ->
   (* Fonction qui applique l'hypothèse n° hypAAppId dans l'hypothèse n° hypTargetId (si c'est faisable) *)
-  let propAAppliquer = (List.find (estCeLaBonneHypothese hypAAppId) proof.hypos).prop in
+  let propAAppliquer = getProp (List.find (estCeLaBonneHypothese hypAAppId) proof.hypos) in
   let rec iterateurLocal =  fun propToMatch propToReplace listeAVider listeARemplir aBouge ->
     match listeAVider with 
       [] -> (listeARemplir, aBouge)
-    | hypo ::reste -> if hypo.id = hypTargetId && hypo.prop = propToMatch
+    | hypo ::reste -> if (getId hypo) = hypTargetId && (getProp hypo) = propToMatch
         then if keep 
-          then iterateurLocal propToMatch propToReplace reste (hypo:: {id=(nextHypId proof);prop=propToReplace}::listeARemplir) (aBouge||true)
-          else iterateurLocal propToMatch propToReplace reste ({id=(nextHypId proof);prop=propToReplace}::listeARemplir) (aBouge||true)
+          then iterateurLocal propToMatch propToReplace reste (hypo:: (newHypo (nextHypId proof) propToReplace) ::listeARemplir) true
+          else iterateurLocal propToMatch propToReplace reste ((newHypo (nextHypId proof) propToReplace)::listeARemplir) true
         else iterateurLocal propToMatch propToReplace reste (hypo::listeARemplir) aBouge in 
   match propAAppliquer with 
     Implies (part1, part2) -> let (newHypos, result) = iterateurLocal part1 part2 proof.hypos [] false in
@@ -350,4 +350,4 @@ let prop_iter = fun c_n c_t c_f f_imply f_and f_or prop ->
   iter_local prop;;
 
 let foncgen_hypo = fun f_id f_prop hypo ->
-  (f_id hypo.id, f_prop hypo.prop);;
+  (f_id (getId hypo), f_prop (getProp hypo));;
