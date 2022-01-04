@@ -2,8 +2,6 @@
 
 type proposition
 
-type hypothesis
-
 type proof
 
 val empty_proof: proof
