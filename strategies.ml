@@ -101,5 +101,5 @@ let applyInHyp = fun keep hypTargetId hypAAppId proof ->
           then iterateurLocal propToMatch propToReplace reste (hypo:: propToReplace ::listeARemplir) true (ind+1)
           else iterateurLocal propToMatch propToReplace reste (propToReplace::listeARemplir)  true (ind+1)
         else iterateurLocal propToMatch propToReplace reste (hypo::listeARemplir) aBouge (ind+1) in 
-  prop_match (fun n -> failed) failed failed (fun part1 part2 -> let (newHypos, result) = iterateurLocal part1 part2 proof.hypos [] false in 
+  prop_match (fun n -> failed) failed failed (fun part1 part2 -> let (newHypos, result) = iterateurLocal part1 part2 (get_hyps proof) [] false 0 in 
                                                                 (result, make_proof newHypos (get_goal proof))) (fun p1 p2 ->failed) (fun p1 p2 ->failed) propAAppliquer
