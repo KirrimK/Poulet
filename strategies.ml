@@ -7,30 +7,34 @@ let fail = fun x -> (false, x);;
 
 let intro = fun proof ->
   let failed = fail proof in
+  let faileds = (fun x y->failed) in
   let (goal::rest) = get_goal proof in
   prop_match (fun x->failed) failed failed (fun x y->
     if (x = p_true || x = p_false) then
       failed
     else
       (true, make_proof (x::(get_hyps proof)) (y::rest))
-                                          ) (fun x y->failed) (fun x y-> failed) goal;;
+                                          ) faileds faileds goal;;
 
 let split = fun proof ->
   let failed = fail proof in
+  let faileds = (fun x y->failed) in
   let (goal::rest) = get_goal proof in
-  prop_match (fun x->failed) failed failed (fun x y->failed) (fun x y->
-    (true, make_proof (get_hyps proof) (x::(y::rest)))) (fun x y->failed) goal;;
+  prop_match (fun x->failed) failed failed faileds (fun x y->
+    (true, make_proof (get_hyps proof) (x::(y::rest)))) faileds goal;;
 
 let hyp_split = fun id proof ->
   let failed = fail proof in
+  let faileds = (fun x y->failed) in
   let other_hyps = remove_hyp id proof in
-  prop_match (fun x->failed) failed failed (fun x y->failed) (fun x y->
-    (true, make_proof (x::(y::other_hyps)) (get_goal proof))) (fun x y->failed) (get_hyp id proof);;
+  prop_match (fun x->failed) failed failed faileds (fun x y->
+    (true, make_proof (x::(y::other_hyps)) (get_goal proof))) faileds (get_hyp id proof);;
 
 let orsplit = fun left proof ->
   let failed = fail proof in
+  let faileds = (fun x y->failed) in
   let (goal::rest) = get_goal proof in
-  prop_match (fun x->failed) failed failed (fun x y->failed) (fun x y->failed) (fun x y->
+  prop_match (fun x->failed) failed failed faileds faileds (fun x y->
     (true, make_proof (get_hyps proof) (if left then x::rest else y::rest))) goal;;
 
 let left = orsplit true;;
@@ -38,8 +42,9 @@ let right = orsplit false;;
 
 let hyp_orsplit = fun left id proof ->
   let failed = fail proof in
+  let faileds = (fun x y->failed) in
   let other_hyps = remove_hyp id proof in
-  prop_match (fun x->failed) failed failed (fun x y->failed) (fun x y->failed) (fun x y->
+  prop_match (fun x->failed) failed failed faileds faileds (fun x y->
     (true, make_proof (if left then x::other_hyps else y::other_hyps) (get_goal proof))) (get_hyp id proof);;
 
 let hyp_left = hyp_orsplit true;;
@@ -47,7 +52,8 @@ let hyp_right = hyp_orsplit false;;
 
 let false_hyp = fun id proof ->
   let failed = fail proof in
-  prop_match (fun x->failed) failed (true, make_proof (get_hyps proof) []) (fun x y->failed) (fun x y->failed) (fun x y->failed) (get_hyp id proof);;
+  let faileds = (fun x y->failed) in
+  prop_match (fun x->failed) failed (true, make_proof (get_hyps proof) []) (fun x y->failed) faileds faileds (get_hyp id proof);;
 
 let exact = fun id proof ->
   let failed = fail proof in
