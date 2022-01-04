@@ -18,6 +18,6 @@ val print_prop:  Proposition.t -> unit;;
 
 val string_to_list: string -> string list;;
 
-val proof_to_string: Strategies.proof -> string;;
+val proof_to_string: Proof.t -> string;;
 
 val repl: unit -> unit;;
