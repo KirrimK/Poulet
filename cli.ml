@@ -20,28 +20,28 @@ let c_false = "⊥" ;;
 
 (*let and_symbol = Uchar.type  0x02C4;;*)
 
-let f_implies = fun s1 s2 -> String.concat "" ["(";s1;"⇒";s2;")"];;
+let f_implies = fun s1 s2 -> String.concat "" ["(";s1;" ⇒ ";s2;")"];;
 
 let f_and = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∧ ";sProp2;")"];;
 
 let f_or = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∨ ";sProp2;")"];;
 
-let prop_to_string = fun propo -> prop_iter c_name c_true c_false f_implies f_and f_or  propo;;
+let prop_to_string = fun propo -> prop_iter c_name c_true c_false f_implies f_and f_or propo;;
 
 let print_prop = fun propo -> Printf.printf "%s" (prop_to_string propo);;
 
 let string_to_list = fun str -> String.split_on_char ' ' str;;
 
-let hyp_to_string = fun hypo ->
-  prop_to_string hypo;;
+let hyp_to_string = fun id prop ->
+  String.concat "" [string_of_int id; "\t: "; prop_to_string prop];;
 
 let proof_to_string = fun proof->
   (* Afficher les hypothèses *)
-  let hypStrings = List.map (fun x -> hyp_to_string x) (get_hyps proof) in
+  let hypStrings = List.map2 (fun x y -> hyp_to_string x y) (hyp_ids proof) (get_hyps proof) in
   let hypsString = String.concat "\n" hypStrings in
-  let remainderStrings = List.map (prop_to_string) (get_goal proof) in
-  let remainderString = String.concat "\n" remainderStrings in
-  String.concat "\n" [hypsString; "-----"; remainderString];;
+  let goalStrings = List.map (prop_to_string) (get_goal proof) in
+  let goalString = String.concat "\n" goalStrings in
+  String.concat "\n" [""; hypsString; String.make 15 '-'; goalString];;
 
 exception InvalidArgument
 
@@ -52,9 +52,22 @@ let print_help = fun () ->
   Printf.printf "  Poulet v%s: REPL Help" version_code;
   Printf.printf "
   The current state of the proof is displayed like this:
-  (ids: hypotheses)
-  -----
+  (ids    : hypotheses)
+  ---------------
   (goals)
+
+  Formulas are currently typed in stack-based reverse form:
+  ex: \"add_hyp A B =>\" gives \"id: (A ⇒ B)\"
+      \"add_goal A B C => =>\" gives \"(A ⇒ (B ⇒ C))\"
+
+  Formula operators are:
+             \"=>\" : implies
+              \"^\" : and
+              \"v\" : or
+            \"Not\" : not
+           \"True\" : ⊤ (literal true)
+          \"False\" : ⊥ (literal false)
+  (anything else) : proposition name
 
   List of available commands:
   - help: displays this help
@@ -63,8 +76,8 @@ let print_help = fun () ->
   - clean: reorders the hypotheses and goals and deletes duplicated items in the current proof state
   - add_hyp <formula>
   - add_goal <formula>
-  - add_random_goal <depth>
-  - add_random_context <hyp depth> <hyp number>
+  - add_random_goal <max depth>
+  - add_random_context <hyp max depth> <hyp number>
 
   List of available proof strategies:
   - intro
@@ -255,4 +268,3 @@ let repl = fun () ->
         Printf.printf "Commande incorrecte.\n" in
     if not !finished then Printf.printf "%s\n" (proof_to_string !proof);
   done;;
-

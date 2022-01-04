@@ -58,13 +58,11 @@ let getStratList = fun proof hpf ->
 let backtrack = fun proof prints hpf->
   let stateMemory = ref [] in (* Mémoire de tous les états déjà visités *)
   (* *)
-  let rec backrec = fun proo nameacc->
-    (* Nettoyer l'objet preuve et normaliser *)
-    let norm_proo = clean proo in
+  let rec backrec = fun norm_proo nameacc->
     (* Vérifier appartenance à la liste des états déjà visités *)
     if List.mem norm_proo !stateMemory then (* L'état a déjà été visité *)
       let () = if prints then Printf.printf "%s | Déjà visité.\n" nameacc else () in
-      (false, proo)
+      (false, norm_proo)
     else (* L'état n'a jamais été visité *)
       begin
         (* Ajouter l'état à la liste des états visités *)
@@ -76,7 +74,7 @@ let backtrack = fun proof prints hpf->
             (strat, stratname)::rest -> (* Encore des stratégies à tester *)
               let (result, resproof) = strat norm_proo in (* Tester la stratégie *)
               let norm_resproof = clean resproof in (* Nettoyer et normaliser *)
-              let newnameacc = String.concat " > " [nameacc;stratname] in
+              let newnameacc = String.concat (if prints then " > " else "\n> ") [nameacc;stratname] in
               if result then (* La stratégie à fait progresser la preuve*)
                 if is_proven norm_resproof then (* Est-ce que la preuve est finie *)
                   let () = Printf.printf "%s | Preuve finie\n" newnameacc in
@@ -93,7 +91,7 @@ let backtrack = fun proof prints hpf->
           | [] -> (* Plus de stratégies à tester à ce stage *)
               if prints then
                 (Printf.printf "%s | Plus de stratégies applicables.\n" nameacc);
-              (false, proo) in
+              (false, norm_proo) in
         explore stratList
       end in
-  backrec proof "backtrack";;
+  backrec (clean proof) "backtrack";;

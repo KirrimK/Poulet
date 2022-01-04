@@ -68,7 +68,7 @@ let exact = fun id proof ->
     goal::rest ->
       let hyp = get_hyp id proof in
       if goal = hyp then
-        (true, make_proof (get_goal proof) rest)
+        (true, make_proof (get_hyps proof) rest)
       else
         failed
   | _ -> failed;;
@@ -97,12 +97,12 @@ let applyInHyp = fun keep hypTargetId hypAAppId proof ->
   let failed = fail proof in
   let faileds = fails proof in
   let rec iterateurLocal =  fun propToMatch propToReplace listeAVider listeARemplir aBouge ind ->
-    match listeAVider with 
+    match listeAVider with
       [] -> (listeARemplir, aBouge)
     | hypo ::reste -> if ind = hypTargetId && hypo = propToMatch
-        then if keep 
+        then if keep
           then iterateurLocal propToMatch propToReplace reste (hypo:: propToReplace ::listeARemplir) true (ind+1)
           else iterateurLocal propToMatch propToReplace reste (propToReplace::listeARemplir)  true (ind+1)
-        else iterateurLocal propToMatch propToReplace reste (hypo::listeARemplir) aBouge (ind+1) in 
-  prop_match (fun n -> failed) failed failed (fun part1 part2 -> let (newHypos, result) = iterateurLocal part1 part2 (get_hyps proof) [] false 0 in 
+        else iterateurLocal propToMatch propToReplace reste (hypo::listeARemplir) aBouge (ind+1) in
+  prop_match (fun n -> failed) failed failed (fun part1 part2 -> let (newHypos, result) = iterateurLocal part1 part2 (get_hyps proof) [] false 0 in
                                                                 (result, make_proof newHypos (get_goal proof))) faileds faileds propAAppliquer
