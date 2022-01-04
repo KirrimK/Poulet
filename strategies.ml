@@ -1,15 +1,6 @@
 (* Strategies.ml *)
 
 (* Définitions de types *)
-open Hypothese;;
-
-type proposition = Name of string
-  | Implies of proposition * proposition
-  | True
-  | False
-  | And of proposition * proposition
-  | Or of proposition * proposition;;
-
 
 type proof = {
     hypos: hypothesis list;
@@ -19,89 +10,9 @@ type proof = {
 (* Abstract de constructeurs *)
 let empty_proof = {hypos=[]; remainder=[]};;
 
-let p_true = True;;
-
-let p_false = False;;
-
-let ( => ) = fun a b -> Implies(a, b);;
-
-let p_name = fun a -> Name(a);;
-
-let ( ^ ) = fun a b -> And(a, b);;
-
-let ( $ ) = fun a b -> Or(a, b);;
-
-let p_not = fun a -> Implies(a, p_false);;
-
-exception Invalid_Input;;
-(* Makers de type, à partir de listes de string*)
-let make_prop = fun strlist->
-  let rec iter_loc = fun list acc ->
-    match list with
-      ""::rest -> iter_loc rest acc
-    | "=>"::rest ->
-        begin
-          match acc with
-            second::ac when ac != [] ->
-              begin
-                match ac with
-                  first::a ->
-                    iter_loc rest (Implies(first, second)::a)
-                | _ -> Printf.printf "e";raise Invalid_Input
-              end
-          | _ -> Printf.printf "f";raise Invalid_Input
-        end
-    | "^"::rest ->
-        begin
-          match acc with
-            second::ac when ac != [] ->
-              begin
-                match ac with
-                  first::a ->
-                    iter_loc rest (And(first, second)::a)
-                | _ -> Printf.printf "c";raise Invalid_Input
-              end
-          | _ -> Printf.printf "d";raise Invalid_Input
-        end
-    | "v"::rest ->
-        begin
-          match acc with
-            second::ac when ac != [] ->
-              begin
-                match ac with
-                  first::a ->
-                    iter_loc rest (Or(first, second)::a)
-                | _ -> Printf.printf "a";raise Invalid_Input
-              end
-          | _ -> Printf.printf "b";raise Invalid_Input
-        end
-    | "Not"::rest ->
-        begin
-          match acc with
-            thing::ac ->
-              iter_loc rest (Implies(thing, False)::ac)
-          | _ -> raise Invalid_Input
-        end
-    | "True"::rest ->
-        iter_loc rest (True::acc)
-    | "False"::rest ->
-        iter_loc rest (False::acc)
-    | a::rest when a != ""->
-        let newacc = Name(a)::acc in
-        iter_loc rest newacc
-    | _::rest ->
-        iter_loc rest acc
-    | [] ->
-        begin
-          match acc with
-            elt::rest -> elt
-          | _ -> Printf.printf "g";raise Invalid_Input
-        end in
-  iter_loc strlist [];;
 
 let getAllHypoIds = fun proof ->
   List.map (fun hypo -> hypo.id) proof.hypos;;
-
 
 (* nextHypId : proof -> int *)
 let nextHypId = fun proo ->
@@ -118,23 +29,6 @@ let add_remainder = fun prp proof ->
    {hypos=proof.hypos; remainder=prp::proof.remainder};;
 
 (* Fonctions méthodes sur les types définis plus haut *)
-
-let getRootOfProp = fun prop ->
-  match prop with
-    Implies(_, _) -> "Implies"
-  | And(_, _) -> "And"
-  | Or (_, _) -> "Or"
-  | True -> "True"
-  | False -> "False"
-  | _ -> "Other";;
-
-let getProfOfProp = fun prop ->
-  let rec iterateurLocal = fun prop niveau ->
-    match prop with 
-      True | False | Name (_) -> niveau
-    | And (p1,p2) | Or (p1,p2) | Implies (p1, p2) -> max (iterateurLocal p1 niveau+1) (iterateurLocal p2 niveau+1) in
-  iterateurLocal prop 1;;
-
 let remainderLines = fun proof ->
   List.length proof.remainder;;
 
@@ -324,30 +218,20 @@ let apply = fun hypoId proof ->
 (* applyInHyp : bool -> int -> int -> proof -> bool*proof = <fun> *)
 let applyInHyp = fun keep hypTargetId hypAAppId proof ->
   (* Fonction qui applique l'hypothèse n° hypAAppId dans l'hypothèse n° hypTargetId (si c'est faisable) *)
-  let propAAppliquer = (List.find (estCeLaBonneHypothese hypAAppId) proof.hypos).prop in
+  let propAAppliquer = getProp (List.find (estCeLaBonneHypothese hypAAppId) proof.hypos) in
   let rec iterateurLocal =  fun propToMatch propToReplace listeAVider listeARemplir aBouge ->
     match listeAVider with 
       [] -> (listeARemplir, aBouge)
-    | hypo ::reste -> if hypo.id = hypTargetId && hypo.prop = propToMatch
+    | hypo ::reste -> if (getId hypo) = hypTargetId && (getProp hypo) = propToMatch
         then if keep 
-          then iterateurLocal propToMatch propToReplace reste (hypo:: {id=(nextHypId proof);prop=propToReplace}::listeARemplir) (aBouge||true)
-          else iterateurLocal propToMatch propToReplace reste ({id=(nextHypId proof);prop=propToReplace}::listeARemplir) (aBouge||true)
+          then iterateurLocal propToMatch propToReplace reste (hypo:: (newHypo (nextHypId proof) propToReplace) ::listeARemplir) true
+          else iterateurLocal propToMatch propToReplace reste ((newHypo (nextHypId proof) propToReplace)::listeARemplir) true
         else iterateurLocal propToMatch propToReplace reste (hypo::listeARemplir) aBouge in 
   match propAAppliquer with 
     Implies (part1, part2) -> let (newHypos, result) = iterateurLocal part1 part2 proof.hypos [] false in
     (result, {hypos = newHypos;remainder = proof.remainder})
   | _-> (false, proof);; 
 
-let prop_iter = fun c_n c_t c_f f_imply f_and f_or prop ->
-  let rec iter_local = fun p ->
-    match p with
-      |Name n -> c_n n
-      |True -> c_t
-      |False -> c_f
-      |Implies (p1,p2) -> f_imply (iter_local p1) (iter_local p2)
-      |And (p1,p2) -> f_and (iter_local p1) (iter_local p2)
-      |Or (p1, p2) -> f_or (iter_local p1) (iter_local p2) in
-  iter_local prop;;
 
 let foncgen_hypo = fun f_id f_prop hypo ->
-  (f_id hypo.id, f_prop hypo.prop);;
+  (f_id (getId hypo), f_prop (getProp hypo));;
