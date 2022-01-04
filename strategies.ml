@@ -4,10 +4,11 @@ open Proposition;;
 open Proof;;
 
 let fail = fun x -> (false, x);;
+let fails = fun proof x y -> (false, proof);;
 
 let intro = fun proof ->
   let failed = fail proof in
-  let faileds = (fun x y->failed) in
+  let faileds = fails proof in
   match get_goal proof with
     goal::rest ->
       prop_match (fun x->failed) failed failed (fun x y->
@@ -20,7 +21,7 @@ let intro = fun proof ->
 
 let split = fun proof ->
   let failed = fail proof in
-  let faileds = (fun x y->failed) in
+  let faileds = fails proof in
   match get_goal proof with
     goal::rest ->
       prop_match (fun x->failed) failed failed faileds (fun x y->
@@ -29,14 +30,14 @@ let split = fun proof ->
 
 let hyp_split = fun id proof ->
   let failed = fail proof in
-  let faileds = (fun x y->failed) in
+  let faileds = fails proof in
   let other_hyps = remove_hyp id proof in
   prop_match (fun x->failed) failed failed faileds (fun x y->
     (true, make_proof (x::(y::other_hyps)) (get_goal proof))) faileds (get_hyp id proof);;
 
 let orsplit = fun left proof ->
   let failed = fail proof in
-  let faileds = (fun x y->failed) in
+  let faileds = fails proof in
   match get_goal proof with
     goal::rest ->
       prop_match (fun x->failed) failed failed faileds faileds (fun x y->
@@ -48,7 +49,7 @@ let right = orsplit false;;
 
 let hyp_orsplit = fun left id proof ->
   let failed = fail proof in
-  let faileds = (fun x y->failed) in
+  let faileds = fails proof in
   let other_hyps = remove_hyp id proof in
   prop_match (fun x->failed) failed failed faileds faileds (fun x y->
     (true, make_proof (if left then x::other_hyps else y::other_hyps) (get_goal proof))) (get_hyp id proof);;
@@ -58,7 +59,7 @@ let hyp_right = hyp_orsplit false;;
 
 let false_hyp = fun id proof ->
   let failed = fail proof in
-  let faileds = (fun x y->failed) in
+  let faileds = fails proof in
   prop_match (fun x->failed) failed (true, make_proof (get_hyps proof) []) (fun x y->failed) faileds faileds (get_hyp id proof);;
 
 let exact = fun id proof ->
@@ -86,13 +87,15 @@ let apply = fun hypoId proof ->
   let propHippo = get_hyp hypoId proof in
   let reste = List.tl (get_goal proof) in
   let failed = fail proof in
-  prop_match (fun n -> failed) failed failed (fun partie1 partie2 -> if (partie2 = (get_first_goal proof)) then (true, make_proof (get_hyps proof) (partie1::reste)) else failed) (fun p q -> failed) (fun p q -> failed) propHippo;;
+  let faileds = fails proof in
+  prop_match (fun n -> failed) failed failed (fun partie1 partie2 -> if (partie2 = (get_first_goal proof)) then (true, make_proof (get_hyps proof) (partie1::reste)) else failed) faileds faileds propHippo;;
 
 (* applyInHyp : bool -> int -> int -> proof -> bool*proof = <fun> *)
 let applyInHyp = fun keep hypTargetId hypAAppId proof ->
   (* Fonction qui applique l'hypothèse n° hypAAppId dans l'hypothèse n° hypTargetId (si c'est faisable) *)
   let propAAppliquer = get_hyp hypAAppId proof in
   let failed = fail proof in
+  let faileds = fails proof in
   let rec iterateurLocal =  fun propToMatch propToReplace listeAVider listeARemplir aBouge ind ->
     match listeAVider with 
       [] -> (listeARemplir, aBouge)
@@ -102,4 +105,4 @@ let applyInHyp = fun keep hypTargetId hypAAppId proof ->
           else iterateurLocal propToMatch propToReplace reste (propToReplace::listeARemplir)  true (ind+1)
         else iterateurLocal propToMatch propToReplace reste (hypo::listeARemplir) aBouge (ind+1) in 
   prop_match (fun n -> failed) failed failed (fun part1 part2 -> let (newHypos, result) = iterateurLocal part1 part2 (get_hyps proof) [] false 0 in 
-                                                                (result, make_proof newHypos (get_goal proof))) (fun p1 p2 ->failed) (fun p1 p2 ->failed) propAAppliquer
+                                                                (result, make_proof newHypos (get_goal proof))) faileds faileds propAAppliquer
