@@ -69,7 +69,7 @@ let assumption = fun proof ->
 (* apply: int -> proof -> bool*proof = <fun> *)
 let apply = fun hypoId proof ->
   (* Fonction qui applique l'hypothèse selectionée par hypoId à la proposition à prouver *)
-  let propHippo = get_hyp hypAAppId proof in
+  let propHippo = get_hyp hypoId proof in
   let reste = List.tl (get_goal proof) in
   let failed = fail proof in
   prop_match (fun n -> failed) failed failed (fun partie1 partie2 -> if (partie2 = (get_first_goal proof)) then (true, make_proof (get_hyps proof) (partie1::reste)) else failed) (fun p q -> failed) (fun p q -> failed) propHippo;;
