@@ -10,5 +10,5 @@ val hyp_ids : t -> int list
 
 val make_proof : Proposition.t list -> Proposition.t list -> t
 
-val getHyp : int -> t -> Proposition.t
+val get_hyp : int -> t -> Proposition.t
 
