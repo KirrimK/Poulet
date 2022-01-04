@@ -1,38 +1,14 @@
 (* Strategies.mli *)
 
-type proposition
-
 type proof
 
 val empty_proof: proof
-
-val p_name : string -> proposition
-
-val p_true : proposition
-
-val p_false : proposition
-
-val ( => ) : proposition -> proposition -> proposition
-
-val ( ^ ) : proposition -> proposition -> proposition
-
-val ( $ ) : proposition -> proposition -> proposition
-
-val p_not : proposition -> proposition
-
-exception Invalid_Input
-
-val make_prop : string list -> proposition
 
 val add_hyp : proposition -> proof -> proof
 
 val add_remainder : proposition -> proof -> proof
 
 val getAllHypoIds : proof -> int list
-
-val getRootOfProp : proposition -> string
-
-val getProfOfProp : proposition -> int
 
 val getHypList : proof -> hypothesis list
 
