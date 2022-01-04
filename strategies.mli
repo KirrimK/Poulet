@@ -1,51 +1,33 @@
 (* Strategies.mli *)
 
-type proof
+val add_hyp : proposition -> Proof.t -> Proof.t
 
-val empty_proof: proof
+val add_remainder : proposition -> Proof.t -> Proof.t
 
-val add_hyp : proposition -> proof -> proof
+val remainderLines : Proof.t -> int
 
-val add_remainder : proposition -> proof -> proof
+val getFirstRemainder : Proof.t -> proposition
 
-val getAllHypoIds : proof -> int list
-
-val getHypList : proof -> hypothesis list
-
-val getRemainder : proof -> proposition list
-
-val remainderLines : proof -> int
-
-val getFirstRemainder : proof -> proposition
-
-val getPropOfHyp : int -> proof -> proposition
-
-val isProven : proof -> bool
-
-val nettoyer : proof -> proof
+val nettoyer : Proof.t -> Proof.t
 
 (* Stratégies appliquables à un problème mathématique *)
 
-val falseHypo : int -> proof -> bool * proof
+val falseHypo : int -> Proof.t -> bool * Proof.t
 
-val andsplit : proof -> bool * proof
+val andsplit : Proof.t -> bool * Proof.t
 
-val andSplitHypo : int -> proof -> bool * proof
+val andSplitHypo : int -> Proof.t -> bool * Proof.t
 
-val orSplit : bool -> proof -> bool * proof
+val orSplit : bool -> Proof.t -> bool * Proof.t
 
-val orSplitHypo : bool -> int -> proof -> bool * proof
+val orSplitHypo : bool -> int -> Proof.t -> bool * Proof.t
 
-val intro : proof -> bool * proof
+val intro : Proof.t -> bool * Proof.t
 
-val exact : int -> proof -> bool * proof
+val exact : int -> Proof.t -> bool * Proof.t
 
-val apply : int -> proof -> bool * proof
+val apply : int -> Proof.t -> bool * Proof.t
 
-val applyInHyp : bool -> int -> int -> proof -> bool*proof
+val applyInHyp : bool -> int -> int -> Proof.t -> bool*Proof.t
 
-val assumption : proof -> bool * proof
-
-val prop_iter : (string -> 'a) -> 'a -> 'a -> ('a -> 'a -> 'a) -> ('a -> 'a -> 'a) -> ('a -> 'a -> 'a) -> proposition -> 'a
-
-val foncgen_hypo : (int -> 'a) -> (proposition -> 'b) -> hypothesis -> 'a * 'b
+val assumption : Proof.t -> bool * Proof.type
