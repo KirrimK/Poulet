@@ -61,4 +61,4 @@ let remove_hyp = fun id proof ->
   it 0 (get_hyps proof);;
 
 let clean = fun proof ->
-  make_proof (List.sort_uniq compare (List.filter (fun x -> x <> p_true) (get_hyps proof)) (List.sort_uniq compare (List.filter (fun x -> x <> p_true) (get_goal proof));;
+  make_proof (List.sort_uniq compare (List.filter (fun x -> x <> p_true) (get_hyps proof))) (List.sort_uniq compare (List.filter (fun x -> x <> p_true) (get_goal proof)));;
