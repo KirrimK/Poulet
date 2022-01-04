@@ -1,5 +1,7 @@
+(* fichier parser.mly*)
+
+
 %{ open Strategies %}
-%token <int> INT
 %token <string> NAME
 %token TRUE
 %token FALSE
@@ -13,9 +15,9 @@
 
 (* On écrit les règles de priorité *)
 
-%right "v"
+%right "v"  (* "ou" moins prioritaire que "et" et "=>" *)
 %right "=>" "^"
-%nonassoc NOT
+%nonassoc NOT (* opérateur unaire donc non associatif *)
 
 %start <Strategies.proposition> main
 
@@ -26,7 +28,6 @@ main:
 | e = expr EOL { e }
 
 expr :
-/* | i = INT { i } */
 | "(" e = expr ")" { e }
 | s = NAME { p_name s }
 | NOT e = expr { p_not e } (* NOT prop <=> prop => False *)

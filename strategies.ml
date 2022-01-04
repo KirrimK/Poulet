@@ -2,11 +2,6 @@
 
 (* Définitions de types *)
 
-type hypothesis = {
-    id: int;
-    prop: proposition;
-  };;
-
 type proof = {
     hypos: hypothesis list;
     remainder: proposition list;
@@ -55,7 +50,7 @@ let getRemainder = fun proof->
 (* estCeLaBonneHypothese : int -> hypo -> bool*)
 let estCeLaBonneHypothese = fun hypoId hypo ->
   (* Fonction privée sensée être utilisée exclusivement dans ce module *)
-  hypo.id = hypoId;;
+  getId hypo = hypoId;;
 
 (* Stratégies à appliquer *)
 
@@ -77,8 +72,8 @@ let andSplitHypo = fun hypoId proof ->
       [] -> (listeHypoARemplir, result)
     | hypo :: suite ->
         if hypo.id = hypoId
-          then match hypo.prop with
-            And (prop1,prop2) -> iterateurLocal suite ({id=(hypo.id);prop=prop1}::{id=(nextHypId proof);prop=prop2}::listeHypoARemplir) true
+          then match (getProp hypo) with
+            And (prop1,prop2) -> iterateurLocal suite ({id=(getId hypo);prop=prop1}::{id=(nextHypId proof);prop=prop2}::listeHypoARemplir) true
           | _ -> iterateurLocal suite (hypo::listeHypoARemplir) false
         else iterateurLocal suite (hypo::listeHypoARemplir) (result||false) in
   let (newListHippos, result) = iterateurLocal proof.hypos [] false in
@@ -109,9 +104,9 @@ let orSplitHypo = fun dejaPasse idHypo proof->
     match listeHyposAVider with
       []->(result,listeHypoARemplir)
     | hypot::reste ->
-        if hypot.id = idHypo then
+        if (getId hypot) = idHypo then
           begin
-          match hypot.prop with
+          match (getProp hypot) with
             Or (p1, p2) ->
               if  dejaPasse then iterateurLocal reste ({id=(nextHypId proof);prop=p2}::listeHypoARemplir) true
               else iterateurLocal reste ({id=(nextHypId proof);prop=p1}::listeHypoARemplir) true
@@ -145,7 +140,7 @@ let intro = fun proo ->
 (* estCeQueLHypotheseEstDansLaListe : prop -> hypo -> bool = <fun> *)
 let estCeQueLHypotheseEstDansLaListe = fun hypoProp hypo ->
   (* Fonction privée sensée être appelée exclusivement par nettoyer *)
-  hypo.prop = hypoProp;;
+  getProp hypo = hypoProp;;
 
 (* nettoyer: proof -> proof *)
 (* Une fonction qui normalise un état de preuve *)
@@ -167,20 +162,20 @@ let nettoyer = fun preuve->
   let rec iterLocHypos = fun nettList proprList->
     match nettList with
       [] -> proprList
-    | hyp::rest when hyp.prop = True ->
+    | hyp::rest when (getProp hypo) = True ->
         iterLocHypos rest proprList
     | hyp::rest ->
-        if List.exists (estCeQueLHypotheseEstDansLaListe hyp.prop) proprList then
+        if List.exists (estCeQueLHypotheseEstDansLaListe (getProp hypo)) proprList then
           iterLocHypos rest proprList
         else
           iterLocHypos rest (hyp::proprList) in
-  let newHypList = List.sort (fun x y -> compare x.prop y.prop) (iterLocHypos preuve.hypos []) in
+  let newHypList = List.sort (fun x y -> compare (getProp x) (getProp y)) (iterLocHypos preuve.hypos []) in
   (* renumérotation des hypothèses *)
   let rec renumerotation = fun inacc outacc num->
     match inacc with
       [] -> outacc
     | hyp::rest ->
-        renumerotation rest ({id=num; prop=hyp.prop}::outacc) (num+1) in
+        renumerotation rest ((newHypo num (getProp hyp))::outacc) (num+1) in
   let renumHypList = renumerotation newHypList [] 0 in
   {hypos=renumHypList; remainder=newremainder};;
 
@@ -190,7 +185,7 @@ let exact = fun hypoId preuve ->
   let rec iterateurLocal = fun listeResteAProuver listeNonProuvee result ->
     match listeResteAProuver with
       propos::reste ->
-        if (propos = (List.find (estCeLaBonneHypothese hypoId) preuve.hypos).prop)
+        if (propos = getProp (List.find (estCeLaBonneHypothese hypoId) preuve.hypos))
           then iterateurLocal reste (True :: listeNonProuvee) (result || true)
           else iterateurLocal reste (propos :: listeNonProuvee) (result || false)
     | [] -> let nouvellePreuve = {hypos=preuve.hypos ; remainder = listeNonProuvee}in
@@ -204,7 +199,7 @@ let assumption = fun preuve ->
     match listeHypothese with
       [] -> (result, preuveInterne)
     | hypot :: reste ->
-        let numeroHypothese = hypot.id in
+        let numeroHypothese = (getId hypot) in
         let (cond, nouvellePreuve) = exact numeroHypothese preuveInterne in
         iterateurLocal reste nouvellePreuve (cond||result) in
   iterateurLocal preuve.hypos preuve false;;
@@ -212,7 +207,7 @@ let assumption = fun preuve ->
 (* apply: int -> proof -> bool*proof = <fun> *)
 let apply = fun hypoId proof ->
   (* Fonction qui applique l'hypothèse selectionée par hypoId à la proposition à prouver *)
-  let propHippo = (List.find (estCeLaBonneHypothese hypoId) proof.hypos).prop in
+  let propHippo = getProp (List.find (estCeLaBonneHypothese hypoId) proof.hypos) in
   match propHippo with
     Implies (partie1,partie2) ->
       if (partie2 = List.hd proof.remainder)
@@ -223,14 +218,14 @@ let apply = fun hypoId proof ->
 (* applyInHyp : bool -> int -> int -> proof -> bool*proof = <fun> *)
 let applyInHyp = fun keep hypTargetId hypAAppId proof ->
   (* Fonction qui applique l'hypothèse n° hypAAppId dans l'hypothèse n° hypTargetId (si c'est faisable) *)
-  let propAAppliquer = (List.find (estCeLaBonneHypothese hypAAppId) proof.hypos).prop in
+  let propAAppliquer = getProp (List.find (estCeLaBonneHypothese hypAAppId) proof.hypos) in
   let rec iterateurLocal =  fun propToMatch propToReplace listeAVider listeARemplir aBouge ->
     match listeAVider with 
       [] -> (listeARemplir, aBouge)
-    | hypo ::reste -> if hypo.id = hypTargetId && hypo.prop = propToMatch
+    | hypo ::reste -> if (getId hypo) = hypTargetId && (getProp hypo) = propToMatch
         then if keep 
-          then iterateurLocal propToMatch propToReplace reste (hypo:: {id=(nextHypId proof);prop=propToReplace}::listeARemplir) (aBouge||true)
-          else iterateurLocal propToMatch propToReplace reste ({id=(nextHypId proof);prop=propToReplace}::listeARemplir) (aBouge||true)
+          then iterateurLocal propToMatch propToReplace reste (hypo:: (newHypo (nextHypId proof) propToReplace) ::listeARemplir) true
+          else iterateurLocal propToMatch propToReplace reste ((newHypo (nextHypId proof) propToReplace)::listeARemplir) true
         else iterateurLocal propToMatch propToReplace reste (hypo::listeARemplir) aBouge in 
   match propAAppliquer with 
     Implies (part1, part2) -> let (newHypos, result) = iterateurLocal part1 part2 proof.hypos [] false in
@@ -239,4 +234,4 @@ let applyInHyp = fun keep hypTargetId hypAAppId proof ->
 
 
 let foncgen_hypo = fun f_id f_prop hypo ->
-  (f_id hypo.id, f_prop hypo.prop);;
+  (f_id (getId hypo), f_prop (getProp hypo));;
