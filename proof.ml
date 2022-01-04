@@ -17,11 +17,11 @@ let get_goal = fun proof ->
 
 let hyp_ids = fun proof ->
   let rec it = fun nb acc->
-    if nb > 0 then
+    if nb >= 0 then
       it (nb-1) (nb::acc)
     else
       acc in
-  it (List.length (get_hyps proof)) [];;
+  it (List.length (get_hyps proof) -1) [];;
 
 let make_proof = fun hyps_ goal_->
    {hyps=hyps_; goal=goal_};;
@@ -40,7 +40,7 @@ let get_hyp = fun id proof ->
           a
         else
           it (nb+1) rest
-    | _ -> failwith "l'id n'existe pas dans la liste" in
+    | _ -> failwith (String.concat "" ["L'id "; string_of_int id; " n'existe pas dans la liste"]) in
   it 0 (get_hyps proof);;
 
 let get_first_goal = fun proof ->

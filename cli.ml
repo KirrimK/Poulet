@@ -12,7 +12,7 @@ open Notsoquickcheck;;
 *)
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
-let version_code = "0.02a";;
+let version_code = "0.1";;
 
 let c_name = fun n -> n ;;
 let c_true = "⊤";;
@@ -246,7 +246,8 @@ let repl = fun () ->
               end
             else
               Printf.printf "La commande a échoué.\n"
-          with _ ->
+          with e ->
+            Printf.printf "%s\n" (Printexc.to_string e);
             Printf.printf "Erreur lors de l'exécution de la commande.\n"
         in
         ()

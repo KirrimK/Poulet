@@ -112,7 +112,7 @@ let prop_match = fun c_n c_t c_f f_imply f_and f_or prop ->
 
 (* Récupérer le type du noeud le plus haut sous forme de string *)
 let prop_root = fun prop ->
-  prop_iter (fun x->"Name") "True" "False" (fun x y->"Implies") (fun x y->"And") (fun x y->"Or") prop;;
+  prop_match (fun x->"Name") "True" "False" (fun x y->"Implies") (fun x y->"And") (fun x y->"Or") prop;;
 
 let branch = fun x y -> 1 + (max x y);;
 
