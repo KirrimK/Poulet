@@ -49,32 +49,22 @@ let false_hyp = fun id proof ->
   let failed = fail proof in
   prop_iter (fun x->failed) failed (true, make_prop (get_hyps proof) []) failed failed failed (get_hyp id proof);;
 
+let exact = fun id proof ->
+  let failed = fail proof in
+  let (goal::rest) = get_goal proof in
+  let hyp = get_hyp id proof in
+  if goal = hyp then
+    (true, make_prop (get_goals proof) rest)
+  else
+    failed;;
 
-
-(* exact : int -> proof -> bool * proof = <fun> *)
-let exact = fun hypoId preuve ->
-  (* Verifie si la proposition à prouver est l'hypothèse hypoId *)
-  let rec iterateurLocal = fun listeResteAProuver listeNonProuvee result ->
-    match listeResteAProuver with
-      propos::reste ->
-        if (propos = getProp (List.find (estCeLaBonneHypothese hypoId) preuve.hypos))
-          then iterateurLocal reste (True :: listeNonProuvee) true
-          else iterateurLocal reste (propos :: listeNonProuvee) result
-    | [] -> let nouvellePreuve = {hypos=preuve.hypos ; remainder = listeNonProuvee}in
-        (result,nouvellePreuve) in
-  iterateurLocal preuve.remainder [] false;;
-
-(* assumption : proof -> bool * proof = <fun> *)
-let assumption = fun preuve ->
-  (* Vérifie si la proposition à prouver n'est pas présente dans la liste des hypothèses. *)
-  let rec iterateurLocal = fun listeHypothese preuveInterne result->
-    match listeHypothese with
-      [] -> (result, preuveInterne)
-    | hypot :: reste ->
-        let numeroHypothese = (getId hypot) in
-        let (cond, nouvellePreuve) = exact numeroHypothese preuveInterne in
-        iterateurLocal reste nouvellePreuve (cond||result) in
-  iterateurLocal preuve.hypos preuve false;;
+let assumption = fun proof ->
+  let failed = fail proof in
+  let hyp_list = hyp_ids proof in
+  let exact_list = List.filter (fun x -> let (a, b) = x in a <> false) (List.map (fun x -> exact x proof) hyp_list) in
+  match exact_list with
+    [] -> failed
+  | a::rest -> a;;
 
 (* apply: int -> proof -> bool*proof = <fun> *)
 let apply = fun hypoId proof ->
