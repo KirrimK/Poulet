@@ -12,3 +12,6 @@ val make_proof : Proposition.t list -> Proposition.t list -> t
 
 val get_hyp : int -> t -> Proposition.t
 
+val remove_hyp : int -> t -> Proposition.t list
+
+val clean : t -> t

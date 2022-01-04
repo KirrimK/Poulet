@@ -16,6 +16,8 @@ val ( $ ) : t -> t -> t
 
 exception Invalid_Input
 
+val prop_match : (string -> 'a) -> 'a -> 'a -> (t -> t -> 'a) -> (t -> t -> 'a) -> (t -> t -> 'a) -> t -> 'a
+
 val prop_iter : (string -> 'a) -> 'a -> 'a -> ('a -> 'a -> 'a) -> ('a -> 'a -> 'a) -> ('a -> 'a -> 'a) -> t -> 'a
 
 val polo_prop : string list -> t
