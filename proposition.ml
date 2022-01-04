@@ -63,7 +63,7 @@ let polo_prop = fun strlist->
                     iter_loc rest ((first $ second)::a)
                 | _ -> raise Invalid_Input
               end
-          | _ -> ;raise Invalid_Input
+          | _ -> raise Invalid_Input
         end
     | "Not"::rest ->
         begin

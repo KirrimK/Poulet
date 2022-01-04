@@ -137,6 +137,20 @@ let intro = fun proo ->
       (true, newproo)
   | _ -> (false, proo);;
 
+(* Stratégies remaniées *)
+let fail = fun x -> (false, x);;
+
+let intro = fun proof ->
+  let failed = fail proof in
+  let (goal, rest) = get_goal proof in
+  prop_iter (fun x->failed) failed failed (fun x y->
+                                              if x = p_true || x = p_false then
+                                                failed
+                                              else
+                                                (true, make_proof (x::(get_hyps proof)) y::rest)
+                                              ) failed failed goal;;
+
+
 (* estCeQueLHypotheseEstDansLaListe : prop -> hypo -> bool = <fun> *)
 let estCeQueLHypotheseEstDansLaListe = fun hypoProp hypo ->
   (* Fonction privée sensée être appelée exclusivement par nettoyer *)
