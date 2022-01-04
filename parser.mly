@@ -19,7 +19,7 @@
 %right "=>" "^"
 %nonassoc NOT (* opérateur unaire donc non associatif *)
 
-%start <Strategies.proposition> main
+%start <Proposition.t> main
 
 %%
 (* définition des "règles de grammaire" *)
