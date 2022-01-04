@@ -33,7 +33,7 @@ let orsplit = fun left proof ->
   prop_match (fun x->failed) failed failed (fun x y->failed) (fun x y->failed) (fun x y->
     (true, make_proof (get_hyps proof) (if left then x::rest else y::rest))) goal;;
 
-let left = orpslit true;;
+let left = orsplit true;;
 let right = orsplit false;;
 
 let hyp_orsplit = fun left id proof ->
@@ -47,14 +47,14 @@ let hyp_right = hyp_orsplit false;;
 
 let false_hyp = fun id proof ->
   let failed = fail proof in
-  prop_match (fun x->failed) failed (true, make_prop (get_hyps proof) []) (fun x y->failed) (fun x y->failed) (fun x y->failed) (get_hyp id proof);;
+  prop_match (fun x->failed) failed (true, make_proof (get_hyps proof) []) (fun x y->failed) (fun x y->failed) (fun x y->failed) (get_hyp id proof);;
 
 let exact = fun id proof ->
   let failed = fail proof in
   let (goal::rest) = get_goal proof in
   let hyp = get_hyp id proof in
   if goal = hyp then
-    (true, make_prop (get_goals proof) rest)
+    (true, make_proof (get_goal proof) rest)
   else
     failed;;
 
