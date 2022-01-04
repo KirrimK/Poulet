@@ -1,6 +1,8 @@
 (* cli.ml interface*)
 
+open Proposition;;
 open Strategies;;
+open Proof;;
 (*open String;; unused d'après Dune*)
 open Backtrack;;
 open Notsoquickcheck;;
@@ -31,21 +33,20 @@ let print_prop = fun propo -> Printf.printf "%s" (prop_to_string propo);;
 let string_to_list = fun str -> String.split_on_char ' ' str;;
 
 let hyp_to_string = fun hypo ->
-  let (strid, strprop) = foncgen_hypo (fun x -> string_of_int x) (fun x -> prop_to_string x) hypo in
-  String.concat ": "  [strid; strprop];;
+  prop_to_string hypo;;
 
 let proof_to_string = fun proof->
   (* Afficher les hypothèses *)
-  let hypStrings = List.map (fun x -> hyp_to_string x) (getHypList proof) in
+  let hypStrings = List.map (fun x -> hyp_to_string x) (get_hyps proof) in
   let hypsString = String.concat "\n" hypStrings in
-  let remainderStrings = List.map (prop_to_string) (getRemainder proof) in
+  let remainderStrings = List.map (prop_to_string) (get_goal proof) in
   let remainderString = String.concat "\n" remainderStrings in
   String.concat "\n" [hypsString; "-----"; remainderString];;
 
 exception InvalidArgument
 
 let hpf_cli = fun id proof ->
-  prop_to_string (getPropOfHyp id proof);;
+  prop_to_string (get_hyp id proof);;
 
 let print_help = fun () ->
   Printf.printf "  Poulet v%s: REPL Help" version_code;
@@ -96,15 +97,15 @@ let traiter_cmde = fun str stateList shadd fin ->
           [] ->
             let () = shadd := false in
             let () = Printf.printf "Historique vide.\n" in
-            (fun x -> (true, empty_proof))
+            (fun x -> (true, Proof.empty))
         | smth::rest ->
             let () = shadd := false in
             let () = stateList := rest in
             (fun x -> (true, smth))
       end
   | ["intro"] -> intro
-  | ["clean"] -> (fun x -> (true, nettoyer x))
-  | ["split"] -> andsplit
+  | ["clean"] -> (fun x -> (true, clean x))
+  | ["split"] -> split
   | ["assumption"] -> assumption
   | "auto"::rest ->
       begin
@@ -117,21 +118,21 @@ let traiter_cmde = fun str stateList shadd fin ->
         match rest with
           [arg] ->
             let hyp_num = int_of_string arg in
-            andSplitHypo hyp_num
+            hyp_split hyp_num
         | _ -> raise InvalidArgument
       end
-  | ["left"] -> orSplit false
-  | ["right"] -> orSplit true
+  | ["left"] -> left
+  | ["right"] -> right
   | "add_hyp"::rest ->
-        (fun x -> (true, add_hyp (make_prop rest) x))
+        (fun x -> (true, add_hyp (polo_prop rest) x))
   | "add_goal"::rest ->
-        (fun x -> (true, add_remainder (make_prop rest) x))
+        (fun x -> (true, add_goal (polo_prop rest) x))
   | "hyp_left"::rest ->
       begin
         match rest with
           [arg] ->
             let hyp_num = int_of_string arg in
-            orSplitHypo false hyp_num
+            hyp_left hyp_num
         | _ -> raise InvalidArgument
       end
   | "hyp_right"::rest ->
@@ -139,7 +140,7 @@ let traiter_cmde = fun str stateList shadd fin ->
         match rest with
           [arg] ->
             let hyp_num = int_of_string arg in
-            orSplitHypo true hyp_num
+            hyp_right hyp_num
         | _ -> raise InvalidArgument
       end
   | "exact"::rest ->
@@ -180,7 +181,7 @@ let traiter_cmde = fun str stateList shadd fin ->
         match rest with
           [arg] ->
             let hyp_num = int_of_string arg in
-            falseHypo hyp_num
+            false_hyp hyp_num
         | _ -> raise InvalidArgument
       end
   | "add_random_goal"::rest ->
@@ -217,7 +218,7 @@ let traiter_cmde = fun str stateList shadd fin ->
 let repl = fun () ->
   (* Mettre ici des prints lors du lancement du programme *)
   let () = Printf.printf "Poulet v%s\nCopyright 2021 - 2022 Brévart, Courtadon, Dutau, de Crevoisier\nType \"help\" for help.\n" version_code in
-  let proof = ref empty_proof in
+  let proof = ref Proof.empty in
   let stateList = ref [] in
   let should_add = ref true in
   Printf.printf "%s\n" (proof_to_string !proof);
