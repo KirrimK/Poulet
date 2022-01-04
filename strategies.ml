@@ -1,14 +1,25 @@
 (* Strategies.ml *)
 
-(* andsplit: proof -> bool * proof = <fun> *)
-let andsplit = fun proof ->
-  (* Fonction qui découpe la première proposition du remainder en deux propositions
-  si il s'agit d'un And*)
-  match List.hd proof.remainder with
-    And(a, b) ->
-      let newremainder = a :: (b::List.tl proof.remainder) in
-      (true, {hypos=proof.hypos; remainder=newremainder})
-  | _ -> (false, proof);;
+open Proposition;;
+open Proof;;
+
+let fail = fun x -> (false, x);;
+
+let intro = fun proof ->
+  let failed = fail proof in
+  let (goal, rest) = get_goal proof in
+  prop_iter (fun x->failed) failed failed (fun x y->
+    if x = p_true || x = p_false then
+      failed
+    else
+      (true, make_proof (x::(get_hyps proof)) y::rest)
+                                          ) failed failed goal;;
+
+let split = fun proof ->
+  let failed = fail proof in
+  let (goal, rest) = get_goal proof in
+  prop_iter (fun x->failed) failed failed failed (fun x y->
+    (true, make_proof (get_hyps proof) (x::(y::rest)))) failed goal;;
 
 (* andSplitHypo : int -> proof -> bool*proof = <fun> *)
 let andSplitHypo = fun hypoId proof ->
@@ -72,30 +83,8 @@ let falseHypo = fun id proof->
     (false, proof);;
 
 (* intro : proof -> bool * proof = <fun> *)
-let intro = fun proo ->
-  match List.hd proo.remainder with
-    Implies(True, _)
-  | Implies(False, _) -> (false, proo)
-  | Implies(a, b) ->
-      let nexthyp = {id=(nextHypId proo); prop=a} in
-      let nextremainder = b::(List.tl proo.remainder) in
-      let newproo = {hypos=(nexthyp::proo.hypos); remainder=nextremainder} in
-      (true, newproo)
-  | _ -> (false, proo);;
 
 (* Stratégies remaniées *)
-let fail = fun x -> (false, x);;
-
-let intro = fun proof ->
-  let failed = fail proof in
-  let (goal, rest) = get_goal proof in
-  prop_iter (fun x->failed) failed failed (fun x y->
-                                              if x = p_true || x = p_false then
-                                                failed
-                                              else
-                                                (true, make_proof (x::(get_hyps proof)) y::rest)
-                                              ) failed failed goal;;
-
 
 (* -------------------- *)
 
