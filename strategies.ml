@@ -21,6 +21,12 @@ let split = fun proof ->
   prop_iter (fun x->failed) failed failed failed (fun x y->
     (true, make_proof (get_hyps proof) (x::(y::rest)))) failed goal;;
 
+let hyp_split = fun id proof ->
+  let failed = fail proof in
+  let other_hyps = remove_hyp id proof in
+  prop_iter (fun x->failed) failed failed failed (fun x y->
+    (true, make_proof (x::(y::other_hyps)) (get_goal proof) failed (get_hyp id proof));;
+
 (* andSplitHypo : int -> proof -> bool*proof = <fun> *)
 let andSplitHypo = fun hypoId proof ->
   (* Fonction qui découpe l'hypothèse hypoId en deux hypothèses si il s'agit d'un And*)
@@ -81,12 +87,6 @@ let falseHypo = fun id proof->
     (true, {hypos = proof.hypos; remainder = []})
   else
     (false, proof);;
-
-(* intro : proof -> bool * proof = <fun> *)
-
-(* Stratégies remaniées *)
-
-(* -------------------- *)
 
 (* estCeQueLHypotheseEstDansLaListe : prop -> hypo -> bool = <fun> *)
 let estCeQueLHypotheseEstDansLaListe = fun hypoProp hypo ->

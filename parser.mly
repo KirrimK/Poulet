@@ -1,7 +1,7 @@
 (* fichier parser.mly*)
 
 
-%{ open Strategies %}
+%{ open Proposition %}
 %token <string> NAME
 %token TRUE
 %token FALSE
@@ -19,7 +19,7 @@
 %right "=>" "^"
 %nonassoc NOT (* opérateur unaire donc non associatif *)
 
-%start <Strategies.proposition> main
+%start <Proposition.t> main
 
 %%
 (* définition des "règles de grammaire" *)

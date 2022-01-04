@@ -12,12 +12,12 @@ val f_and: string -> string -> string;;
 
 val f_or: string -> string -> string;;
 
-val prop_to_string: Strategies.proposition -> string;;
+val prop_to_string: Proposition.t -> string;;
 
-val print_prop: Strategies.proposition -> unit;;
+val print_prop:  Proposition.t -> unit;;
 
 val string_to_list: string -> string list;;
 
-val proof_to_string: Strategies.proof -> string;;
+val proof_to_string: Proof.t -> string;;
 
 val repl: unit -> unit;;

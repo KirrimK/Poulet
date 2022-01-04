@@ -18,7 +18,7 @@ let get_goal = fun proof ->
 let hyp_ids = fun proof ->
   let rec it = fun nb acc->
     if nb > 0 then
-      it (nb-1) nb::acc
+      it (nb-1) (nb::acc)
     else
       acc in
   it (List.length (get_hyps proof)) [];;
@@ -48,3 +48,14 @@ let get_first_goal = fun proof ->
 
 let is_proven = fun proof ->
   ((get_goal proof) = []);;
+
+let remove_hyp = fun id proof ->
+  let rec it = fun nb acc acc_ok->
+    match acc with
+      a::rest ->
+        if id = nb then
+          it (nb+1) rest acc_ok
+        else
+          it (nb+1) rest (a::acc_ok)
+    | _ -> failwith "l'id n'existe pas dans la liste" in
+  it 0 (get_hyps proof);;
