@@ -1,59 +1,5 @@
 (* Strategies.ml *)
 
-(* Définitions de types *)
-
-type proof = {
-    hypos: hypothesis list;
-    remainder: proposition list;
-  };;
-
-(* Abstract de constructeurs *)
-let empty_proof = {hypos=[]; remainder=[]};;
-
-
-let getAllHypoIds = fun proof ->
-  List.map (fun hypo -> hypo.id) proof.hypos;;
-
-(* nextHypId : proof -> int *)
-let nextHypId = fun proo ->
-    (* Fonction privée qui donne un numéro libre pour une hypothèse *)
-    if (getAllHypoIds proo != []) then
-      (List.fold_left (fun x y -> max x y) 0 (getAllHypoIds proo))+1
-    else 0;;
-
-let add_hyp = fun prp proof ->
-   let nexthyp = {id=(nextHypId proof); prop=prp} in
-   {hypos=(nexthyp::proof.hypos); remainder=proof.remainder};;
-
-let add_remainder = fun prp proof ->
-   {hypos=proof.hypos; remainder=prp::proof.remainder};;
-
-(* Fonctions méthodes sur les types définis plus haut *)
-let remainderLines = fun proof ->
-  List.length proof.remainder;;
-
-let getFirstRemainder = fun proof ->
-  List.hd proof.remainder;;
-
-let isProven = fun proof ->
-  (proof.remainder = []);;
-
-let getPropOfHyp = fun hypoId proof ->
-  (List.find (fun hyp -> hyp.id = hypoId) proof.hypos).prop;;
-
-let getHypList = fun proof->
-  proof.hypos;;
-
-let getRemainder = fun proof->
-  proof.remainder;;
-
-(* estCeLaBonneHypothese : int -> hypo -> bool*)
-let estCeLaBonneHypothese = fun hypoId hypo ->
-  (* Fonction privée sensée être utilisée exclusivement dans ce module *)
-  getId hypo = hypoId;;
-
-(* Stratégies à appliquer *)
-
 (* andsplit: proof -> bool * proof = <fun> *)
 let andsplit = fun proof ->
   (* Fonction qui découpe la première proposition du remainder en deux propositions
@@ -151,6 +97,8 @@ let intro = fun proof ->
                                               ) failed failed goal;;
 
 
+(* -------------------- *)
+
 (* estCeQueLHypotheseEstDansLaListe : prop -> hypo -> bool = <fun> *)
 let estCeQueLHypotheseEstDansLaListe = fun hypoProp hypo ->
   (* Fonction privée sensée être appelée exclusivement par nettoyer *)
@@ -245,7 +193,3 @@ let applyInHyp = fun keep hypTargetId hypAAppId proof ->
     Implies (part1, part2) -> let (newHypos, result) = iterateurLocal part1 part2 proof.hypos [] false in
     (result, {hypos = newHypos;remainder = proof.remainder})
   | _-> (false, proof);; 
-
-
-let foncgen_hypo = fun f_id f_prop hypo ->
-  (f_id (getId hypo), f_prop (getProp hypo));;
