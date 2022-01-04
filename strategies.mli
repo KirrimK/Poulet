@@ -24,4 +24,4 @@ val assumption : Proof.t -> bool * Proof.t
 
 val apply : int -> Proof.t -> bool * Proof.t
 
-val applyInHyp : int -> int -> Proof.t -> bool * Proof.t
+val applyInHyp : bool -> int -> int -> Proof.t -> bool * Proof.t
