@@ -1,6 +1,7 @@
 (* Module NotSoQuickCheck *)
 open Strategies;;
 open Proposition;;
+open Proof;;
 (* Générer une proposition aléatoire *)
 (* propAleatoire : int -> prop *)
 
@@ -42,7 +43,7 @@ let propAleatoire = fun profondeurMax->
 
 (* Générer un but aléatoire *)
 let add_rand_goal = fun depth proof ->
-  (true, add_remainder (propAleatoire depth) proof);;
+  (true, add_goal (propAleatoire depth) proof);;
 
 (* Générer un contexte aléatoire *)
 let add_rand_cont = fun max_prop_depth hyp_quantity proof ->
@@ -55,7 +56,7 @@ let add_rand_cont = fun max_prop_depth hyp_quantity proof ->
   (true, new_proof);;
 
 let get_rand_cont = fun max_prp_dp hp->
-  add_rand_cont max_prp_dp hp empty_proof;;
+  add_rand_cont max_prp_dp hp empty;;
 
 (* Générer un but garanti prouvable à partir d'un contexte *)
 
