@@ -90,16 +90,15 @@ let apply = fun hypoId proof ->
 (* applyInHyp : bool -> int -> int -> proof -> bool*proof = <fun> *)
 let applyInHyp = fun keep hypTargetId hypAAppId proof ->
   (* Fonction qui applique l'hypothèse n° hypAAppId dans l'hypothèse n° hypTargetId (si c'est faisable) *)
-  let propAAppliquer = getProp (List.find (estCeLaBonneHypothese hypAAppId) proof.hypos) in
-  let rec iterateurLocal =  fun propToMatch propToReplace listeAVider listeARemplir aBouge ->
+  let propAAppliquer = get_hyp hypAAppId proof in
+  let rec iterateurLocal =  fun propToMatch propToReplace listeAVider listeARemplir aBouge ind ->
     match listeAVider with 
       [] -> (listeARemplir, aBouge)
-    | hypo ::reste -> if (getId hypo) = hypTargetId && (getProp hypo) = propToMatch
+    | hypo ::reste -> if ind = hypTargetId && hypo = propToMatch
         then if keep 
-          then iterateurLocal propToMatch propToReplace reste (hypo:: (newHypo (nextHypId proof) propToReplace) ::listeARemplir) true
-          else iterateurLocal propToMatch propToReplace reste ((newHypo (nextHypId proof) propToReplace)::listeARemplir) true
-        else iterateurLocal propToMatch propToReplace reste (hypo::listeARemplir) aBouge in 
-  match propAAppliquer with 
-    Implies (part1, part2) -> let (newHypos, result) = iterateurLocal part1 part2 proof.hypos [] false in
-    (result, {hypos = newHypos;remainder = proof.remainder})
-  | _-> (false, proof);; 
+          then iterateurLocal propToMatch propToReplace reste (hypo:: propToReplace ::listeARemplir) true (ind+1)
+          else iterateurLocal propToMatch propToReplace reste (propToReplace::listeARemplir)  true (ind+1)
+        else iterateurLocal propToMatch propToReplace reste (hypo::listeARemplir) aBouge (ind+1) in 
+  prop_iter (fun n -> failed) failed failed (fun p -> let (newHypos, result) = iterateurLocal part1 part2 proof.hypos [] false in
+  (result, make_proof newHypos (get_goal proof))) failed failed propAAppliquer;;
+ 
