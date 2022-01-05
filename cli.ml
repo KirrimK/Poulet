@@ -86,7 +86,6 @@ let print_help = fun () ->
   - add_random_context <hyp max_depth> <hyp_number>
   - get_random_context <hyp max_depth> <hyp_number>
   - reverse
-  - depth
   - unittests
 
   List of available proof strategies:
@@ -136,7 +135,6 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["unittests"] -> let () = shadd := false in
     let () = tests () in
     (fun x -> (true, x))
-  | ["depth"] -> (fun x -> (Printf.printf "%d\n" (prop_depth (get_first_goal x))); (true, x))
   | "auto"::rest ->
       begin
         match rest with
