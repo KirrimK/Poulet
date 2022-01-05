@@ -12,7 +12,7 @@ open Notsoquickcheck;;
 *)
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
-let version_code = "0.2";;
+let version_code = "0.3";;
 
 let c_name = fun n -> n ;;
 let c_true = "⊤";;
@@ -129,7 +129,9 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["split"] -> split
   | ["assumption"] -> assumption
   | ["reverse"] -> reverse
-  | ["empty"] -> (fun x -> (true, Proof.empty))
+  | ["empty"] -> let () = shadd := false in
+    let () = stateList := [] in
+    (fun x -> (true, Proof.empty))
   | ["depth"] -> (fun x -> (Printf.printf "%d\n" (prop_depth (get_first_goal x))); (true, x))
   | "auto"::rest ->
       begin
