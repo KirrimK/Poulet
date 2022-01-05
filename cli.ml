@@ -6,6 +6,7 @@ open Proof;;
 (*open String;; unused d'après Dune*)
 open Backtrack;;
 open Notsoquickcheck;;
+open Tests;;
 
 (*let show_id_hypo = fun hypo ->
   foncgen_hypo (Printf.printf "%d") (fun x -> ()) hypo;;
@@ -86,6 +87,7 @@ let print_help = fun () ->
   - get_random_context <hyp max_depth> <hyp_number>
   - reverse
   - depth
+  - unittests
 
   List of available proof strategies:
   - intro
@@ -131,6 +133,9 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["reverse"] -> reverse
   | ["empty"] -> let () = shadd := false in
     (fun x -> (true, Proof.empty))
+  | ["unittests"] -> let () = shadd := false in
+    let () = tests () in
+    (fun x -> (true, x))
   | ["depth"] -> (fun x -> (Printf.printf "%d\n" (prop_depth (get_first_goal x))); (true, x))
   | "auto"::rest ->
       begin
