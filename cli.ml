@@ -12,7 +12,7 @@ open Notsoquickcheck;;
 *)
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
-let version_code = "0.1";;
+let version_code = "0.2";;
 
 let c_name = fun n -> n ;;
 let c_true = "⊤";;
@@ -81,6 +81,7 @@ let print_help = fun () ->
   - add_random_context <hyp max_depth> <hyp_number>
   - get_random_context <hyp max_depth> <hyp_number>
   - reverse
+  - depth
 
   List of available proof strategies:
   - intro
@@ -125,6 +126,7 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["assumption"] -> assumption
   | ["reverse"] -> reverse
   | ["empty"] -> (fun x -> (true, Proof.empty))
+  | ["depth"] -> (fun x -> (Printf.printf "%d\n" (prop_depth (get_first_goal x))); (true, x))
   | "auto"::rest ->
       begin
         match rest with

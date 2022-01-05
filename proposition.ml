@@ -110,6 +110,36 @@ let prop_match = fun c_n c_t c_f f_imply f_and f_or prop ->
   | And (p1,p2) -> f_and p1 p2
   | Or (p1, p2) -> f_or p1 p2;;
 
+let p_matchname = fun f_n c_fail prop ->
+  match prop with
+    Name n -> f_n n
+  | _ -> c_fail;;
+
+let p_matchtrue = fun c_t c_fail prop ->
+  match prop with
+    True -> c_t
+  | _ -> c_fail;;
+
+let p_matchfalse = fun c_f c_fail prop ->
+  match prop with
+    False -> c_f
+  | _ -> c_fail;;
+
+let p_matchimpl = fun f_imply c_fail prop ->
+  match prop with
+    Implies(a, b) -> f_imply a b
+  | _ -> c_fail;;
+
+let p_matchand = fun f_and c_fail prop ->
+  match prop with
+    And(a, b) -> f_and a b
+  | _ -> c_fail;;
+
+let p_matchor = fun f_or c_fail prop ->
+  match prop with
+    Or(a, b) -> f_or a b
+  | _ -> c_fail;;
+
 (* Récupérer le type du noeud le plus haut sous forme de string *)
 let prop_root = fun prop ->
   prop_match (fun x->"Name") "True" "False" (fun x y->"Implies") (fun x y->"And") (fun x y->"Or") prop;;
