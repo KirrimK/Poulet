@@ -1,7 +1,7 @@
 {
   open Parser
 
-  exception SyntaxError of string
+  exception Error of string
 
 }
 
@@ -19,7 +19,7 @@ rule token = parse
   | name as s { NAME s }
   | "=>" { IMPLIES }
   | '^' { AND }
-  | 'v' { OR }
+  | '|' { OR }
   | '(' { LPAREN }
   | ')' { RPAREN }
   | eof { EOF }

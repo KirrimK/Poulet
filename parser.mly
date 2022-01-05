@@ -7,7 +7,7 @@
 %token FALSE
 %token IMPLIES "=>"
 %token AND "^"
-%token OR "v"
+%token OR "|"
 %token NOT
 %token LPAREN "("
 %token RPAREN ")"
@@ -15,7 +15,7 @@
 
 (* On écrit les règles de priorité *)
 
-%right "v"  (* "ou" moins prioritaire que "et" et "=>" *)
+%right "|"  (* "ou" moins prioritaire que "et" et "=>" *)
 %right "=>" "^"
 %nonassoc NOT (* opérateur unaire donc non associatif *)
 
@@ -35,4 +35,4 @@ expr :
 | FALSE { p_false }
 | e1 = expr "=>" e2 = expr { e1 => e2 }
 | e1 = expr "^" e2 = expr { e1 ^ e2 }
-| e1 = expr "v" e2 = expr { e1 $ e2 }
+| e1 = expr "|" e2 = expr { e1 $ e2 }
