@@ -64,8 +64,11 @@ let get_rand_cont = fun max_prp_dp hp->
 
 let rev_intro = fun id proof ->
   match get_goal proof with
-    a::rest -> (true, make_proof (remove_hyp id proof) (((get_hyp id proof) => a)::rest))
+    a::rest when a <> p_true-> (true, make_proof (remove_hyp id proof) (((get_hyp id proof) => a)::rest))
   | [] -> (false, proof)
+
+let rev_exact = fun id proof ->
+  (true, make_proof (get_hyps proof) ((get_hyp id proof)::(get_goal proof)));;
 
 let rev_hyp_split = fun ida idb proof ->
   if ida = idb then
@@ -80,14 +83,18 @@ let rev_split = fun proof ->
     a::(b::rest) -> (true, make_proof (get_hyps proof) ((a ^ b)::rest))
   | _ -> (false, proof)
 
+let rev_apply = fun id proof ->
+  ()
+
 (* Génération d'un problème prouvable à partir d'un contexte *)
 
 (* Génération des stratégies inverses appliquables à un problème *)
 let get_revstrat_list = fun proof ->
   let goal_revs_list = [("rev_split", rev_split)] in
+  let rev_exact_list = List.map (fun x -> ("rev_exact", rev_exact x)) (hyp_ids proof) in
   let rev_intro_list = List.map (fun x -> ("rev_intro", rev_intro x)) (hyp_ids proof) in
   let rev_hyp_split_list = List.concat (List.map (fun y -> List.map (fun x -> ("rev_hyp_split", rev_hyp_split x y)) (remove_item_list y (hyp_ids proof))) (hyp_ids proof)) in
-  List.concat [goal_revs_list; rev_intro_list; rev_hyp_split_list];;
+  List.concat [goal_revs_list; rev_exact_list; rev_intro_list; rev_hyp_split_list];;
 
 (* Génération du problème prouvable à partir du contexte *)
 let reverse = fun proof ->
