@@ -12,7 +12,7 @@ open Notsoquickcheck;;
 *)
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
-let version_code = "0.1";;
+let version_code = "0.2";;
 
 let c_name = fun n -> n ;;
 let c_true = "⊤";;

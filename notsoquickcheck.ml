@@ -63,9 +63,9 @@ let get_rand_cont = fun max_prp_dp hp->
 (* Strategies inversées pour créer des théorèmes prouvables *)
 
 let rev_intro = fun id proof ->
-  match get_goal proof with
+  match (get_goal proof) with
     a::rest when a <> p_true-> (true, make_proof (remove_hyp id proof) (((get_hyp id proof) => a)::rest))
-  | [] -> (false, proof)
+  | _ -> (false, proof)
 
 let rev_exact = fun id proof ->
   (true, make_proof (get_hyps proof) ((get_hyp id proof)::(get_goal proof)));;
@@ -79,12 +79,20 @@ let rev_hyp_split = fun ida idb proof ->
     (true, make_proof new_hyplist (get_goal proof));;
 
 let rev_split = fun proof ->
-  match get_goal proof with
+  let failed = fail proof in
+  match (get_goal proof) with
     a::(b::rest) -> (true, make_proof (get_hyps proof) ((a ^ b)::rest))
-  | _ -> (false, proof)
+  | _ -> failed
 
 let rev_apply = fun id proof ->
-  ()
+  let failed = fail proof in
+  match (get_goal proof) with
+    a::rest -> p_matchimpl (fun x y->
+      if x = a then
+        (true, make_proof (get_hyps proof) (y::rest))
+      else
+        failed) failed (get_hyp id proof)
+  | _ -> failed;;
 
 (* Génération d'un problème prouvable à partir d'un contexte *)
 
@@ -92,9 +100,10 @@ let rev_apply = fun id proof ->
 let get_revstrat_list = fun proof ->
   let goal_revs_list = [("rev_split", rev_split)] in
   let rev_exact_list = List.map (fun x -> ("rev_exact", rev_exact x)) (hyp_ids proof) in
+  let rev_apply_list = List.map (fun x -> ("rev_apply", rev_apply x)) (hyp_ids proof) in
   let rev_intro_list = List.map (fun x -> ("rev_intro", rev_intro x)) (hyp_ids proof) in
   let rev_hyp_split_list = List.concat (List.map (fun y -> List.map (fun x -> ("rev_hyp_split", rev_hyp_split x y)) (remove_item_list y (hyp_ids proof))) (hyp_ids proof)) in
-  List.concat [goal_revs_list; rev_exact_list; rev_intro_list; rev_hyp_split_list];;
+  List.concat [goal_revs_list; rev_apply_list; rev_exact_list; rev_intro_list; rev_hyp_split_list];;
 
 (* Génération du problème prouvable à partir du contexte *)
 let reverse = fun proof ->
