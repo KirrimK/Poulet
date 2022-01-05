@@ -6,13 +6,14 @@ open Proof;;
 (*open String;; unused d'après Dune*)
 open Backtrack;;
 open Notsoquickcheck;;
+open Tests;;
 
 (*let show_id_hypo = fun hypo ->
   foncgen_hypo (Printf.printf "%d") (fun x -> ()) hypo;;
 *)
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
-let version_code = "0.1";;
+let version_code = "0.3";;
 
 let c_name = fun n -> n ;;
 let c_true = "⊤";;
@@ -26,7 +27,11 @@ let f_and = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∧ ";sProp2;")"
 
 let f_or = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∨ ";sProp2;")"];;
 
-let prop_to_string = fun propo -> prop_iter c_name c_true c_false f_implies f_and f_or propo;;
+let prop_to_string = fun propo ->
+  if prop_depth propo > 6 then
+    String.concat "" ["(proposition of depth "; string_of_int (prop_depth propo); ")"]
+  else
+    prop_iter c_name c_true c_false f_implies f_and f_or propo;;
 
 let print_prop = fun propo -> Printf.printf "%s" (prop_to_string propo);;
 
@@ -81,6 +86,7 @@ let print_help = fun () ->
   - add_random_context <hyp max_depth> <hyp_number>
   - get_random_context <hyp max_depth> <hyp_number>
   - reverse
+  - unittests
 
   List of available proof strategies:
   - intro
@@ -124,7 +130,11 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["split"] -> split
   | ["assumption"] -> assumption
   | ["reverse"] -> reverse
-  | ["empty"] -> (fun x -> (true, Proof.empty))
+  | ["empty"] -> let () = shadd := false in
+    (fun x -> (true, Proof.empty))
+  | ["unittests"] -> let () = shadd := false in
+    let () = tests () in
+    (fun x -> (true, x))
   | "auto"::rest ->
       begin
         match rest with
