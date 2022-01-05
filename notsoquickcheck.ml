@@ -2,6 +2,7 @@
 open Strategies;;
 open Proposition;;
 open Proof;;
+open Backtrack;;
 (* Générer une proposition aléatoire *)
 (* propAleatoire : int -> prop *)
 
@@ -136,3 +137,38 @@ let reverse = fun proof ->
       proo := newproo;
   done in
   (true, !proo);;
+
+let testMassif = fun () ->
+  let listeTemps = ref [] in
+  let listeMoyennes = ref [] in
+  let proof = ref Proof.empty in
+  let prof_max = 7 in
+  for profMax = 1 to prof_max do
+    for i = 1 to 10 do
+      proof := Proof.empty;
+      let (b1,p1) = add_rand_goal profMax !proof in proof := p1;
+      let profReel = prop_depth (get_first_goal !proof) in
+      let tStart = Sys.time() in 
+      let (b2,p2) = backtrack !proof false (fun x y -> "") in proof := p2;
+      listeTemps := (profReel,Sys.time() -. tStart)::!listeTemps;
+      listeMoyennes := (0,0.) :: !listeMoyennes;
+    done;
+  done;
+  let rec insertMoyenne = fun p t listeAVider listeARemplir ->
+    match listeAVider with
+      [] -> List.rev listeARemplir
+    | (n,m)::reste -> 
+        if p = 1 
+          then insertMoyenne (p-1) t reste ((n+1,(float n *. m +. t) /. float (n+1))::listeARemplir)
+          else insertMoyenne (p-1) t reste ((n,m)::listeARemplir) in
+  let rec convertToMoyennes = fun listeTuple ->
+    match listeTuple with
+      [] -> ()
+    | (p,t) :: reste -> listeMoyennes := insertMoyenne p t !listeMoyennes [] ;convertToMoyennes reste
+    | _ -> raise Invalid_Input in 
+  convertToMoyennes !listeTemps;
+  let rec printMoyennes = fun liste acc ->
+    match liste with
+      (n,m)::reste-> Printf.printf "Profondeur %d : moyenne = %f s\n" acc m;printMoyennes reste (acc+1)
+    | [] -> () in
+  printMoyennes !listeMoyennes 1;;
