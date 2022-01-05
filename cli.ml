@@ -130,7 +130,6 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["assumption"] -> assumption
   | ["reverse"] -> reverse
   | ["empty"] -> let () = shadd := false in
-    let () = stateList := [] in
     (fun x -> (true, Proof.empty))
   | ["depth"] -> (fun x -> (Printf.printf "%d\n" (prop_depth (get_first_goal x))); (true, x))
   | "auto"::rest ->
