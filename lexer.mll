@@ -11,13 +11,17 @@ let upper = ['A'-'Z']
 let letter = lower | upper
 
 let number = digit+
-let name = letter (letter | digit)* (* on fait ça pour avoir l'équivalent du [::alnum::] dans les regexp *)
+let name = letter (letter | digit)* (* on fait ça pour avoir l'équivalent du [::alnum::] des regexp *)
 
 rule token = parse
   | [' ' '\t'] {token lexbuf}
   | '\n' { EOL }
+  | "NOT" { NOT }
+  | "TRUE" { TRUE }
+  | "FALSE" { FALSE }
   | name as s { NAME s }
   | "=>" { IMPLIES }
+  | "<=>" {EQUI}
   | '^' { AND }
   | '|' { OR }
   | '(' { LPAREN }
