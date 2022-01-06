@@ -1,3 +1,4 @@
+
 (* cli.ml interface*)
 
 open Proposition;;
@@ -35,7 +36,7 @@ let prop_to_string = fun propo ->
 
 let print_prop = fun propo -> Printf.printf "%s" (prop_to_string propo);;
 
-let string_to_list = fun str -> String.split_on_char ' ' str;;
+let string_to_list = fun str -> String.split_on_char ' '  str;;
 
 let hyp_to_string = fun id prop ->
   String.concat "" [string_of_int id; "\t: "; prop_to_string prop];;
@@ -151,10 +152,20 @@ let traiter_cmde = fun str stateList shadd fin ->
       end
   | ["left"] -> left
   | ["right"] -> right
-  | "add_hyp"::rest ->
-        (fun x -> (true, add_hyp (polo_prop rest) x))
+  | "add_hyp"::rest -> 
+    let formula = String.concat " " rest in
+    let formula_bis = String.concat "" [formula;"\n"] in
+    let lexbuf = Lexing.from_string formula_bis in
+    let propo = Parser.main Lexer.token lexbuf in 
+    (fun x -> (true, add_hyp propo  x))
+    
   | "add_goal"::rest ->
-        (fun x -> (true, add_goal (polo_prop rest) x))
+    let formula = String.concat " " rest in
+    let formula_bis=String.concat "" [formula;"\n"] in
+    let lexbuf = Lexing.from_string formula_bis in
+    let propo = Parser.main Lexer.token lexbuf in 
+    (fun x -> (true, add_goal propo  x))
+        
   | "hyp_left"::rest ->
       begin
         match rest with
@@ -297,3 +308,8 @@ let repl = fun () ->
         Printf.printf "Commande incorrecte.\n" in
     if not !finished then Printf.printf "%s\n" (proof_to_string !proof);
   done;;
+
+
+
+
+	
