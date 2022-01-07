@@ -108,23 +108,23 @@ let rev_apply = fun id proof ->
 
 let rev_applyin = fun ida idb proof ->
   let failed = fail proof in
-  match (get_hyp ida proof) with
-    a -> p_matchimpl (fun x y->
-      if x = a then
-        (true, make_proof (y::(remove_hyp ida proof)) (get_goal proof))
-      else
-        failed) failed (get_hyp idb proof);;
+  let a = (get_hyp ida proof) in
+  p_matchimpl (fun x y->
+    if x = a then
+      (true, make_proof (y::(remove_hyp ida proof)) (get_goal proof))
+    else
+      failed) failed (get_hyp idb proof);;
 
 (* Génération d'un problème prouvable à partir d'un contexte *)
 
 (* Génération des stratégies inverses appliquables à un problème *)
 let get_revstrat_list = fun proof ->
-  let goal_revs_list = [("rev_split", rev_split); ("rev_orsplit", rev_orsplit)] in
-  let rev_exact_list = List.map (fun x -> ("rev_exact", rev_exact x)) (hyp_ids proof) in
-  let rev_apply_list = List.map (fun x -> ("rev_apply", rev_apply x)) (hyp_ids proof) in
-  let rev_intro_list = List.map (fun x -> ("rev_intro", rev_intro x)) (hyp_ids proof) in
-  let rev_hyp_split_list = List.concat (List.map (fun y -> List.map (fun x -> ("rev_hyp_split", rev_hyp_split x y)) (remove_item_list y (hyp_ids proof))) (hyp_ids proof)) in
-  let rev_applyin_list = List.concat (List.map (fun y -> List.map (fun x -> ("rev_applyin", rev_applyin x y)) (remove_item_list y (hyp_ids proof))) (hyp_ids proof)) in
+  let goal_revs_list = [rev_split; rev_orsplit] in
+  let rev_exact_list = List.map (fun x -> rev_exact x) (hyp_ids proof) in
+  let rev_apply_list = List.map (fun x -> rev_apply x) (hyp_ids proof) in
+  let rev_intro_list = List.map (fun x -> rev_intro x) (hyp_ids proof) in
+  let rev_hyp_split_list = List.concat (List.map (fun y -> List.map (fun x ->  rev_hyp_split x y) (remove_item_list y (hyp_ids proof))) (hyp_ids proof)) in
+  let rev_applyin_list = List.concat (List.map (fun y -> List.map (fun x -> rev_applyin x y) (remove_item_list y (hyp_ids proof))) (hyp_ids proof)) in
   [goal_revs_list; rev_apply_list; rev_exact_list; rev_intro_list; rev_applyin_list; rev_hyp_split_list];;
 
 (* Génération du problème prouvable à partir du contexte *)
@@ -136,7 +136,7 @@ let reverse = fun proof->
       let funclistlist = get_revstrat_list proo in
       let funclist = random_list_elt funclistlist in
       if List.length funclist <> 0 then
-        let (funcname, func) = random_list_elt funclist in
+        let func = random_list_elt funclist in
         let (res, newproo) = func proo in
         if res then
             revrec newproo
@@ -152,12 +152,12 @@ let testMassif = fun () ->
   let proof = ref Proof.empty in
   let prof_max = 7 in
   for profMax = 1 to prof_max do
-    for _ = 1 to 10 do
+    for i = 1 to 10 do
       proof := Proof.empty;
-      let (_b1,p1) = add_rand_goal profMax !proof in proof := p1;
+      let (b1,p1) = add_rand_goal profMax !proof in proof := p1;
       let profReel = prop_depth (get_first_goal !proof) in
       let tStart = Sys.time() in 
-      let (_b2,p2) = backtrack !proof false (fun _ _ -> "") in proof := p2;
+      let (b2,p2) = backtrack !proof false (fun x y -> "") in proof := p2;
       listeTemps := (profReel,Sys.time() -. tStart)::!listeTemps;
       listeMoyennes := (0,0.) :: !listeMoyennes;
     done;
@@ -173,9 +173,10 @@ let testMassif = fun () ->
     match listeTuple with
       [] -> ()
     | (p,t) :: reste -> listeMoyennes := insertMoyenne p t !listeMoyennes [] ;convertToMoyennes reste
-  in convertToMoyennes !listeTemps;
+    | _ -> raise Invalid_Input in 
+  convertToMoyennes !listeTemps;
   let rec printMoyennes = fun liste acc ->
     match liste with
-      (_n,m)::reste-> Printf.printf "Profondeur %d : moyenne = %f s\n" acc m;printMoyennes reste (acc+1)
+      (n,m)::reste-> Printf.printf "Profondeur %d : moyenne = %f s\n" acc m;printMoyennes reste (acc+1)
     | [] -> () in
   printMoyennes !listeMoyennes 1;;
