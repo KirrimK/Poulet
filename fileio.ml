@@ -21,5 +21,5 @@ let writeInFile = fun nomFic preuve ->
 
 
 let load_from_file = fun name ->
-  let ic = open_in name
-
+  let ic = open_in name in
+  empty
