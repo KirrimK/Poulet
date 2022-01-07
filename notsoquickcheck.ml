@@ -3,6 +3,11 @@ open Strategies;;
 open Proposition;;
 open Proof;;
 open Backtrack;;
+
+(* Element aléatoire dans une liste *)
+let random_list_elt = fun ls->
+  List.nth ls (Random.int (List.length ls));;
+
 (* Générer une proposition aléatoire *)
 (* propAleatoire : int -> prop *)
 
@@ -122,21 +127,26 @@ let get_revstrat_list = fun proof ->
   let rev_intro_list = List.map (fun x -> ("rev_intro", rev_intro x)) (hyp_ids proof) in
   let rev_hyp_split_list = List.concat (List.map (fun y -> List.map (fun x -> ("rev_hyp_split", rev_hyp_split x y)) (remove_item_list y (hyp_ids proof))) (hyp_ids proof)) in
   let rev_applyin_list = List.concat (List.map (fun y -> List.map (fun x -> ("rev_applyin", rev_applyin x y)) (remove_item_list y (hyp_ids proof))) (hyp_ids proof)) in
-  List.concat [goal_revs_list; rev_apply_list; rev_exact_list; rev_intro_list; rev_applyin_list; rev_hyp_split_list];;
+  [goal_revs_list; rev_apply_list; rev_exact_list; rev_intro_list; rev_applyin_list; rev_hyp_split_list];;
 
 (* Génération du problème prouvable à partir du contexte *)
-let reverse = fun proof ->
-  let proo = ref (if (get_goal proof) = [] then add_goal p_true proof else proof) in
-  let () =  while (get_hyps !proo) <> [] do
-    let funclist = get_revstrat_list !proo in
-    let choix = Random.int (List.length funclist) in
-    let (funcname, func) = List.nth funclist choix in
-    let (res, newproo) = func !proo in
-    if res then
-      Printf.printf "%s\n" funcname;
-      proo := newproo;
-  done in
-  (true, !proo);;
+let reverse = fun proof->
+  let rec revrec = fun proo->
+    if get_hyps proo = [] then
+      proo
+    else
+      let funclistlist = get_revstrat_list proo in
+      let funclist = random_list_elt funclistlist in
+      if List.length funclist <> 0 then
+        let (funcname, func) = random_list_elt funclist in
+        let (res, newproo) = func proo in
+        if res then
+            revrec newproo
+        else
+          revrec proo
+      else
+        revrec proo in
+  (true, revrec proof);;
 
 let testMassif = fun () ->
   let listeTemps = ref [] in
