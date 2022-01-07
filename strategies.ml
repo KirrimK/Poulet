@@ -69,10 +69,10 @@ let exact = fun id proof ->
 let assumption = fun proof ->
   let failed = fail proof in
   let hyp_list = hyp_ids proof in
-  let exact_list = List.filter (fun x -> let (a, b) = x in a <> false) (List.map (fun x -> exact x proof) hyp_list) in
+  let exact_list = List.filter (fun x -> let (a, _b) = x in a <> false) (List.map (fun x -> exact x proof) hyp_list) in
   match exact_list with
     [] -> failed
-  | a::rest -> a;;
+  | a::_rest -> a;;
 
 (* apply: int -> proof -> bool*proof = <fun> *)
 let apply = fun hypoId proof ->
