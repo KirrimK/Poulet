@@ -1,5 +1,4 @@
 (* FileIO.ml *)
-open Cli;;
 open Proof;;
 open Proposition;;
 
@@ -25,7 +24,7 @@ let writeInFile = fun nomFic preuve ->
     | propo ::reste -> if boolHyp 
         then transcrireProp boolHyp reste ((Printf.sprintf "h: %S" (propToString propo))::strListe)
         else transcrireProp boolHyp reste ((Printf.sprintf "g: %S" (propToString propo))::strListe) in
-  let listeDeButsAEcrire = transcrireProp fasle listeButs [] in
+  let listeDeButsAEcrire = transcrireProp false listeButs [] in
   let listeDeTrucsAEcrire = transcrireProp true listeButs listeDeButsAEcrire in
   let rec ecrireChaines = fun listeChaines oc-> 
     match listeChaines with
@@ -37,19 +36,18 @@ let writeInFile = fun nomFic preuve ->
 let load_from_file = fun name ->
   let ic = open_in name in
   let rec readLines = fun accH accG ->
-    let ()=
-      try
-        let ligne = read_line ic in
-        let ligneCoupee = String.split ":" ligne in
-        match ligneCoupee with
+    try
+      let ligne = input_line ic in
+      let ligneCoupee = String.split_on_char ':' ligne in
+      match ligneCoupee with
         "h"::strProp -> 
-          let strProp2 = String.concat "" [strProp;"\n"] in 
+          let strProp2 = String.concat "" [String.concat " " strProp;"\n"] in 
           readLines (strProp2::accH) accG
       | "g"::strProp -> 
-          let strProp2 = String.concat "" [strProp;"\n"] in 
+          let strProp2 = String.concat "" [String.concat " " strProp;"\n"] in 
           readLines accH (strProp2::accG)
       | _ -> readLines accH accG 
-      with End_of_file -> (accH, accG) in () in
+    with End_of_file -> (accH, accG) in
   let (listeHyp, listeBut) = readLines [] [] in
   close_in ic;
   let p = empty in
@@ -59,7 +57,7 @@ let load_from_file = fun name ->
     | stringProp :: reste -> 
       let lexbuf = Lexing.from_string stringProp in
       let propo = Parser.main Lexer.token lexbuf in 
-      let nouvPreuve = (if boolHyp then add else add_goal) propo preuve in
+      let nouvPreuve = (if boolHyp then add_hyp else add_goal) propo preuve in
       addProps boolHyp reste nouvPreuve in
   let preuve = addProps true listeHyp empty in
   addProps false listeBut preuve;;
