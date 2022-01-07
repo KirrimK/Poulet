@@ -5,7 +5,7 @@ open Proof;;
 open Strategies;;
 open Notsoquickcheck;;
 
-let tests = fun unit ->
+let tests = fun () ->
 let test1 = add_goal (polo_prop ["A"; "B"; "=>"]) empty in
 let test1_res = add_hyp (polo_prop ["A"]) (add_goal (polo_prop ["B"]) empty) in
 let test = fun name funct dep arr ->

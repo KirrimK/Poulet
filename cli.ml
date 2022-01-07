@@ -62,14 +62,14 @@ let print_help = fun () ->
   ---------------
   (goals)
 
-  Formulas are currently typed in stack-based reverse form:
-  ex: \"add_hyp A B =>\" gives \"id: (A ⇒ B)\"
-      \"add_goal A B C => =>\" gives \"(A ⇒ (B ⇒ C))\"
+  Formulas must be typed  typed in this form:
+  ex: \"add_hyp A=>B\" gives \"id: (A ⇒ B)\"
+      \"add_goal A=>B=>C \" gives \"(A ⇒ (B ⇒ C))\"
 
   Formula operators are:
              \"=>\" : implies
               \"^\" : and
-              \"v\" : or
+              \"|\" : or
             \"Not\" : not
            \"True\" : ⊤ (literal true)
           \"False\" : ⊥ (literal false)
@@ -120,11 +120,11 @@ let traiter_cmde = fun str stateList shadd fin ->
           [] ->
             let () = shadd := false in
             let () = Printf.printf "Historique vide.\n" in
-            (fun x -> (true, Proof.empty))
+            (fun _ -> (true, Proof.empty))
         | smth::rest ->
             let () = shadd := false in
             let () = stateList := rest in
-            (fun x -> (true, smth))
+            (fun _ -> (true, smth))
       end
   | ["intro"] -> intro
   | ["clean"] -> (fun x -> (true, clean x))
@@ -132,7 +132,7 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["assumption"] -> assumption
   | ["reverse"] -> reverse
   | ["empty"] -> let () = shadd := false in
-    (fun x -> (true, Proof.empty))
+    (fun _ -> (true, Proof.empty))
   | ["unittests"] -> let () = shadd := false in
     let () = tests () in
     (fun x -> (true, x))
@@ -254,7 +254,7 @@ let traiter_cmde = fun str stateList shadd fin ->
               match resta with
                 [argb] ->
                   let hyp_numb = int_of_string argb in
-                  (fun x->get_rand_cont hyp_numa hyp_numb)
+                  (fun _ ->get_rand_cont hyp_numa hyp_numb)
               | _ -> raise InvalidArgument
             end
         | _ -> raise InvalidArgument
@@ -262,7 +262,7 @@ let traiter_cmde = fun str stateList shadd fin ->
   | _ -> raise InvalidArgument;;
 
 (* REPL: Read-Eval-Print Loop
-   Prendre une entrée, la parser pour en sortir une commande,
+   Prendre une entrée, la parser pour en sortir une commande avec des arguments (ou pas),
    exécuter la commande sur la preuve,
    recommencer jusqu'à quitter
 *)

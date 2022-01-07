@@ -108,14 +108,12 @@ let rev_apply = fun id proof ->
 
 let rev_applyin = fun ida idb proof ->
   let failed = fail proof in
-  let failed = fail proof in
   match (get_hyp ida proof) with
     a -> p_matchimpl (fun x y->
       if x = a then
         (true, make_proof (y::(remove_hyp ida proof)) (get_goal proof))
       else
-        failed) failed (get_hyp idb proof)
-  | _ -> failed;;
+        failed) failed (get_hyp idb proof);;
 
 (* Génération d'un problème prouvable à partir d'un contexte *)
 
@@ -154,12 +152,12 @@ let testMassif = fun () ->
   let proof = ref Proof.empty in
   let prof_max = 7 in
   for profMax = 1 to prof_max do
-    for i = 1 to 10 do
+    for _ = 1 to 10 do
       proof := Proof.empty;
-      let (b1,p1) = add_rand_goal profMax !proof in proof := p1;
+      let (_b1,p1) = add_rand_goal profMax !proof in proof := p1;
       let profReel = prop_depth (get_first_goal !proof) in
       let tStart = Sys.time() in 
-      let (b2,p2) = backtrack !proof false (fun x y -> "") in proof := p2;
+      let (_b2,p2) = backtrack !proof false (fun _ _ -> "") in proof := p2;
       listeTemps := (profReel,Sys.time() -. tStart)::!listeTemps;
       listeMoyennes := (0,0.) :: !listeMoyennes;
     done;
@@ -175,10 +173,9 @@ let testMassif = fun () ->
     match listeTuple with
       [] -> ()
     | (p,t) :: reste -> listeMoyennes := insertMoyenne p t !listeMoyennes [] ;convertToMoyennes reste
-    | _ -> raise Invalid_Input in 
-  convertToMoyennes !listeTemps;
+  in convertToMoyennes !listeTemps;
   let rec printMoyennes = fun liste acc ->
     match liste with
-      (n,m)::reste-> Printf.printf "Profondeur %d : moyenne = %f s\n" acc m;printMoyennes reste (acc+1)
+      (_n,m)::reste-> Printf.printf "Profondeur %d : moyenne = %f s\n" acc m;printMoyennes reste (acc+1)
     | [] -> () in
   printMoyennes !listeMoyennes 1;;
