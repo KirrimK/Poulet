@@ -1,5 +1,6 @@
 (* FileIO.ml *)
 open Cli;;
+open Proof;;
 
 let writeInFile = fun nomFic preuve ->
   let listeHypothese = get_hyps preuve in
@@ -20,4 +21,5 @@ let writeInFile = fun nomFic preuve ->
 
 
 let load_from_file = fun name ->
-  let ic = 
+  let ic = open_in name
+
