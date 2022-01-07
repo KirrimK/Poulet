@@ -8,6 +8,7 @@ open Proof;;
 open Backtrack;;
 open Notsoquickcheck;;
 open Tests;;
+open Fileio;;
 
 (*let show_id_hypo = fun hypo ->
   foncgen_hypo (Printf.printf "%d") (fun x -> ()) hypo;;
@@ -165,7 +166,10 @@ let traiter_cmde = fun str stateList shadd fin ->
     let lexbuf = Lexing.from_string formula_bis in
     let propo = Parser.main Lexer.token lexbuf in 
     (fun x -> (true, add_goal propo  x))
-        
+  | "load"::rest -> 
+    let filename = String.concat " " rest in
+    (fun _ -> (true, load_from_file filename))
+    
   | "hyp_left"::rest ->
       begin
         match rest with

@@ -4,7 +4,7 @@ open Strategies;;
 open Proposition;;
 open Proof;;
 
-let hpf_basic = fun id _ ->
+let _hpf_basic = fun id _ ->
   string_of_int id;;
 
 (* Génération des stratégies applicables pour une état de la preuve donné *)
