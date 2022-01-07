@@ -84,7 +84,7 @@ let polo_prop = fun strlist->
     | [] ->
         begin
           match acc with
-            elt::rest -> elt
+            elt::_rest -> elt
           | _ -> raise Invalid_Input
         end in
   iter_loc strlist [];;
