@@ -84,7 +84,7 @@ let polo_prop = fun strlist->
     | [] ->
         begin
           match acc with
-            elt::rest -> elt
+            elt::_rest -> elt
           | _ -> raise Invalid_Input
         end in
   iter_loc strlist [];;
@@ -142,9 +142,9 @@ let p_matchor = fun f_or c_fail prop ->
 
 (* Récupérer le type du noeud le plus haut sous forme de string *)
 let prop_root = fun prop ->
-  prop_match (fun x->"Name") "True" "False" (fun x y->"Implies") (fun x y->"And") (fun x y->"Or") prop;;
+  prop_match (fun _ ->"Name") "True" "False" (fun _ _ ->"Implies") (fun _ _->"And") (fun _ _ ->"Or") prop;;
 
 let branch = fun x y -> 1 + (max x y);;
 
 let prop_depth = fun prop ->
-  prop_iter (fun x->1) 1 1 branch branch branch prop;;
+  prop_iter (fun _ ->1) 1 1 branch branch branch prop;;
