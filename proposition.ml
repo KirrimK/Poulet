@@ -147,5 +147,10 @@ let prop_root = fun prop ->
 
 let branch = fun x y -> 1 + (max x y);;
 
+let branch_c = fun x y -> 1 + x + y;;
+
 let prop_depth = fun prop ->
   prop_iter (fun _ ->1) 1 1 branch branch branch prop;;
+
+let prop_items = fun prop ->
+  prop_iter (fun _ -> 1) 1 1 branch_c branch_c branch_c prop;;

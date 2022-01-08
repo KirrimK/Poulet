@@ -156,14 +156,15 @@ let reverse_provable_test = fun number->
   let rec test_rec = fun numb proved->
     let (_, proof) = get_rand_cont 3 5 in
     let (_, proof_totest) = reverse proof in
+    let () = Printf.printf "test %d/%d (depth %d, %d items): %!" numb number (proof_goal_depth proof_totest) (proof_goal_items proof_totest) in
     let (res, _) = backtrack 0 (fun _ _->"") proof_totest in
-    let () = Printf.printf "test %d/%d (%s): " numb number (if res then "ok" else "fail") in
+    let () = Printf.printf "--> %s\n" (if res then "ok" else "fail") in
     if numb >= number then
       (if res then proved + 1 else proved)
     else
       test_rec (numb+1) (if res then proved + 1 else proved) in
   let proved = test_rec 1 0 in
-  Printf.printf "%d backtracks on %d provable objects have succeded.\n" proved number;;
+  Printf.printf "%d backtracks on %d should-be provable objects have succeded.\n" proved number;;
 
 (* Ne pas laisser dans le code source pour le rendu *)
 let testMassif = fun () ->

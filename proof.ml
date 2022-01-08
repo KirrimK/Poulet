@@ -73,3 +73,9 @@ let remove_item_list = fun id ls ->
 
 let clean = fun proof ->
   make_proof (List.sort_uniq compare (List.filter (fun x -> x <> p_true) (get_hyps proof))) (List.sort_uniq compare (List.filter (fun x -> x <> p_true) (get_goal proof)));;
+
+let proof_goal_depth = fun proof ->
+  (List.fold_left max 0 (List.map prop_depth (get_goal proof)))+1;;
+
+let proof_goal_items = fun proof ->
+  List.fold_left (+) 0 (List.map prop_items (get_goal proof));;

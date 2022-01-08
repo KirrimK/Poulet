@@ -25,3 +25,7 @@ val remove_hyp : int -> t -> Proposition.t list
 val remove_item_list : int -> 'a list -> 'a list
 
 val clean : t -> t
+
+val proof_goal_depth : t -> int
+
+val proof_goal_items : t -> int
