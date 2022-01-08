@@ -152,6 +152,17 @@ let reverse = fun proof->
         revrec proo in
   (true, revrec proof);;
 
+let reverse_provable_test = fun number->
+  let rec test_rec = fun number proved->
+    let (_, proof) = get_rand_cont 3 10 in
+    let (_, proof_totest) = reverse proof in
+    let (res, _) = backtrack 0 (fun _ _->"") proof_totest in
+    if number <= 0 then
+      (if res then proved + 1 else proved)
+    else
+      test_rec (number-1) (if res then proved + 1 else proved) in
+  Printf.printf "%d backtracks on %d provable objects have succeded.\n" (test_rec number 0) number;;
+
 (* Ne pas laisser dans le code source pour le rendu *)
 let testMassif = fun () ->
   let listeTemps = ref [] in
@@ -164,7 +175,7 @@ let testMassif = fun () ->
       let (_b1,p1) = add_rand_goal profMax !proof in proof := p1;
       let profReel = prop_depth (get_first_goal !proof) in
       let tStart = Sys.time() in
-      let (_b2,p2) = backtrack !proof false (fun _ _ -> "") in proof := p2;
+      let (_b2,p2) = backtrack 0 (fun _ _ -> "") !proof in proof := p2;
       listeTemps := (profReel,Sys.time() -. tStart)::!listeTemps;
       listeMoyennes := (0,0.) :: !listeMoyennes;
     done;

@@ -137,11 +137,14 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["unittests"] -> let () = shadd := false in
     let () = tests () in
     (fun x -> (true, x))
+  | ["backtests"] ->
+      let () = reverse_provable_test 100 in
+      (fun x -> (true, x))
   | "auto"::rest ->
       begin
         match rest with
-          ["verbose"] -> (fun x -> backtrack x true hpf_cli)
-        | _ -> (fun x -> backtrack x false hpf_cli)
+          ["verbose"] -> backtrack 2 hpf_cli
+        | _ ->  backtrack 1 hpf_cli
       end
   | "hyp_split"::rest->
       begin
@@ -309,12 +312,8 @@ let repl = fun () ->
             Printf.printf "Erreur lors de l'exécution de la commande.\n"
         in
         ()
-      with _ ->
+      with e ->
+        Printf.printf "%s\n" (Printexc.to_string e);
         Printf.printf "Commande incorrecte.\n" in
     if not !finished then Printf.printf "%s\n" (proof_to_string !proof);
   done;;
-
-
-
-
-	
