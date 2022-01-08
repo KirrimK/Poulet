@@ -137,9 +137,16 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["unittests"] -> let () = shadd := false in
     let () = tests () in
     (fun x -> (true, x))
-  | ["backtests"] ->
-      let () = reverse_provable_test 100 in
-      (fun x -> (true, x))
+  | "backtests"::rest ->
+       begin
+        match rest with
+          [arg] ->
+            let num_arg = int_of_string arg in
+            let () = reverse_provable_test num_arg in
+            (fun x -> (true, x))
+        | _ -> raise InvalidArgument
+      end
+      
   | "auto"::rest ->
       begin
         match rest with
