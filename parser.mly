@@ -8,7 +8,7 @@
 %token IMPLIES "=>"
 %token AND "^"
 %token OR "|"
-%token NOT
+%token NOT 
 %token EQUI "<=>"
 %token LPAREN "("
 %token RPAREN ")"

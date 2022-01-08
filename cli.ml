@@ -146,7 +146,6 @@ let traiter_cmde = fun str stateList shadd fin ->
             (fun x -> (true, x))
         | _ -> raise InvalidArgument
       end
-      
   | "auto"::rest ->
       begin
         match rest with
@@ -159,6 +158,14 @@ let traiter_cmde = fun str stateList shadd fin ->
           [arg] ->
             let hyp_num = int_of_string arg in
             hyp_split hyp_num
+        | _ -> raise InvalidArgument
+      end
+  | "select_goal"::rest->
+      begin
+        match rest with
+          [arg] ->
+            let hyp_num = int_of_string arg in
+             select_goal hyp_num
         | _ -> raise InvalidArgument
       end
   | ["left"] -> left
