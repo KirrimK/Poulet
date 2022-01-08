@@ -153,23 +153,24 @@ let traiter_cmde = fun str stateList shadd fin ->
       end
   | ["left"] -> left
   | ["right"] -> right
-  | "add_hyp"::rest -> 
+  | "add_hyp"::rest ->
     let formula = String.concat " " rest in
     let formula_bis = String.concat "" [formula;"\n"] in
     let lexbuf = Lexing.from_string formula_bis in
-    let propo = Parser.main Lexer.token lexbuf in 
+    let propo = Parser.main Lexer.token lexbuf in
     (fun x -> (true, add_hyp propo  x))
-    
   | "add_goal"::rest ->
     let formula = String.concat " " rest in
     let formula_bis=String.concat "" [formula;"\n"] in
     let lexbuf = Lexing.from_string formula_bis in
-    let propo = Parser.main Lexer.token lexbuf in 
+    let propo = Parser.main Lexer.token lexbuf in
     (fun x -> (true, add_goal propo  x))
-  | "load"::rest -> 
+  | "load"::rest ->
     let filename = String.concat " " rest in
     (fun _ -> (true, load_from_file filename))
-    
+   | "save"::rest ->
+    let filename = String.concat " " rest in
+    (fun x -> let () = writeInFile filename x in (true, x))
   | "hyp_left"::rest ->
       begin
         match rest with
