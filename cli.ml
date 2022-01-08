@@ -132,6 +132,7 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["split"] -> split
   | ["assumption"] -> assumption
   | ["reverse"] -> reverse
+  | ["get_provable"] -> (fun _ -> get_provable ())
   | ["empty"] -> let () = shadd := false in
     (fun _ -> (true, Proof.empty))
   | ["unittests"] -> let () = shadd := false in

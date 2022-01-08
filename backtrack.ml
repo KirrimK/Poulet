@@ -17,7 +17,10 @@ let getStratList = fun proof hpf ->
     []
   else
     let hypIds = hyp_ids proof in
-    let goalIds = goal_ids proof in
+    let otherGoalIds =
+      (match goal_ids proof with
+        _::rest -> rest
+      | [] -> []) in
     let forAllApplicableHypos = fun predicat func funcname hypoIdsList ->
       List.map (fun id -> (func id, String.concat " " [funcname; hpf id proof])) (List.filter predicat hypoIdsList) in
 
@@ -41,7 +44,7 @@ let getStratList = fun proof hpf ->
               (addStratToList rootIsOr (right, "hyp_right") []))) in
 
     (* Liste des stratégies visant à changer de but à prouver *)
-    let switch_goal_list = forAllGoals select_goal "selected" goalIds in
+    let switch_goal_list = forAllGoals select_goal "selected" otherGoalIds in
 
     (* Liste des stratégies prenant des hypothèses en paramètres *)
     (* Séparation d'une hypothèse "And" en deux *)
@@ -66,7 +69,7 @@ let getStratList = fun proof hpf ->
     let falseHypList = forAllApplicableHypos (fun x -> prop_root (get_hyp x proof) = "False") false_hyp "hypos has" hypIds in
 
     (* Agrégation des listes *)
-    List.concat [falseHypList; goalStratlist; applyList; exactList; switch_goal_list; orSplitHypLeftList; orSplitHypRightList; andSplitHypList; applyHypList];;
+    List.concat [falseHypList; exactList; applyList; goalStratlist; switch_goal_list; orSplitHypLeftList; orSplitHypRightList; andSplitHypList; applyHypList];;
 
 (* Algorithme du backtrack *)
 type state = {visited: Proof.t list; num: int};;
@@ -74,7 +77,7 @@ type state = {visited: Proof.t list; num: int};;
 let backtrack = fun prints hpf proof->
   let rec backrec = fun norm_proo nameacc stateacc->
     (* Vérifier appartenance à la liste des états déjà visités *)
-    let () = if ((stateacc.num mod 1000) = 0) && prints = 1 then (Printf.printf "\rDone %d backtracks.%!" stateacc.num) else () in
+    let () = if (((stateacc.num mod 100) = 0) && prints < 2) then (Printf.printf "\r-> %d%!" stateacc.num) else () in
     if List.mem norm_proo (stateacc.visited) then (* L'état a déjà été visité *)
       let () = if prints = 2 then Printf.printf "%s | Already visited.\n" nameacc else () in
       ((false, norm_proo), stateacc)
@@ -109,6 +112,6 @@ let backtrack = fun prints hpf proof->
               ((false, norm_proo), {visited=stateacc.visited; num=(stateacc.num + 1)}) in
         explore stratList newstateacc
       end in
-  let ((res, proof), state) = backrec (clean proof) "backtrack" {visited=[]; num=0} in
-  let () = Printf.printf "Done %d backtracks.\n" state.num in
+  let ((res, proof), state) = backrec (clean proof) (if prints = 2 then "\nbacktrack" else "\rbacktrack") {visited=[]; num=0} in
+  let () = Printf.printf "\rDone %d backtracks.\n" state.num in
   (res, proof);;
