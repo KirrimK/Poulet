@@ -101,6 +101,7 @@ let prop_iter = fun c_n c_t c_f f_imply f_and f_or prop ->
     | Or (p1, p2) -> f_or (iter_local p1) (iter_local p2) in
   iter_local prop;;
 
+(* Abstraction du pattern matching sur les différents types de noeuds *)
 let prop_match = fun c_n c_t c_f f_imply f_and f_or prop ->
   match prop with
     Name n -> c_n n

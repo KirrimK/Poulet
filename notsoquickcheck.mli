@@ -1,7 +1,5 @@
 (* notsoquickcheck.mli *)
 
-val prop_aleatoire : int -> int -> Proposition.t;;
-
 val propAleatoire : int -> Proposition.t;;
 
 val add_rand_goal : int -> Proof.t -> bool * Proof.t;;
