@@ -30,7 +30,7 @@ let f_and = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∧ ";sProp2;")"
 let f_or = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∨ ";sProp2;")"];;
 
 let prop_to_string = fun propo ->
-  if prop_depth propo > 6 then
+  if prop_items propo > 100 then
     String.concat "" ["(proposition of depth "; string_of_int (prop_depth propo); " and "; string_of_int (prop_items propo) ; " items | root is "; prop_root propo; ")"]
   else
     prop_iter c_name c_true c_false f_implies f_and f_or propo;;

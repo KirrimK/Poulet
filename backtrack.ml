@@ -57,19 +57,20 @@ let getStratList = fun proof hpf ->
     (* Application d'une hypothèse à une autre
        Ne pas utiliser si le applyhypo crée de nouvelles hypothèses plutot que modifier*)
     (* Hyp à modifier en premier, Hyp à appliquer en seconde *)
-    let applyHypList = List.concat (List.map (fun x -> forAllApplicableHypos (fun x -> prop_root (get_hyp x proof) = "Implies") (applyInHyp false x) (String.concat "" ["applyhyp "; hpf x proof; " <-"]) hypIds) hypIds) in
+    let applyHypList = List.concat (List.map (fun a ->
+        forAllApplicableHypos (fun x->p_matchimpl (fun x _ -> x = (get_hyp a proof)) false (get_hyp x proof)) (applyInHyp false a) (String.concat "" ["applyhyp "; hpf a proof; " <-"]) hypIds) hypIds) in
 
     (* Application d'une hypothèse au but *)
-    let applyList = forAllApplicableHypos (Fun.const true) apply "apply" hypIds in
+    let applyList = forAllApplicableHypos (fun x->p_matchimpl (fun _ y-> y = (get_first_goal proof)) false (get_hyp x proof)) apply "apply" hypIds in
 
     (* Exacts des hypothèses au but *)
-    let exactList = forAllApplicableHypos (Fun.const true) exact "exact" (hyp_ids proof) in
+    let exactList = forAllApplicableHypos (fun x-> (get_hyp x proof) = get_first_goal proof) exact "exact" (hyp_ids proof) in
 
     (* Terminaison de la preuve si une hypothèse est "Faux" *)
-    let falseHypList = forAllApplicableHypos (fun x -> prop_root (get_hyp x proof) = "False") false_hyp "hypos has" hypIds in
+    let falseHypList = forAllApplicableHypos (fun x -> (get_hyp x proof) = p_false) false_hyp "hypos has" hypIds in
 
     (* Agrégation des listes *)
-    List.concat [falseHypList; exactList; applyList; goalStratlist; switch_goal_list; orSplitHypLeftList; orSplitHypRightList; andSplitHypList; applyHypList];;
+    List.concat [falseHypList; exactList; goalStratlist; applyList; orSplitHypLeftList; orSplitHypRightList; andSplitHypList; applyHypList; switch_goal_list];;
 
 (* Algorithme du backtrack *)
 type state = {visited: Proof.t list; num: int};;
