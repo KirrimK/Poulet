@@ -99,14 +99,14 @@ let rev_hyp_split = fun ida idb proof ->
     let new_hyplist = new_hyp::(remove_item_list ida (remove_item_list idb (get_hyps proof))) in
     (true, make_proof new_hyplist (get_goal proof));;
 
-let rev_hyp_orsplit = fun ida idb proof ->
-  if ida = idb then
-    (false, proof)
-  else if (((get_hyp ida proof) = p_false) && ((get_hyp idb proof) = p_false)) then
+let rev_hyp_orsplit = fun id proof ->
+  let a = get_hyp id proof in
+  if a = p_false then
     (false, proof)
   else
-    let new_hyp = (get_hyp ida proof) $ (get_hyp idb proof) in
-    let new_hyplist = new_hyp::(remove_item_list ida (remove_item_list idb (get_hyps proof))) in
+    let left = Random.bool () in
+    let new_hyp = (if left then a $ (propAleatoire (prop_depth a)) else (propAleatoire (prop_depth a)) $ a) in
+    let new_hyplist = new_hyp::(remove_item_list id (get_hyps proof)) in
     (true, make_proof new_hyplist (get_goal proof));;
 
 let rev_split = fun proof ->
@@ -119,9 +119,9 @@ let rev_split = fun proof ->
 
 let rev_orsplit = fun proof ->
   let failed = fail proof in
+  let left = Random.bool () in
   match (get_goal proof) with
-    a::(b::_) when (b = p_false && a = p_false) -> failed
-  | a::(b::rest) -> (true, make_proof (get_hyps proof) ((a $ b)::rest))
+    a::rest -> (true, make_proof (get_hyps proof) ((if left then a $ (propAleatoire ((prop_depth a)/2)) else (propAleatoire ((prop_depth a)/2) $ a))::rest))
   | _ -> failed;;
 
 let rev_apply = fun id proof ->
@@ -142,18 +142,14 @@ let get_revstrat_list = fun proof ->
   let rev_exact_list = List.map (fun x -> rev_exact x) (hyp_ids proof) in
   let rev_apply_list = List.map (fun x -> rev_apply x) (hyp_ids proof) in
   let rev_intro_list = List.map (fun x -> rev_intro x) (hyp_ids proof) in
+  let rev_hyp_orsplit_list = List.map (fun x -> rev_hyp_orsplit x) (hyp_ids proof) in
   let rev_hyp_split_list = List.concat (List.map (fun y -> List.map (fun x ->  rev_hyp_split x y) (remove_item_list y (hyp_ids proof))) (hyp_ids proof)) in
-  let rev_hyp_orsplit_list = List.concat (List.map (fun y -> List.map (fun x ->  rev_hyp_orsplit x y) (remove_item_list y (hyp_ids proof))) (hyp_ids proof)) in
-  List.concat [goal_revs_list; rev_apply_list; rev_intro_list; rev_exact_list; rev_apply_list; rev_intro_list; rev_intro_list; rev_hyp_split_list; rev_hyp_orsplit_list];;
-
-let get_term_revstrat_list = fun proof ->
-  let rev_exact_list = List.map (fun x -> rev_exact x) (hyp_ids proof) in
-  let rev_intro_list = List.map (fun x -> rev_intro x) (hyp_ids proof) in
-  List.concat [rev_exact_list; rev_intro_list;rev_intro_list];;
+  List.concat [goal_revs_list; rev_apply_list; rev_exact_list; rev_intro_list; rev_hyp_split_list; rev_hyp_orsplit_list];;
 
 (* Génération du problème prouvable à partir du contexte *)
 let reverse = fun proof->
-  let max_tries = 200 in
+  let () = Random.self_init () in
+  let max_tries = 100 in
   let rec revrec = fun proo tries->
     if get_hyps proo = [] then
       (true, proo)
@@ -173,7 +169,7 @@ let reverse = fun proof->
   revrec proof 0;;
 
 let get_provable = fun () ->
-  let (_, a) = get_rand_cont 1 15 in
+  let (_, a) = get_rand_cont 1 10 in
   reverse a;;
 
 let reverse_provable_test = fun number->
@@ -189,7 +185,7 @@ let reverse_provable_test = fun number->
       if numb >= number then
         (if res then proved + 1 else proved)
       else
-        test_rec (numb+1) (if res then proved + 1 else proved) 
+        test_rec (numb+1) (if res then proved + 1 else proved)
     else
       test_rec numb proved in
   let proved = test_rec 1 0 in

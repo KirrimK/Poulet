@@ -1,0 +1,1 @@
+g: (((P=>Q)=>P)=>P) <=> (NOT NOT P => P) <=> (NOT (NOT P ^ NOT Q) => (P | Q)) <=> ((P=>Q)=>(NOT P | Q)) <=> ((P | NOT P) ^ (Q | NOT Q))
