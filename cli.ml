@@ -46,7 +46,7 @@ let proof_to_string = fun proof->
   (* Afficher les hypothèses *)
   let hypStrings = List.mapi (fun x y -> hyp_to_string x y) (get_hyps proof) in
   let hypsString = String.concat "\n" hypStrings in
-  let goalStrings = List.map (prop_to_string) (get_goal proof) in
+  let goalStrings = List.mapi (fun x y -> hyp_to_string x y)(get_goal proof) in
   let goalString = String.concat "\n" goalStrings in
   String.concat "\n" [""; hypsString; String.make 15 '-'; goalString];;
 
