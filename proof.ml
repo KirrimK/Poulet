@@ -2,18 +2,22 @@
 
 open Proposition;;
 
-type t = {
+type a = {
     hyps: Proposition.t list;
-    goal: Proposition.t list
+    goal: Proposition.t
 };;
 
-let empty = {hyps=[]; goal=[]};;
+type t = a list;;
+
+let empty = [];;
 
 let get_hyps = fun proof ->
-  proof.hyps;;
+  match proof with
+    hd::_ -> hd.hyps
+  | [] -> [] ;;
 
 let get_goal = fun proof ->
-  proof.goal;;
+  List.map (fun x -> x.goal) proof;;
 
 let list_ids = fun list ->
   let rec it = fun nb acc->
@@ -29,15 +33,26 @@ let hyp_ids = fun proof ->
 let goal_ids = fun proof ->
   list_ids (get_goal proof);;
 
-let make_proof = fun hyps_ goal_->
-   {hyps=hyps_; goal=goal_};;
+let make_proof = fun hyp_ls_ls goal_ls->
+  List.map2 (fun x y-> {hyps = x; goal = y}) hyp_ls_ls goal_ls;; 
 
+let make_a = fun hyp_ls goal->
+  {hyps=hyp_ls; goal=goal};;
+  
 let add_hyp = fun prop proof->
-  make_proof (prop::(get_hyps proof)) (get_goal proof);;
+  match proof with
+    hd::rest ->
+      make_proof ((prop::hd.hyps)::(List.map (fun x->x.hyps) rest)) (get_goal proof)
+  | [] -> failwith "Add a goal first."
 
 let add_goal = fun prop proof->
-  make_proof (get_hyps proof) (prop::(get_goal proof));;
+  {hyps=[]; goal=prop}::proof;;
 
+let change_first_goal = fun prop proof->
+  match proof with
+    hd::rest -> {hyps=hd.hyps; goal=prop}::rest
+  | [] -> failwith "Add a goal first." ;;
+  
 let get_hyp = fun id proof ->
   let rec it = fun nb acc->
     match acc with
@@ -69,6 +84,18 @@ let remove_item_list = fun id ls ->
 let remove_hyp = fun id proof ->
   remove_item_list id (get_hyps proof);;
 
+let place_elt_at_head = fun id list->
+  let rec get_elt = fun ls count->
+    match ls with
+      a::rest ->
+        if id = count then
+          a
+        else
+          get_elt rest (count+1)
+    | _ -> failwith (Printf.sprintf "id %d doesn't exist in list.\n" id) in
+  let elt = get_elt list 0 in
+  elt::(remove_item_list id list);;
+
 let rm_duplic = fun list->
   let rec rm_rec = fun ls acc->
     match ls with
@@ -82,12 +109,9 @@ let rm_duplic = fun list->
 
 (* Enleves les duplications, les vrais, et trie les elts (sauf le premier but (le but actif) qui reste en premier *)
 let clean = fun proof ->
-  let goals_no_duplic = (List.filter (fun x -> x <> p_true) (rm_duplic (get_goal proof))) in
-  let goal_first_and_tail_sorted =
-    (match goals_no_duplic with
-      first::rest -> first::(List.sort compare rest)
-    | [] -> []) in
-  make_proof (List.sort_uniq compare (List.filter (fun x -> x <> p_true) (get_hyps proof))) goal_first_and_tail_sorted;;
+  let goals_no_duplic = (List.sort_uniq (fun x y-> compare x.goal y.goal) proof) in
+  let goals_no_true = (List.filter (fun x -> x.goal <> p_true) goals_no_duplic) in
+  List.map (fun x -> {hyps=(List.sort_uniq compare (List.filter (fun x -> x <> p_true) x.hyps)); goal=x.goal}) goals_no_true;;
 
 let proof_goal_depth = fun proof ->
   (List.fold_left max 0 (List.map prop_depth (get_goal proof)))+(List.length (get_goal proof))-1;;

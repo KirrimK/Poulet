@@ -223,6 +223,7 @@ let backtrack = fun prints hpf proof->
               ((false, norm_proo), {visited=recstateacc.visited; backnum=(recstateacc.backnum + 1); depth=(recstateacc.depth - 1)}) in
         explore stratList newstateacc
       end in
+  let t_start = Sys.time () in
   let ((res, proof), state) = backrec (clean proof) (if prints = 2 then "\nbacktrack" else "\rbacktrack") {visited=[]; backnum=0; depth=0} in
-  let () = Printf.printf "\rDone %d backtracks, depth achieved %d.\n" state.backnum state.depth in
+  let () = Printf.printf "\rDone %d backtracks, depth achieved %d. Took %fsecs.\n" state.backnum state.depth (Sys.time () -. t_start) in
   (res, proof);;

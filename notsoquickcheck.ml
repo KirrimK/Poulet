@@ -74,7 +74,7 @@ let get_rand_cont = fun max_prp_dp hp->
   add_rand_cont max_prp_dp hp (add_goal p_true empty);;
 
 (* Strategies inversées pour créer des théorèmes prouvables *)
-
+(*
 let rev_intro = fun id proof ->
   if (get_hyp id proof) = p_false then
     (false, proof)
@@ -190,7 +190,7 @@ let reverse_provable_test = fun number->
       test_rec numb proved in
   let proved = test_rec 1 0 in
   Printf.printf "%d backtracks on %d should-be provable objects have succeded.\n" proved number;;
-
+*)
 (* Ne pas laisser dans le code source pour le rendu *)
 let testMassif = fun () ->
   let listeTemps = ref [] in

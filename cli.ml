@@ -128,14 +128,14 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["clean"] -> (fun x -> (true, clean x))
   | ["split"] -> split
   | ["assumption"] -> assumption
-  | ["reverse"] -> reverse
-  | ["get_provable"] -> (fun _ -> get_provable ())
+  (*| ["reverse"] -> reverse*)
+  (*| ["get_provable"] -> (fun _ -> get_provable ())*)
   | ["empty"] -> let () = shadd := false in
     (fun _ -> (true, Proof.empty))
   | ["unittests"] -> let () = shadd := false in
     let () = tests () in
     (fun x -> (true, x))
-  | "backtests"::rest ->
+  (*| "backtests"::rest ->
        begin
         match rest with
           [arg] ->
@@ -143,7 +143,7 @@ let traiter_cmde = fun str stateList shadd fin ->
             let () = reverse_provable_test num_arg in
             (fun x -> (true, x))
         | _ -> raise InvalidArgument
-      end
+      end*)
   | "auto"::rest ->
       begin
         match rest with

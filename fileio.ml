@@ -58,5 +58,6 @@ let load_from_file = fun name ->
       let propo = Parser.main Lexer.token lexbuf in
       let nouvPreuve = (if boolHyp then add_hyp else add_goal) propo preuve in
       addProps boolHyp reste nouvPreuve in
-  let preuve = addProps true listeHyp empty in
-  addProps false listeBut preuve;;
+  let preuve = addProps false listeBut empty in
+  let hyp_on_first = addProps true listeHyp preuve in
+  List.map (fun x-> make_a (get_hyps hyp_on_first) x) (get_goal hyp_on_first);;
