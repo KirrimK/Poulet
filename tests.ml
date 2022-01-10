@@ -3,7 +3,6 @@
 open Proposition;;
 open Proof;;
 open Strategies;;
-open Notsoquickcheck;;
 
 let tests = fun () ->
 let test1 = add_goal (polo_prop ["A"; "B"; "=>"]) empty in
