@@ -23,5 +23,3 @@ val reverse : Proof.t -> bool * Proof.t;;
 val get_provable : unit ->bool *  Proof.t;;
 
 val reverse_provable_test : int -> unit;;
-
-val testMassif : unit -> unit;;

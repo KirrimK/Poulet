@@ -191,37 +191,3 @@ let reverse_provable_test = fun number->
   let proved = test_rec 1 0 in
   Printf.printf "%d backtracks on %d should-be provable objects have succeded.\n" proved number;;
 
-(* Ne pas laisser dans le code source pour le rendu *)
-let testMassif = fun () ->
-  let listeTemps = ref [] in
-  let listeMoyennes = ref [] in
-  let proof = ref Proof.empty in
-  let prof_max = 6 in
-  for profMax = 1 to prof_max do
-    for _ = 1 to 50 do
-      proof := Proof.empty;
-      let (_b1,p1) = add_rand_goal profMax !proof in proof := p1;
-      let profReel = prop_depth (get_first_goal !proof) in
-      let tStart = Sys.time() in
-      let (b2,p2) = backtrack 0 (fun _ -> "") !proof in proof := p2;
-      if b2 then listeTemps := (profReel,Sys.time() -. tStart)::!listeTemps;
-    done;
-    listeMoyennes := (0,0.) :: !listeMoyennes;
-  done;
-  let rec insertMoyenne = fun p t listeAVider listeARemplir ->
-    match listeAVider with
-      [] -> List.rev listeARemplir
-    | (n,m)::reste -> 
-        if p = 1 
-          then insertMoyenne (p-1) t reste ((n+1,(float n *. m +. t) /. float (n+1))::listeARemplir)
-          else insertMoyenne (p-1) t reste ((n,m)::listeARemplir) in
-  let rec convertToMoyennes = fun listeTuple ->
-    match listeTuple with
-      [] -> ()
-    | (p,t) :: reste -> listeMoyennes := insertMoyenne p t !listeMoyennes [] ;convertToMoyennes reste
-  in convertToMoyennes !listeTemps;
-  let rec printMoyennes = fun liste acc ->
-    match liste with
-      (_n,m)::reste-> Printf.printf "Profondeur %d : moyenne = %f s\n" acc m;printMoyennes reste (acc+1)
-    | [] -> () in
-  printMoyennes !listeMoyennes 1;;
