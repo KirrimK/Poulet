@@ -13,15 +13,8 @@ let getStratList_old = fun proof hpf ->
     []
   else
     let hypIds = hyp_ids proof in
-    let otherGoalIds =
-      (match goal_ids proof with
-        _::rest -> rest
-      | [] -> []) in
     let forAllApplicableHypos = fun predicat func funcname hypoIdsList ->
       List.map (fun id -> (func id, String.concat " " [funcname; hpf (get_hyp id proof)])) (List.filter predicat hypoIdsList) in
-
-    let forAllGoals = fun func funcname goalidlist->
-      List.map (fun id -> (func id, String.concat " " [funcname; string_of_int id])) goalidlist in
 
     let addStratToList = fun predicat stratandstratname stratlist ->
       if predicat then
@@ -71,9 +64,6 @@ let getStratList = fun proof hpf ->
     []
   else
     let first_goal = get_first_goal proof in
-    let other_goals = match get_goal proof with
-        _::rest -> rest
-      | [] -> [] in
     let hyps = get_hyps proof in
 
     let forAllApplicable = fun other_goals cond cond_prio funcname func ls ->
@@ -90,7 +80,6 @@ let getStratList = fun proof hpf ->
       gen_lists (if other_goals then 1 else 0) ls [] [] in
     
     let forAllApplicableHypos = forAllApplicable false in
-    let forOtherGoals = forAllApplicable true in
     
     let getOneHypThatIsApplicable = fun cond funcname func hyplist ->
       let rec get_elt = fun id hyplist->
