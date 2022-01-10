@@ -39,9 +39,6 @@ let getStratList_old = fun proof hpf ->
            (addStratToList rootIsOr (left, "left")
               (addStratToList rootIsOr (right, "right") []))) in
 
-    (* Liste des stratégies visant à changer de but à prouver *)
-    let switch_goal_list = forAllGoals select_goal "selected" otherGoalIds in
-
     (* Liste des stratégies prenant des hypothèses en paramètres *)
     (* Séparation d'une hypothèse "And" en deux *)
     let andSplitHypList = forAllApplicableHypos (fun x -> prop_root (get_hyp x proof) = "And") hyp_split "hyp_split" hypIds in
@@ -66,7 +63,7 @@ let getStratList_old = fun proof hpf ->
     let falseHypList = forAllApplicableHypos (fun x -> (get_hyp x proof) = p_false) false_hyp "hypos has" hypIds in
 
     (* Agrégation des listes *)
-    List.concat [falseHypList; exactList; goalStratlist; applyList; orSplitHypLeftList; orSplitHypRightList; andSplitHypList; applyHypList; switch_goal_list];;
+    List.concat [falseHypList; exactList; goalStratlist; applyList; orSplitHypLeftList; orSplitHypRightList; andSplitHypList; applyHypList];;
 
 (* Génération des stratégies applicables pour une état de la preuve donné *)
 let getStratList = fun proof hpf ->
@@ -132,11 +129,6 @@ let getStratList = fun proof hpf ->
         else ([(left, "left"); (right, "right")], [])
       else
         ([], []) in
-    
-    let (prio_switch_ls, std_switch_ls) = forOtherGoals (*Récupération des buts auquels passer si le problème n'avance pas*)
-        (fun g -> List.mem g hyps || (p_matchname (Fun.const false) true g)) (*Cas prioritaire (naif): le but est dans les hypothèses (un exact et hop) ou (non exclusif) le but n'est pas un nom seul (pas forcément interessant)*)
-        (Fun.const true)(*Cas standard: on essaie de passer aux autres buts*)
-        "selected goal" select_goal other_goals in
 
     (* Liste des stratégies prenant des hypothèses en paramètres *)
     
@@ -180,7 +172,7 @@ let getStratList = fun proof hpf ->
 
     (* Agrégation des listes, avec les stratégies prioritaires en premier *)
     (* Ordre: hypothèse fausse, exact, les stratégies sur le but (souvent utilisées), ce qui génère des faux dans les hyps,  ce qui génère des hyps exact-ables, le reste, changer de but en cas d'impasse *)
-    List.concat [false_hyp_list; exact_list; std_gst_ls; prio_hsplit_ls; prio_hleft_ls; prio_hright_ls; prio_apphyp_ls; prio_apply_ls; std_apphyp_ls; std_apply_ls; std_hsplit_ls; std_hleft_ls; std_hright_ls; not_prio_gst_ls; prio_switch_ls; std_switch_ls];;
+    List.concat [false_hyp_list; exact_list; std_gst_ls; prio_hsplit_ls; prio_hleft_ls; prio_hright_ls; prio_apphyp_ls; prio_apply_ls; std_apphyp_ls; std_apply_ls; std_hsplit_ls; std_hleft_ls; std_hright_ls; not_prio_gst_ls];;
 
 (* Algorithme du backtrack *)
 type state = {visited: Proof.t list; backnum: int; depth: int};;

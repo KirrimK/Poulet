@@ -122,7 +122,7 @@ let applyInHyp = fun keep idtarget idapplied proof ->
   let failed = fail proof in
   let propcible = get_hyp idtarget proof in
   match proof with
-    _::rest -> p_matchimpl (fun x y -> if x = propcible then (true, (make_a ((if keep then (remove_hyp idtarget) else get_hyps) proof) y)::rest) else failed) failed (get_hyp idapplied proof)
+    _::rest -> p_matchimpl (fun x y -> if x = propcible then (true, (make_a (if not keep then y::(remove_hyp idtarget proof) else y::(get_hyps proof)) (get_first_goal proof))::rest) else failed) failed (get_hyp idapplied proof)
   | [] -> failed;;
 
 (* applyInHyp : bool -> int -> int -> proof -> bool*proof = <fun> *)
