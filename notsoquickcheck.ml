@@ -180,7 +180,7 @@ let reverse_provable_test = fun number->
       let proof_totest = clean proof_rev in
       let () = writeInFile (Printf.sprintf "backtests/test_%d.hen" numb) proof_totest in
       let () = Printf.printf "test %d/%d (depth %d, %d items):\n%!" numb number (proof_goal_depth proof_totest) (proof_goal_items proof_totest) in
-      let (res, _) = backtrack 0 (fun _ _->"") proof_totest in
+      let (res, _) = backtrack 0 (fun _->"") proof_totest in
       let () = Printf.printf "--> %s\n" (if res then "ok" else "fail") in
       if numb >= number then
         (if res then proved + 1 else proved)
@@ -203,7 +203,7 @@ let testMassif = fun () ->
       let (_b1,p1) = add_rand_goal profMax !proof in proof := p1;
       let profReel = prop_depth (get_first_goal !proof) in
       let tStart = Sys.time() in
-      let (_b2,p2) = backtrack 0 (fun _ _ -> "") !proof in proof := p2;
+      let (_b2,p2) = backtrack 0 (fun _ -> "") !proof in proof := p2;
       listeTemps := (profReel,Sys.time() -. tStart)::!listeTemps;
       listeMoyennes := (0,0.) :: !listeMoyennes;
     done;
