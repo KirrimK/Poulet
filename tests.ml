@@ -6,9 +6,7 @@ open Strategies;;
 
 let tests = fun () ->
     let test = fun name funct wantFail dep arr ->
-    if wantFail
-        then Printf.printf "%s test %s\n" name (if funct dep = (false, arr) then "success" else "fail") 
-        else Printf.printf "%s test %s\n" name (if funct dep = (true, arr) then "success" else "fail")in
+        Printf.printf "%s test %s\n" name (if funct dep = (not wantFail, arr) then "success" else "fail")in
     
     let test1 = add_goal (polo_prop ["A"; "B"; "=>"]) empty in
     let test1_res = add_hyp (polo_prop ["A"]) (add_goal (polo_prop ["B"]) empty) in
