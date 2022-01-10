@@ -190,3 +190,4 @@ let reverse_provable_test = fun number->
       test_rec numb proved in
   let proved = test_rec 1 0 in
   Printf.printf "%d backtracks on %d should-be provable objects have succeded.\n" proved number;;
+*)
