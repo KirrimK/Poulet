@@ -249,6 +249,12 @@ let traiter_cmde = fun str stateList shadd fin ->
             end
         | _ -> raise InvalidArgument
       end
+  | "remove_goal" :: rest ->
+      begin
+        match rest with
+          [arga] -> (fun x -> (true, remove_item_list (int_of_string arga) x))
+        | _ -> raise InvalidArgument
+      end 
   | _ -> raise InvalidArgument;;
 
 (* REPL: Read-Eval-Print Loop
