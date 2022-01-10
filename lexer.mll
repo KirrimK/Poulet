@@ -8,11 +8,11 @@
 let digit = ['0'-'9']
 let lower = ['a'-'z']
 let upper = ['A'-'Z']
-let other = ['_']
+let other = ['_' '-' '@']
 let letter = lower | upper
 
 let number = digit+
-let name = letter (letter | digit | other)* (* on fait ça pour avoir l'équivalent du [::alnum::] des regexp *)
+let name = letter (letter | digit | other)* (* on fait ï¿½a pour avoir l'ï¿½quivalent du [::alnum::] des regexp *)
 
 rule token = parse
   | [' ' '\t'] {token lexbuf}
