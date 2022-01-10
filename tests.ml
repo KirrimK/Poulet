@@ -56,3 +56,8 @@ let tests = fun () ->
     test "or split hypo right" (hyp_right 0) false test11 test11_res_right;
     test "or split hypo left" (hyp_left 0) false test11 test11_res_left;
     test "or split hypo avec n'importe quoi" (hyp_right 0) true test10 test10;
+
+    let test12 = make_proof[[p_name "A"; p_name "B"]][p_name "A"] in
+    let test12_res = make_proof[[p_name "A"; p_name "B"]][p_true] in
+    test "exact" (exact 0) false test12 test12_res;
+    test "exact qui doit rater" (exact 1) true test12 test12
