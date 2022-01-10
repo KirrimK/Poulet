@@ -1,5 +1,5 @@
 (* Main.ml *)
 
-open Cli;;
+open Notsoquickcheck;;
 
-repl ();;
+testMassif ();;

@@ -153,12 +153,12 @@ let testMassif = fun () ->
   let prof_max = 7 in
   for profMax = 1 to prof_max do
     for _ = 1 to 10 do
-      proof := Proof.empty;
-      let (_b1,p1) = add_rand_goal profMax !proof in proof := p1;
-      let profReel = prop_depth (get_first_goal !proof) in
-      let tStart = Sys.time() in 
-      let (_b2,p2) = backtrack !proof false (fun _ _ -> "") in proof := p2;
-      listeTemps := (profReel,Sys.time() -. tStart)::!listeTemps;
+      proof := Proof.empty;Printf.printf "1:\n" ;
+      let (_b1,p1) = add_rand_goal profMax !proof in proof := p1; Printf.printf "2:\n" ;
+      let profReel = prop_depth (get_first_goal !proof) in Printf.printf "ProfReel : %d\n" profReel;
+      let tStart = Sys.time() in Printf.printf "3:\n";
+      let (_b2,p2) = backtrack !proof false (fun _ _ -> "") in proof := p2;Printf.printf "4:\n";
+      listeTemps := (profReel,Sys.time() -. tStart)::!listeTemps;Printf.printf "5:\n";
       listeMoyennes := (0,0.) :: !listeMoyennes;
     done;
   done;
