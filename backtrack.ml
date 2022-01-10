@@ -125,9 +125,9 @@ let getStratList = fun proof hpf ->
       else if rootIsAnd then
         ([(split, "split")], [])
       else if rootIsOr then (*Si possible, éviter d'avoir à prouver "faux" *)
-        if p_matchor (fun x _ -> x = p_false) false first_goal then (* il y a un faux à gauche *)
+        if p_matchor (fun x _ -> p_matchfalse true false x) false first_goal then (* il y a un faux à gauche *)
           ([(right, "right")], [(left, "left")])
-        else if p_matchor (fun _ y -> y = p_false) false first_goal then (* il y a un faux à droit *)
+        else if p_matchor (fun _ y -> p_matchfalse true false y) false first_goal then (* il y a un faux à droit *)
           ([(left, "left")], [(right, "right")])
         else ([(left, "left"); (right, "right")], [])
       else
@@ -141,23 +141,23 @@ let getStratList = fun proof hpf ->
     (* Liste des stratégies prenant des hypothèses en paramètres *)
     
     let (prio_hsplit_ls, std_hsplit_ls) = forAllApplicableHypos (* Récupération des hypothèses traitables par hyp_split*)
-        (fun h -> p_matchand (fun x y-> (x = p_false || y = p_false)) false h) (*Cas prioritaire: racine And & contient un false (permettrait de faire un false_hyp juste après, ce qui terminerait la preuve*)
+        (fun h -> p_matchand (fun x y-> (p_matchfalse true false x || p_matchfalse true false y)) false h) (*Cas prioritaire: racine And & contient un false (permettrait de faire un false_hyp juste après, ce qui terminerait la preuve*)
         (fun h -> p_matchand typeok false h) (*Cas standard: racine And*)
         "hyp_split" hyp_split hyps in
 
     let (prio_hleft_ls, std_hleft_ls) = forAllApplicableHypos (*Récupération des hypothèses traitables par hyp_left*)
-        (fun h -> p_matchor (fun x _-> x = p_false) false h) (*Cas prioritaire: racine Or & p_false à gauche*)
+        (fun h -> p_matchor (fun x _-> p_matchfalse true false x) false h) (*Cas prioritaire: racine Or & p_false à gauche*)
         (fun h -> p_matchor typeok false h) (*Cas standard: racine Or*)
         "hyp_left" hyp_left hyps in
     
     let (prio_hright_ls, std_hright_ls) = forAllApplicableHypos (*Récupération des hypothèses traitables par hyp_right*)
-        (fun h -> p_matchor (fun _ y-> y = p_false) false h) (*Cas prioritaire: racine Or & p_false à droite*)
+        (fun h -> p_matchor (fun _ y-> p_matchfalse true false y) false h) (*Cas prioritaire: racine Or & p_false à droite*)
         (fun h -> p_matchor typeok false h) (*Cas standard: racine Or*)
         "hyp_right" hyp_right hyps in
 
     let tple_ls = List.mapi 
         (fun id a -> forAllApplicableHypos (*Récupération des combinaisons d'hyps qui peuvent s'appliquer entre elles*)
-            (fun h -> p_matchimpl (fun x y -> (x = a && (y = p_false || List.mem y (get_goal proof)))) false h) (*Cas prioritaire: la partie à gauche de l'implication correspond à l'hypothèse cible, et va générer un false ou un des buts actuellement recherchés*)
+            (fun h -> p_matchimpl (fun x y -> (x = a && (p_matchfalse true false y || List.mem y (get_goal proof)))) false h) (*Cas prioritaire: la partie à gauche de l'implication correspond à l'hypothèse cible, et va générer un false ou un des buts actuellement recherchés*)
             (fun h -> p_matchimpl (fun x _ -> (x = a)) false h) (*Cas standard: la partie à gauche de l'=> correspond à l'hyp cible*)
             (String.concat "" ["applyhyp "; hpf a; " <-"]) (applyInHyp false id) hyps)
         hyps in
