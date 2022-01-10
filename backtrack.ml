@@ -198,7 +198,7 @@ let backtrack = fun prints hpf proof->
         let newstateacc = {visited=(norm_proo::(stateacc.visited)); backnum=stateacc.backnum; depth=(stateacc.depth+1)} in
         let stratList = (if no_heur then getStratList_old else getStratList) norm_proo hpf in (* Récupérer la liste des stratégies applicables à ce stade *)
         (* Explorer toutes les stratégies dans la liste *)
-        let rec explore = fun stratlist stateacc->
+        let rec explore = fun stratlist recstateacc->
           match stratlist with
             (strat, stratname)::rest -> (* Encore des stratégies à tester *)
               let (result, resproof) = strat norm_proo in (* Tester la stratégie *)
@@ -207,20 +207,20 @@ let backtrack = fun prints hpf proof->
               if result then (* La stratégie à fait progresser la preuve*)
                 if is_proven norm_resproof then (* Est-ce que la preuve est finie *)
                   let () = if prints > 0 then  Printf.printf "%s | Proof done\n" newnameacc else () in
-                  ((true, norm_resproof), stateacc)
+                  ((true, norm_resproof), recstateacc)
                 else (* La preuve n'est pas encore finie, explorer le nouveau noeud de l'arbre*)
                   let () = if prints = 2 then (Printf.printf "%s (progress)\n" newnameacc) else () in
-                  let backresult = backrec norm_resproof newnameacc stateacc in
+                  let backresult = backrec norm_resproof newnameacc recstateacc in
                   match backresult with
                     ((true, backres), state) -> ((true, backres), state) (* Le backtrack a réussi à prouver *)
                   | ((false, _), state)  -> explore rest state (* Essayer les autres possibilités *)
               else (* La stratégie à échoué *)
                 let () = if prints = 2 then Printf.printf "%s (fail)\n" newnameacc else () in
-                explore rest {visited=(stateacc.visited); backnum=(stateacc.backnum + 1); depth=(stateacc.depth-1)} (* Essayer le reste des stratégies à ce niveau *)
+                explore rest {visited=(recstateacc.visited); backnum=(recstateacc.backnum + 1); depth=(recstateacc.depth)} (* Essayer le reste des stratégies à ce niveau *)
           | [] -> (* Plus de stratégies à tester à ce stage *)
               if prints = 2 then
                 (Printf.printf "%s | No more applicable strategies.\n" nameacc);
-              ((false, norm_proo), {visited=stateacc.visited; backnum=(stateacc.backnum + 1); depth=(stateacc.depth - 1)}) in
+              ((false, norm_proo), {visited=recstateacc.visited; backnum=(recstateacc.backnum + 1); depth=(recstateacc.depth - 1)}) in
         explore stratList newstateacc
       end in
   let ((res, proof), state) = backrec (clean proof) (if prints = 2 then "\nbacktrack" else "\rbacktrack") {visited=[]; backnum=0; depth=0} in
