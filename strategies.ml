@@ -5,6 +5,24 @@ open Proof;;
 
 let fail = fun x -> (false, x);;
 
+let place_elt_at_head = fun id list->
+  let rec get_elt = fun ls count->
+    match ls with
+      a::rest ->
+        if id = count then
+          a
+        else
+          get_elt rest (count+1)
+    | _ -> failwith (Printf.sprintf "id %d doesn't exist in list.\n" id) in
+  let elt = get_elt list 0 in
+  elt::(remove_item_list id list);;
+
+let select_goal = fun goalnumber proof ->
+  if goalnumber < List.length (get_goal proof) then
+    (true, make_proof (get_hyps proof) (place_elt_at_head goalnumber (get_goal proof)))
+  else
+    (false, proof);;
+
 let intro = fun proof ->
   let failed = fail proof in
   match get_goal proof with
@@ -69,10 +87,10 @@ let exact = fun id proof ->
 let assumption = fun proof ->
   let failed = fail proof in
   let hyp_list = hyp_ids proof in
-  let exact_list = List.filter (fun x -> let (a, _b) = x in a <> false) (List.map (fun x -> exact x proof) hyp_list) in
+  let exact_list = List.filter (fun x -> let (a, _) = x in a <> false) (List.map (fun x -> exact x proof) hyp_list) in
   match exact_list with
     [] -> failed
-  | a::_rest -> a;;
+  | a::_ -> a;;
 
 (* apply: int -> proof -> bool*proof = <fun> *)
 let apply = fun hypoId proof ->

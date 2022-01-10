@@ -101,6 +101,7 @@ let prop_iter = fun c_n c_t c_f f_imply f_and f_or prop ->
     | Or (p1, p2) -> f_or (iter_local p1) (iter_local p2) in
   iter_local prop;;
 
+(* Abstraction du pattern matching sur les différents types de noeuds *)
 let prop_match = fun c_n c_t c_f f_imply f_and f_or prop ->
   match prop with
     Name n -> c_n n
@@ -146,5 +147,10 @@ let prop_root = fun prop ->
 
 let branch = fun x y -> 1 + (max x y);;
 
+let branch_c = fun x y -> 1 + x + y;;
+
 let prop_depth = fun prop ->
   prop_iter (fun _ ->1) 1 1 branch branch branch prop;;
+
+let prop_items = fun prop ->
+  prop_iter (fun _ -> 1) 1 1 branch_c branch_c branch_c prop;;

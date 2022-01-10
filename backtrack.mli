@@ -1,4 +1,4 @@
 (* backtrack.mli *)
 
-val backtrack: Proof.t -> bool -> (int -> Proof.t -> string) -> bool * Proof.t
+val backtrack:  int -> (Proposition.t -> string) -> Proof.t -> bool * Proof.t
 

@@ -12,7 +12,7 @@
 %token EQUI "<=>"
 %token LPAREN "("
 %token RPAREN ")"
-%token EOL EOF
+%token EOL 
 
 (* On écrit les règles de priorité *)
 

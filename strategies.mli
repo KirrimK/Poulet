@@ -2,6 +2,8 @@
 
 val fail : Proof.t -> bool * Proof.t
 
+val select_goal : int -> Proof.t -> bool * Proof.t
+
 val intro : Proof.t -> bool * Proof.t
 
 val split : Proof.t -> bool * Proof.t

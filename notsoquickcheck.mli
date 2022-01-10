@@ -1,7 +1,5 @@
 (* notsoquickcheck.mli *)
 
-val prop_aleatoire : int -> int -> Proposition.t;;
-
 val propAleatoire : int -> Proposition.t;;
 
 val add_rand_goal : int -> Proof.t -> bool * Proof.t;;
@@ -21,5 +19,9 @@ val rev_split : Proof.t -> bool * Proof.t;;
 val rev_apply : int -> Proof.t -> bool * Proof.t;;
 
 val reverse : Proof.t -> bool * Proof.t;;
+
+val get_provable : unit ->bool *  Proof.t;;
+
+val reverse_provable_test : int -> unit;;
 
 val testMassif : unit -> unit;;

@@ -37,3 +37,5 @@ val polo_prop : string list -> t
 val prop_root : t -> string
 
 val prop_depth : t -> int
+
+val prop_items : t -> int

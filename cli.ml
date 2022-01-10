@@ -15,7 +15,7 @@ open Fileio;;
 *)
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
-let version_code = "0.3";;
+let version_code = "1.0";;
 
 let c_name = fun n -> n ;;
 let c_true = "⊤";;
@@ -30,8 +30,8 @@ let f_and = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∧ ";sProp2;")"
 let f_or = fun sProp1 sProp2 -> String.concat "" ["(";sProp1;" ∨ ";sProp2;")"];;
 
 let prop_to_string = fun propo ->
-  if prop_depth propo > 6 then
-    String.concat "" ["(proposition of depth "; string_of_int (prop_depth propo); ")"]
+  if prop_items propo > 100 then
+    String.concat "" ["(proposition of depth "; string_of_int (prop_depth propo); " and "; string_of_int (prop_items propo) ; " items | root is "; prop_root propo; ")"]
   else
     prop_iter c_name c_true c_false f_implies f_and f_or propo;;
 
@@ -46,14 +46,11 @@ let proof_to_string = fun proof->
   (* Afficher les hypothèses *)
   let hypStrings = List.mapi (fun x y -> hyp_to_string x y) (get_hyps proof) in
   let hypsString = String.concat "\n" hypStrings in
-  let goalStrings = List.map (prop_to_string) (get_goal proof) in
+  let goalStrings = List.mapi (fun x y -> hyp_to_string x y)(get_goal proof) in
   let goalString = String.concat "\n" goalStrings in
   String.concat "\n" [""; hypsString; String.make 15 '-'; goalString];;
 
 exception InvalidArgument
-
-let hpf_cli = fun id proof ->
-  prop_to_string (get_hyp id proof);;
 
 let print_help = fun () ->
   Printf.printf "  Poulet v%s: REPL Help" version_code;
@@ -132,16 +129,26 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["split"] -> split
   | ["assumption"] -> assumption
   | ["reverse"] -> reverse
+  | ["get_provable"] -> (fun _ -> get_provable ())
   | ["empty"] -> let () = shadd := false in
     (fun _ -> (true, Proof.empty))
   | ["unittests"] -> let () = shadd := false in
     let () = tests () in
     (fun x -> (true, x))
+  | "backtests"::rest ->
+       begin
+        match rest with
+          [arg] ->
+            let num_arg = int_of_string arg in
+            let () = reverse_provable_test num_arg in
+            (fun x -> (true, x))
+        | _ -> raise InvalidArgument
+      end
   | "auto"::rest ->
       begin
         match rest with
-          ["verbose"] -> (fun x -> backtrack x true hpf_cli)
-        | _ -> (fun x -> backtrack x false hpf_cli)
+          ["verbose"] -> backtrack 2 prop_to_string
+        | _ ->  backtrack 1 prop_to_string
       end
   | "hyp_split"::rest->
       begin
@@ -151,25 +158,34 @@ let traiter_cmde = fun str stateList shadd fin ->
             hyp_split hyp_num
         | _ -> raise InvalidArgument
       end
+  | "select_goal"::rest->
+      begin
+        match rest with
+          [arg] ->
+            let hyp_num = int_of_string arg in
+             select_goal hyp_num
+        | _ -> raise InvalidArgument
+      end
   | ["left"] -> left
   | ["right"] -> right
-  | "add_hyp"::rest -> 
+  | "add_hyp"::rest ->
     let formula = String.concat " " rest in
     let formula_bis = String.concat "" [formula;"\n"] in
     let lexbuf = Lexing.from_string formula_bis in
-    let propo = Parser.main Lexer.token lexbuf in 
+    let propo = Parser.main Lexer.token lexbuf in
     (fun x -> (true, add_hyp propo  x))
-    
   | "add_goal"::rest ->
     let formula = String.concat " " rest in
     let formula_bis=String.concat "" [formula;"\n"] in
     let lexbuf = Lexing.from_string formula_bis in
-    let propo = Parser.main Lexer.token lexbuf in 
+    let propo = Parser.main Lexer.token lexbuf in
     (fun x -> (true, add_goal propo  x))
-  | "load"::rest -> 
+  | "load"::rest ->
     let filename = String.concat " " rest in
     (fun _ -> (true, load_from_file filename))
-    
+   | "save"::rest ->
+    let filename = String.concat " " rest in
+    (fun x -> let () = writeInFile filename x in (true, x))
   | "hyp_left"::rest ->
       begin
         match rest with
@@ -308,12 +324,8 @@ let repl = fun () ->
             Printf.printf "Erreur lors de l'exécution de la commande.\n"
         in
         ()
-      with _ ->
+      with e ->
+        Printf.printf "%s\n" (Printexc.to_string e);
         Printf.printf "Commande incorrecte.\n" in
     if not !finished then Printf.printf "%s\n" (proof_to_string !proof);
   done;;
-
-
-
-
-	
