@@ -69,8 +69,8 @@ let print_help = fun () ->
               \"^\" : and
               \"|\" : or
             \"Not\" : not
-           \"True\" : ⊤ (literal true)
-          \"False\" : ⊥ (literal false)
+           \"TRUE\" : ⊤ (literal true)
+          \"FALSE\" : ⊥ (literal false)
   (anything else) : proposition name
 
   List of available commands:
