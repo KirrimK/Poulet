@@ -1,10 +1,6 @@
 (* Module NotSoQuickCheck *)
-open Strategies;;
 open Proposition;;
 open Proof;;
-open Backtrack;;
-open Fileio;;
-
 (* Element aléatoire dans une liste *)
 let random_list_elt = fun ls->
   List.nth ls (Random.int (List.length ls));;
