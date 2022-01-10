@@ -1,18 +1,13 @@
-
 (* cli.ml interface*)
 
 open Proposition;;
 open Strategies;;
 open Proof;;
-(*open String;; unused d'après Dune*)
 open Backtrack;;
 open Random_props;;
 open Tests;;
 open Fileio;;
 
-(*let show_id_hypo = fun hypo ->
-  foncgen_hypo (Printf.printf "%d") (fun x -> ()) hypo;;
-*)
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
 let version_code = "1.0";;
@@ -128,22 +123,11 @@ let traiter_cmde = fun str stateList shadd fin ->
   | ["clean"] -> (fun x -> (true, clean x))
   | ["split"] -> split
   | ["assumption"] -> assumption
-  (*| ["reverse"] -> reverse*)
-  (*| ["get_provable"] -> (fun _ -> get_provable ())*)
   | ["empty"] -> let () = shadd := false in
     (fun _ -> (true, Proof.empty))
   | ["unittests"] -> let () = shadd := false in
     let () = tests () in
     (fun x -> (true, x))
-  (*| "backtests"::rest ->
-       begin
-        match rest with
-          [arg] ->
-            let num_arg = int_of_string arg in
-            let () = reverse_provable_test num_arg in
-            (fun x -> (true, x))
-        | _ -> raise InvalidArgument
-      end*)
   | "auto"::rest ->
       begin
         match rest with
