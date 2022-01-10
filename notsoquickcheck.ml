@@ -196,15 +196,16 @@ let testMassif = fun () ->
   let listeTemps = ref [] in
   let listeMoyennes = ref [] in
   let proof = ref Proof.empty in
-  let prof_max = 7 in
+  let prof_max = 6 in
   for profMax = 1 to prof_max do
-    for _ = 1 to 10 do
+    for _ = 1 to 50 do
       proof := Proof.empty;
       let (_b1,p1) = add_rand_goal profMax !proof in proof := p1;
       let profReel = prop_depth (get_first_goal !proof) in
       let tStart = Sys.time() in
-      let (_b2,p2) = backtrack 0 (fun _ -> "") !proof in proof := p2;
-      listeTemps := (profReel,Sys.time() -. tStart)::!listeTemps;
+      let (b2,p2) = backtrack 0 (fun _ -> "") !proof in proof := p2;
+      if b2 then listeTemps := (profReel,Sys.time() -. tStart)::!listeTemps;
+    done;
     listeMoyennes := (0,0.) :: !listeMoyennes;
   done;
   let rec insertMoyenne = fun p t listeAVider listeARemplir ->
