@@ -8,7 +8,7 @@
 let digit = ['0'-'9']
 let lower = ['a'-'z']
 let upper = ['A'-'Z']
-let other = ['_' '-' '@']
+let other = ['_' '-' '@' '&' '~' '#' '$' '%'] 
 let letter = lower | upper
 
 let number = digit+
