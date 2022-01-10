@@ -158,9 +158,9 @@ let getStratList = fun proof hpf ->
     let false_hyp_list = getOneHypThatIsApplicable (*Récupération de l'hypothèse qui est fausse, et qui terminera la preuve *)
         (fun h -> h = p_false)
         "hyps has" false_hyp hyps in
-
+        
     (* Agrégation des listes, avec les stratégies prioritaires en premier *)
-    (* Ordre: hypothèse fausse, exact, les stratégies sur le but (souvent utilisées), ce qui génère des faux dans les hyps,  ce qui génère des hyps exact-ables, le reste, changer de but en cas d'impasse *)
+    (* Ordre: hypothèse fausse, exact, les stratégies sur le but (souvent utilisées), ce qui génère des faux dans les hyps,  ce qui génère des hyps exact-ables, le reste *)
     List.concat [false_hyp_list; exact_list; std_gst_ls; prio_hsplit_ls; prio_hleft_ls; prio_hright_ls; prio_apphyp_ls; prio_apply_ls; std_apphyp_ls; std_apply_ls; std_hsplit_ls; std_hleft_ls; std_hright_ls; not_prio_gst_ls];;
 
 (* Algorithme du backtrack *)
@@ -169,7 +169,7 @@ type state = {visited: Proof.t list; backnum: int; depth: int};;
 let backtrack = fun prints hpf proof->
   let rec backrec = fun norm_proo nameacc stateacc->
     (* Vérifier appartenance à la liste des états déjà visités *)
-    let () = if (prints < 2) then (Printf.printf "\r-> %d|%d%!" stateacc.backnum stateacc.depth) else () in
+    let () = if (prints < 2) then (Printf.printf "\r-> %d|%d  %!" stateacc.backnum stateacc.depth) else () in
     if List.mem norm_proo (stateacc.visited) then (* L'état a déjà été visité *)
       let () = if prints = 2 then Printf.printf "%s | Already visited.\n" nameacc else () in
       ((false, norm_proo), stateacc)
