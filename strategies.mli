@@ -1,8 +1,5 @@
 (* Strategies.mli *)
 
-val fail : Proof.t -> bool * Proof.t
-(* Fonction appelée pour indiquer que la stratégie exécutée est inutilisable *)
-
 val select_goal : int -> Proof.t -> bool * Proof.t
 (* Permet de sélectionner un nouveau but courant *)
 
