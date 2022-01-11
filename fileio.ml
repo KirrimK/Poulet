@@ -76,7 +76,7 @@ let load_from_file = fun name ->
   let rec createAs = fun aListe listeButTriee ->
     match listeButTriee with
       [] -> List.rev aListe
-    | (id,butStr)::reste-> 
+    | (_,butStr)::reste-> 
         let lexbuf = Lexing.from_string butStr in
         let but = Parser.main Lexer.token lexbuf in
         createAs ((make_a [] but)::aListe) reste in
