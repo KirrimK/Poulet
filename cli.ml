@@ -72,8 +72,7 @@ let print_help = fun () ->
   List of available commands:
   - add_goal <formula>
   - add_hyp <formula>
-  - add_random_context <hyp max_depth> <hyp_number>
-  - get_random_context <hyp max_depth> <hyp_number>
+  - add_random_context <hyp max_depth> <hyp_number>  
   - add_random_goal <max_depth>
   - back: reverts to the previous state
   - clean: reorders the hypotheses and goals and deletes duplicated items in the current proof state
