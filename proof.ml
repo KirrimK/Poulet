@@ -36,6 +36,9 @@ let goal_ids = fun proof ->
 let make_proof = fun hyp_ls_ls goal_ls->
   List.map2 (fun x y-> {hyps = x; goal = y}) hyp_ls_ls goal_ls;; 
 
+let demake_proof = fun proof->
+  (List.map (fun x->x.hyps) proof, List.map (fun x -> x.goal) proof);; 
+  
 let make_a = fun hyp_ls goal->
   {hyps=hyp_ls; goal=goal};;
   
