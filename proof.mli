@@ -14,6 +14,8 @@ val goal_ids : t -> int list
 
 val make_proof : Proposition.t list list -> Proposition.t list -> t
 
+val demake_proof : t -> Proposition.t list list * Proposition.t list
+
 val make_a : Proposition.t list -> Proposition.t -> a
 
 val get_hyp : int -> t -> Proposition.t
