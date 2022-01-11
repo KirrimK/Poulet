@@ -80,6 +80,7 @@ let print_help = fun () ->
   - remove_goal <goal_number>
   - select_goal <goal_number>
   - unittests : runs tests
+  - chicken
 
 
   List of available proof strategies:
