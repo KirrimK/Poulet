@@ -117,10 +117,10 @@ let rm_duplic = fun list->
   
 let clean = fun proof ->
   let goals_no_true = (List.filter (fun x -> x.goal <> p_true) proof) in
-  let goals_no_duplic = (rm_duplic_ (fun x-> x.goal) goals_no_true) in
+  let goals_no_duplic = (rm_duplic_ (fun x-> x) goals_no_true) in
   let goals_others_sorted = 
     match goals_no_duplic with
-      hd::rest -> hd::(List.sort (fun x y->compare x.goal y.goal) rest)
+      hd::rest -> hd::(List.sort compare rest)
     | [] -> [] in
   List.map (fun x -> {hyps=(List.sort_uniq compare (List.filter (fun x -> x <> p_true) x.hyps)); goal=x.goal}) goals_others_sorted;;
 
