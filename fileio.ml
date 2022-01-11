@@ -97,5 +97,5 @@ let load_from_file = fun name ->
                   fillAs reste (a::aListeRemplie) hypListe (countProofs+1)
         end in
   let listeAs = createAs [] listeButTriee in
-  Printf.printf "Nombre de buts chargés : %d\n" (List.length listeAs);
+  Printf.printf "Amount of goals introduced : %d\n" (List.length listeAs);
   fillAs listeAs [] listeHypTriee 0;;
