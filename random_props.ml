@@ -1,4 +1,4 @@
-(* Module NotSoQuickCheck *)
+(* Module Random_props*)
 open Proposition;;
 open Proof;;
 
