@@ -22,12 +22,12 @@ let writeInFile = fun nomFic preuve ->
     match propoListe with
       [] -> strListe
     | propo ::reste -> 
-        transcrireGoals reste ((Printf.sprintf "g%d: %s" (List.hd nbPreuveListe) (propToString propo))::strListe) (List.tl nbPreuveListe) in
+        transcrireGoals reste ((Printf.sprintf "g %d: %s" (List.hd nbPreuveListe) (propToString propo))::strListe) (List.tl nbPreuveListe) in
   let rec transcrireHypListe = fun listeHyp strListe nbPreuveEnCours->
     match listeHyp with
       []-> strListe
     | propo::reste -> 
-        transcrireHypListe reste (Printf.sprintf "h%d: %s" nbPreuveEnCours (propToString propo)::strListe) nbPreuveEnCours in
+        transcrireHypListe reste (Printf.sprintf "h %d: %s" nbPreuveEnCours (propToString propo)::strListe) nbPreuveEnCours in
   let rec transcrireHyps = fun listesHyps strListe nbPreuveEnCours ->
     match listesHyps with
       [] -> strListe
