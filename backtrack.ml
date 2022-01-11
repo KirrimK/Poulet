@@ -133,7 +133,7 @@ let backtrack = fun prints hpf proof->
               let newnameacc = String.concat (if prints = 2 then " > " else "\n> ") [nameacc;stratname] in
               if result then (* La stratégie à fait progresser la preuve*)
                 if is_proven norm_resproof then (* Est-ce que la preuve est finie *)
-                  let () = if prints > 0 then  Printf.printf "%s | Proof done" newnameacc else () in
+                  let () = if prints > 0 then  Printf.printf "%s | Proof done\n" newnameacc else () in
                   ((true, norm_resproof), recstateacc)
                 else (* La preuve n'est pas encore finie, explorer le nouveau noeud de l'arbre*)
                   let () = if prints = 2 then (Printf.printf "%s (progress)" newnameacc) else () in
