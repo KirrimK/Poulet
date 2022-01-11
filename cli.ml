@@ -45,8 +45,6 @@ let proof_to_string = fun proof->
   let goalString = String.concat "\n" goalStrings in
   String.concat "\n" [""; hypsString; String.make 15 '-'; goalString];;
 
-exception InvalidArgument
-
 let print_help = fun () ->
   Printf.printf "  Poulet v%s: REPL Help" version_code;
   Printf.printf "
@@ -104,29 +102,6 @@ type cli_state = {
     history: Proof.t list;
     has_ended: bool
 };;
-
-  (*| "add_random_goal"::rest ->
-      begin
-        match rest with
-          [arg] ->
-            let num_arg = int_of_string arg in
-            add_rand_goal num_arg
-        | _ -> raise InvalidArgument
-      end
-  | "add_random_context"::rest ->
-      begin
-        match rest with
-          arga::resta ->
-            let hyp_numa = int_of_string arga in
-            begin
-              match resta with
-                [argb] ->
-                  let hyp_numb = int_of_string argb in
-                  add_rand_cont hyp_numa hyp_numb
-              | _ -> raise InvalidArgument
-            end
-        | _ -> raise InvalidArgument
-      end*)
 
 (* REPL: Read-Eval-Print Loop
    Prendre une entrée, la parser pour en sortir une commande avec des arguments (ou pas),
@@ -249,17 +224,32 @@ let traiter_input = fun str state->
   | "add_goal"::rest ->
     try_parse true rest
   | "load"::rest ->
-    let filename = String.concat " " rest in
-    {proof=load_from_file filename; history=previous_in_history; has_ended=false}
+    begin
+    try
+        let filename = String.concat " " rest in
+        {proof=load_from_file filename; history=previous_in_history; has_ended=false}
+    with e ->
+        let () = Printf.printf "%s\n" (Printexc.to_string e) in state
+    end
   | "save"::rest ->
-    let filename = String.concat " " rest in
-    let () = writeInFile filename state.proof in
-    state
+    begin
+    try
+        let filename = String.concat " " rest in
+        let () = writeInFile filename state.proof in
+        state
+    with e ->
+        let () = Printf.printf "%s\n" (Printexc.to_string e) in state
+    end
+  | "add_random_goal"::rest ->
+    one_arg_strat add_rand_goal rest
+  | "add_random_context"::rest ->
+    two_and_optionnal (fun x y _->
+        let num_arga = int_of_string x in
+        let num_argb = int_of_string y in
+        let (_, new_proof) = add_rand_cont num_arga num_argb state.proof in {proof=new_proof; history=previous_in_history; has_ended=false}) missing_arg rest
   | _ ->
     let () = Printf.printf "Unknown command.\n" in 
     state;;
-            
-
 
 let repl = fun ()->
   let () = Printf.printf "Poulet v%s\nCopyright 2021 - 2022 Brévart, Courtadon, Dutau, de Crevoisier\nType \"help\" for help.\n" version_code in
