@@ -30,8 +30,6 @@ let prop_to_string = fun propo ->
   else
     prop_iter c_name c_true c_false f_implies f_and f_or propo;;
 
-let print_prop = fun propo -> Printf.printf "%s" (prop_to_string propo);;
-
 let string_to_list = fun str -> String.split_on_char ' '  str;;
 
 let hyp_to_string = fun id prop ->
