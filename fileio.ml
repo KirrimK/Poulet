@@ -83,7 +83,7 @@ let load_from_file = fun name ->
   let rec fillAs = fun aListeARemplir aListeRemplie hypListe countProofs ->
     match aListeARemplir with
       [] -> aListeRemplie
-    | a::_reste-> 
+    | a::reste-> 
         begin
           match hypListe with
             []-> List.concat [aListeARemplir;aListeRemplie]
@@ -94,7 +94,7 @@ let load_from_file = fun name ->
                   let propo = Parser.main Lexer.token lexbuf in
                   fillAs ((add_hyp_to_a propo a)::aListeARemplir) aListeRemplie suite countProofs
                 else
-                  fillAs aListeARemplir (a::aListeRemplie) hypListe (countProofs+1)
+                  fillAs reste (a::aListeRemplie) hypListe (countProofs+1)
         end in
   let listeAs = createAs [] listeButTriee in
-  fillAs [] listeAs listeHypTriee 0;;
+  fillAs listeAs [] listeHypTriee 0;;
