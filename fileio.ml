@@ -48,24 +48,53 @@ let load_from_file = fun name ->
       let ligne = input_line ic in
       let ligneCoupee = String.split_on_char ':' ligne in
       match ligneCoupee with
-        "h"::strProp ->
+        "h"::strProp -> 
           let strProp2 = String.concat "" [String.concat " " strProp;"\n"] in
-          readLines (strProp2::accH) accG
-      | "g"::strProp ->
+          readLines ((-1,strProp2)::accH) accG
+      |  "g"::strProp -> 
           let strProp2 = String.concat "" [String.concat " " strProp;"\n"] in
-          readLines accH (strProp2::accG)
+          readLines accH ((-1,strProp2)::accG)
+      | debut::strProp -> let debutCoupe = String.split_on_char ' ' debut in
+          begin
+            match debutCoupe with
+              "h"::strId ->
+                let strProp2 = String.concat "" [String.concat " " strProp;"\n"] in
+                readLines (((int_of_string (String.concat "" strId)),strProp2)::accH) accG
+            | "g"::strId ->
+                let strProp2 = String.concat "" [String.concat " " strProp;"\n"] in
+                readLines accH (((int_of_string (String.concat "" strId)),strProp2)::accG)
+            | _ -> readLines accH accG
+          end
       | _ -> readLines accH accG
     with End_of_file -> (accH, accG) in
   let (listeHyp, listeBut) = readLines [] [] in
   close_in ic;
-  let rec addProps = fun boolHyp liste preuve ->
-    match liste with
-      [] -> preuve
-    | stringProp :: reste ->
-      let lexbuf = Lexing.from_string stringProp in
-      let propo = Parser.main Lexer.token lexbuf in
-      let nouvPreuve = (if boolHyp then add_hyp else add_goal) propo preuve in
-      addProps boolHyp reste nouvPreuve in
-  let preuve = addProps false listeBut empty in
-  let hyp_on_first = addProps true listeHyp preuve in
-  List.map (fun x-> make_a (get_hyps hyp_on_first) x) (get_goal hyp_on_first);;
+  let getFirstElt = fun t -> match t with (elt,_)->elt in
+  let compTuple = fun t1 t2 -> (getFirstElt t1)- (getFirstElt t2) in
+  let listeHypTriee = List.sort compTuple listeHyp in
+  let listeButTriee = List.sort compTuple listeBut in
+  let rec createAs = fun aListe listeButTriee ->
+    match listeButTriee with
+      [] -> List.rev aListe
+    | (_,butStr)::reste-> 
+        let lexbuf = Lexing.from_string butStr in
+        let but = Parser.main Lexer.token lexbuf in
+        createAs ((make_a [] but)::aListe) reste in
+  let rec fillAs = fun aListeARemplir aListeRemplie hypListe countProofs ->
+    match aListeARemplir with
+      [] -> aListeRemplie
+    | a::_reste-> 
+        begin
+          match hypListe with
+            []-> List.concat [aListeARemplir;aListeRemplie]
+          | (id,strProp)::suite ->
+              if id = countProofs
+                then 
+                  let lexbuf = Lexing.from_string strProp in
+                  let propo = Parser.main Lexer.token lexbuf in
+                  fillAs ((add_hyp_to_a propo a)::aListeARemplir) aListeRemplie suite countProofs
+                else
+                  fillAs aListeARemplir (a::aListeRemplie) hypListe (countProofs+1)
+        end in
+  let listeAs = createAs [] listeButTriee in
+  fillAs [] listeAs listeHypTriee 0;;

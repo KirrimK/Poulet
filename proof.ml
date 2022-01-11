@@ -41,6 +41,8 @@ let demake_proof = fun proof->
   
 let make_a = fun hyp_ls goal->
   {hyps=hyp_ls; goal=goal};;
+
+let add_hyp_to_a = fun hyp ancienA -> make_a (hyp::ancienA.hyps) ancienA.goal;;
   
 let add_hyp = fun prop proof->
   match proof with
