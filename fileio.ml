@@ -76,8 +76,8 @@ let load_from_file = fun name ->
   let rec createAs = fun aListe listeButTriee ->
     match listeButTriee with
       [] -> List.rev aListe
-    | (_,butStr)::reste-> 
-        let lexbuf = Lexing.from_string butStr in
+    | (id,butStr)::reste-> 
+        let lexbuf = Lexing.from_string butStr in Printf.printf "%d\n"(id);
         let but = Parser.main Lexer.token lexbuf in
         createAs ((make_a [] but)::aListe) reste in
   let rec fillAs = fun aListeARemplir aListeRemplie hypListe countProofs ->
@@ -92,9 +92,10 @@ let load_from_file = fun name ->
                 then 
                   let lexbuf = Lexing.from_string strProp in
                   let propo = Parser.main Lexer.token lexbuf in
-                  fillAs ((add_hyp_to_a propo a)::aListeARemplir) aListeRemplie suite countProofs
+                  fillAs ((add_hyp_to_a propo a)::reste) aListeRemplie suite countProofs
                 else
                   fillAs reste (a::aListeRemplie) hypListe (countProofs+1)
         end in
   let listeAs = createAs [] listeButTriee in
+  Printf.printf "nb BUTS : %d\n" (List.length listeAs);
   fillAs listeAs [] listeHypTriee 0;;
