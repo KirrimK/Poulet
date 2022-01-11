@@ -66,36 +66,38 @@ let print_help = fun () ->
             \"Not\" : not
            \"TRUE\" : ⊤ (literal true)
           \"FALSE\" : ⊥ (literal false)
-  (anything else) : proposition name
+    \"(\" and \")\" : parenthesis
+    (anything else) : proposition name
 
   List of available commands:
-  - help: displays this help
-  - back: reverts to the previous state
-  - empty: reset the proof to zero
-  - q: quits this program
-  - clean: reorders the hypotheses and goals and deletes duplicated items in the current proof state
-  - add_hyp <formula>
   - add_goal <formula>
+  - add_hyp <formula>
+  - add_random_context <hyp max_depth> <hyp_number>  
   - add_random_goal <max_depth>
-  - add_random_context <hyp max_depth> <hyp_number>
-  - get_random_context <hyp max_depth> <hyp_number>
-  - reverse
-  - unittests
+  - back: reverts to the previous state
+  - clean: reorders the hypotheses and goals and deletes duplicated items in the current proof state
+  - empty: reset the proof to zero
+  - help: displays this help
+  - q: quits this program
+  - remove_goal <goal_number>
+  - select_goal <goal_number>
+  - unittests : runs tests
+
 
   List of available proof strategies:
-  - intro
-  - split
-  - isfalse <hyp id>
-  - hyp_split <hyp id>
-  - left
-  - right
-  - hyp_left <hyp id>
-  - hyp_right <hyp id>
   - apply <hyp id>
   - applyin <hyp id:to modify> <hyp id:to apply> <\"keep\": optionnal>
-  - exact <hyp id>
   - assumption
-  - auto <\"verbose\": optionnal>\n";;
+  - auto <\"verbose\": optionnal>
+  - exact <hyp id>
+  - hyp_split <hyp id>
+  - hyp_left <hyp id>
+  - hyp_right <hyp id>
+  - intro
+  - isfalse <hyp id>
+  - left
+  - right
+  - split\n";;
 
 let traiter_cmde = fun str stateList shadd fin ->
   let split_str = string_to_list str in
