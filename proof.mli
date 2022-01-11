@@ -17,8 +17,16 @@ val get_goal : t -> Proposition.t list
       liste des buts à prouver*)
 
 val hyp_ids : t -> int list
+(* Argument:
+   état de preuve
+   Retourne:
+   liste des ids des hypothèses du but courant*)
 
 val goal_ids : t -> int list
+(* Argument:
+   état de preuve
+   Retourne:
+   liste des ids des buts courants *)
 
 val make_proof : Proposition.t list list -> Proposition.t list -> t
 (* Arguments:
@@ -62,7 +70,8 @@ Retourne:
    nouvel enregistrement *)
 
 val add_hyp : Proposition.t -> t -> t
-(* Permet d'ajouter une proposition à la liste des hypothèses du but courant 
+(* Permet d'ajouter une proposition à la liste des hypothèses du but courant
+(échoue si il n'y a pas de but courant)
 Arguments:
    proposition à rajouter
 -> état de preuve
@@ -87,7 +96,7 @@ val is_proven : t -> bool
 (* Argument:
       état de preuve
    Retourne:
-      "Vrai" s'il n'y a pas de buts à prouver, "Faux" sinon *)
+      true s'il n'y a pas de buts à prouver, false sinon *)
 
 val remove_hyp : int -> t -> Proposition.t list
 (* Permet de supprimer une hypothèse de la liste des hypothèses du but courant 
@@ -114,6 +123,7 @@ Retourne:
    nouvelle liste *)
 
 val rm_duplic : 'a list -> 'a list
+(* Supprime les éléments dupliqués d'une liste*)
 
 val clean : t -> t
 (* Supprime les doublons dans les hypothèses et les buts ainsi que les buts égaux à "Vrai"
@@ -123,5 +133,13 @@ Retourne:
    nouvel état de preuve *)
 
 val proof_goal_depth : t -> int
+(* Argument:
+   état de preuve
+   Retourne:
+   la profondeur maximum combinée de tous les buts à prouver*)
 
 val proof_goal_items : t -> int
+(* Argument:
+   état de preuve
+   Retourne:
+   la somme du nombre d'objets présents dans les buts à prouver*)
