@@ -16,16 +16,24 @@ let propToString = fun propo ->
   prop_iter cName cTrue cFalse fImplies fAnd fOr propo;;
 
 let writeInFile = fun nomFic preuve ->
-  let listeHypothese = get_hyps preuve in
-  let listeButs = get_goal preuve in
+  let (listesHypotheses,listeButs) = demake_proof preuve in
   let listeIndices = goal_ids preuve in
-  let rec transcrireProp = fun boolHyp propoListe strListe nbPreuveListe->
+  let rec transcrireGoals = fun propoListe strListe nbPreuveListe->
     match propoListe with
       [] -> strListe
     | propo ::reste -> 
-        transcrireProp boolHyp reste ((Printf.sprintf (if boolHyp then "h%d: %s" else "g%d: %s") (List.hd nbPreuveListe) (propToString propo))::strListe) (List.tl nbPreuveListe)
-  let listeDeButsAEcrire = transcrireProp false listeButs [] listeIndices in
-  let listeDeTrucsAEcrire = transcrireProp true listeHypothese listeDeButsAEcrire in
+        transcrireGoals reste ((Printf.sprintf "g%d: %s" (List.hd nbPreuveListe) (propToString propo))::strListe) (List.tl nbPreuveListe)
+  let rec transcrireHypListe = fun listeHyp strListe nbPreuveEnCours->
+    match listeHyp with
+      []-> strListe
+      propo::reste -> 
+        transcrireHypListe reste (Printf.sprintf "h%d: %s" nbPreuveEnCours (propToString propo)) nbPreuveEnCours
+  let rec transcrireHyps = fun listesHyps strListe nbPreuveEnCours ->
+    match listesHyps with
+      [] -> strListe
+      listeHypo ::reste -> transcrireHyps reste (transcrireHypListe listeHypo strListe nbPreuveEnCours) (nbPreuveEnCours+1)
+  let listeDeButsAEcrire = transcrireGoals listeButs [] listeIndices in
+  let listeDeTrucsAEcrire = transcrireHyps listesHypotheses listeDeButsAEcrire 0 in
   let rec ecrireChaines = fun listeChaines oc->
     match listeChaines with
       [] -> ()
