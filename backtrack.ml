@@ -4,60 +4,6 @@ open Strategies;;
 open Proposition;;
 open Proof;;
 
-let no_heur = false;;
-
-(* Génération des stratégies applicables pour une état de la preuve donné *)
-let getStratList_old = fun proof hpf ->
-  (* Fonction locale qui génère une liste de stratégies appliquables sur les hypothèses, et ne propose leur application que si la strategie est compatible avec l'hypothèse *)
-  if get_goal proof = [] then
-    []
-  else
-    let hypIds = hyp_ids proof in
-    let forAllApplicableHypos = fun predicat func funcname hypoIdsList ->
-      List.map (fun id -> (func id, String.concat " " [funcname; hpf (get_hyp id proof)])) (List.filter predicat hypoIdsList) in
-
-    let addStratToList = fun predicat stratandstratname stratlist ->
-      if predicat then
-        stratandstratname::stratlist
-      else
-        stratlist in
-    let rootIsImplies = (prop_root (get_first_goal proof) = "Implies") in
-    let rootIsAnd = (prop_root (get_first_goal proof) = "And") in
-    let rootIsOr = (prop_root (get_first_goal proof) = "Or") in
-
-    (* Liste des stratégies ne dépendant que du but*)
-    let goalStratlist =
-      addStratToList rootIsImplies (intro, "intro")
-        (addStratToList rootIsAnd (split, "split")
-           (addStratToList rootIsOr (left, "left")
-              (addStratToList rootIsOr (right, "right") []))) in
-
-    (* Liste des stratégies prenant des hypothèses en paramètres *)
-    (* Séparation d'une hypothèse "And" en deux *)
-    let andSplitHypList = forAllApplicableHypos (fun x -> prop_root (get_hyp x proof) = "And") hyp_split "hyp_split" hypIds in
-
-    (* Séparation d'une hypothèse "Or" en deux sous-pbs *)
-    let orSplitHypLeftList = forAllApplicableHypos (fun x -> prop_root (get_hyp x proof) = "Or") hyp_left "hyp_left" hypIds in
-    let orSplitHypRightList = forAllApplicableHypos (fun x -> prop_root (get_hyp x proof) = "Or") hyp_right "hyp_right" hypIds in
-
-    (* Application d'une hypothèse à une autre
-       Ne pas utiliser si le applyhypo crée de nouvelles hypothèses plutot que modifier*)
-    (* Hyp à modifier en premier, Hyp à appliquer en seconde *)
-    let applyHypList = List.concat (List.map (fun a ->
-        forAllApplicableHypos (fun x->p_matchimpl (fun x _ -> x = (get_hyp a proof)) false (get_hyp x proof)) (applyInHyp false a) (String.concat "" ["applyhyp "; hpf (get_hyp a proof); " <-"]) hypIds) hypIds) in
-
-    (* Application d'une hypothèse au but *)
-    let applyList = forAllApplicableHypos (fun x->p_matchimpl (fun _ y-> y = (get_first_goal proof)) false (get_hyp x proof)) apply "apply" hypIds in
-
-    (* Exacts des hypothèses au but *)
-    let exactList = forAllApplicableHypos (fun x-> (get_hyp x proof) = get_first_goal proof) exact "exact" (hyp_ids proof) in
-
-    (* Terminaison de la preuve si une hypothèse est "Faux" *)
-    let falseHypList = forAllApplicableHypos (fun x -> (get_hyp x proof) = p_false) false_hyp "hypos has" hypIds in
-
-    (* Agrégation des listes *)
-    List.concat [falseHypList; exactList; goalStratlist; applyList; orSplitHypLeftList; orSplitHypRightList; andSplitHypList; applyHypList];;
-
 (* Génération des stratégies applicables pour une état de la preuve donné *)
 let getStratList = fun proof hpf ->
   if get_goal proof = [] then (* Aucun but, donc le théorème est déjà prouvé *)
@@ -177,7 +123,7 @@ let backtrack = fun prints hpf proof->
       begin
         (* Ajouter l'état à la liste des états visités *)
         let newstateacc = {visited=(norm_proo::(stateacc.visited)); backnum=stateacc.backnum; depth=(stateacc.depth+1)} in
-        let stratList = (if no_heur then getStratList_old else getStratList) norm_proo hpf in (* Récupérer la liste des stratégies applicables à ce stade *)
+        let stratList = getStratList norm_proo hpf in (* Récupérer la liste des stratégies applicables à ce stade *)
         (* Explorer toutes les stratégies dans la liste *)
         let rec explore = fun stratlist recstateacc->
           match stratlist with
