@@ -165,6 +165,7 @@ let traiter_input = fun str state->
   match str_list with
     ["q"] ->
     {proof=state.proof; history=state.history; has_ended=true}
+  | ["chicken"] -> let () = Printf.printf "Here's a chicken to keep you company:\n   MM\n  <' \\___/|\n    \\_  _/\n      ][\n" in state
   | ["help"] ->
     let () = print_help () in
     {proof=state.proof; history=state.history; has_ended=true}
