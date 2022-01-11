@@ -18,13 +18,13 @@ let propToString = fun propo ->
 let writeInFile = fun nomFic preuve ->
   let listeHypothese = get_hyps preuve in
   let listeButs = get_goal preuve in
-  let rec transcrireProp = fun boolHyp propoListe strListe ->
+  let listeIndices = goal_ids preuve in
+  let rec transcrireProp = fun boolHyp propoListe strListe nbPreuveListe->
     match propoListe with
       [] -> strListe
-    | propo ::reste -> if boolHyp
-        then transcrireProp boolHyp reste ((Printf.sprintf "h: %s" (propToString propo))::strListe)
-        else transcrireProp boolHyp reste ((Printf.sprintf "g: %s" (propToString propo))::strListe) in
-  let listeDeButsAEcrire = transcrireProp false listeButs [] in
+    | propo ::reste -> 
+        transcrireProp boolHyp reste ((Printf.sprintf (if boolHyp then "h%d: %s" else "g%d: %s") (List.hd nbPreuveListe) (propToString propo))::strListe) (List.tl nbPreuveListe)
+  let listeDeButsAEcrire = transcrireProp false listeButs [] listeIndices in
   let listeDeTrucsAEcrire = transcrireProp true listeHypothese listeDeButsAEcrire in
   let rec ecrireChaines = fun listeChaines oc->
     match listeChaines with
