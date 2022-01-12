@@ -162,7 +162,7 @@ let traiter_input = fun str state->
         let () = Printf.printf "%s\n" (Printexc.to_string e) in state in
 
   match str_list with
-    ["q"] ->
+    ["q"]|["quit"] ->
     {proof=state.proof; history=state.history; has_ended=true}
   | ["chicken"] -> let () = Printf.printf "Here's a chicken to keep you company:\n   MM\n  <' \\___/|\n    \\_  _/\n      ][\n" in state
   | ["help"] ->
