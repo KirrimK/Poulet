@@ -58,8 +58,11 @@ let hyp_orsplit = fun left id proof ->
   let failed = fail proof in
   let other_hyps = remove_hyp id proof in
   match proof with
-    _::prest -> p_matchor (fun x y-> (true, (make_a ((if left then x else y)::other_hyps) (get_first_goal proof))::prest)) failed (get_hyp id proof)
-  | [] -> failed;;
+      _::prest -> p_matchor (fun x y->
+	let but_prio = make_a ((if left then x else y)::other_hyps) (get_first_goal proof) in
+	let but_nonprio = make_a ((if not left then x else y)::other_hyps) (get_first_goal proof) in
+	(true,but_prio::(but_nonprio::prest))) failed (get_hyp id proof)
+    | [] -> failed;;
 
 let hyp_left = hyp_orsplit true;;
 let hyp_right = hyp_orsplit false;;
