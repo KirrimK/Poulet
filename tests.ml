@@ -51,8 +51,8 @@ let tests = fun () ->
     test "applyinhyp 2" (applyInHyp true 1 0) false test10 test10_res;
 
     let test11 = make_proof [[(p_name "P") $ (p_name "Q")]] [p_false] in
-    let test11_res_right = make_proof [[(p_name "Q")]] [p_false] in
-    let test11_res_left = make_proof [[(p_name "P")]] [p_false] in
+    let test11_res_right = make_proof [[(p_name "Q")];[(p_name "P")]] [p_false;p_false] in
+    let test11_res_left = make_proof [[(p_name "P")];[(p_name "Q")]] [p_false;p_false] in
     test "or split hypo right" (hyp_right 0) false test11 test11_res_right;
     test "or split hypo left" (hyp_left 0) false test11 test11_res_left;
     test "or split hypo 3f" (hyp_right 0) true test10 test10;
