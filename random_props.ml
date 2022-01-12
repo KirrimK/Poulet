@@ -44,8 +44,8 @@ let prop_aleatoire = fun idmin prob_nonterm prob_term profondeur_max->
   let (_, pa) = pa_rec (idmin+1) 1 false true true in
   pa;;
 
-let std_pb_t = (0.2, 0.6, 0.02);;
-let std_pb = (0.04, 0.02, 0.3, 0.25, 0.35, 0.005);;
+let std_pb_t = (0.2, 0.6, 0.05);;
+let std_pb = (0.04, 0.02, 0.3, 0.3, 0.3, 0.005);;
 
 let propAleatoire = prop_aleatoire 0 std_pb std_pb_t;;
 
