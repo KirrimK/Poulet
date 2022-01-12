@@ -68,17 +68,17 @@ let getStratList = fun proof hpf ->
     (* Liste des stratégies prenant des hypothèses en paramètres *)
     
     let (prio_hsplit_ls, std_hsplit_ls) = forAllApplicableHypos (* Récupération des hypothèses traitables par hyp_split*)
-        (fun h -> p_matchand (fun x y-> (p_matchfalse true false x || p_matchfalse true false y)) false h) (*Cas prioritaire: racine And & contient un false (permettrait de faire un false_hyp juste après, ce qui terminerait la preuve*)
+        (fun h -> p_matchand (fun x y-> (p_matchfalse true false x || p_matchfalse true false y || x = first_goal || y = first_goal)) false h) (*Cas prioritaire: racine And & contient un false (permettrait de faire un false_hyp juste après, ce qui terminerait la preuve ou but dans le et*)
         (fun h -> p_matchand typeok false h) (*Cas standard: racine And*)
         "hyp_split" hyp_split hyps in
 
     let (prio_hleft_ls, std_hleft_ls) = forAllApplicableHypos (*Récupération des hypothèses traitables par hyp_left*)
-        (fun h -> p_matchor (fun x _-> p_matchfalse true false x) false h) (*Cas prioritaire: racine Or & p_false à gauche*)
+        (fun h -> p_matchor (fun x _-> (p_matchfalse true false x || x = first_goal)) false h) (*Cas prioritaire: racine Or & p_false à gauche ou but à prouver à gauche*)
         (fun h -> p_matchor typeok false h) (*Cas standard: racine Or*)
         "hyp_left" hyp_left hyps in
     
     let (prio_hright_ls, std_hright_ls) = forAllApplicableHypos (*Récupération des hypothèses traitables par hyp_right*)
-        (fun h -> p_matchor (fun _ y-> p_matchfalse true false y) false h) (*Cas prioritaire: racine Or & p_false à droite*)
+        (fun h -> p_matchor (fun _ y-> (p_matchfalse true false y || y = first_goal)) false h) (*Cas prioritaire: racine Or & p_false à droite ou but à droite*)
         (fun h -> p_matchor typeok false h) (*Cas standard: racine Or*)
         "hyp_right" hyp_right hyps in
 
@@ -107,7 +107,7 @@ let getStratList = fun proof hpf ->
         
     (* Agrégation des listes, avec les stratégies prioritaires en premier *)
     (* Ordre: hypothèse fausse, exact, les stratégies sur le but (souvent utilisées), ce qui génère des faux dans les hyps,  ce qui génère des hyps exact-ables, le reste *)
-    List.concat [false_hyp_list; exact_list; std_gst_ls; prio_hsplit_ls; prio_hleft_ls; prio_hright_ls; prio_apphyp_ls; prio_apply_ls; std_apphyp_ls; std_apply_ls; std_hsplit_ls; std_hleft_ls; std_hright_ls; not_prio_gst_ls];;
+    List.concat [false_hyp_list; exact_list; prio_hsplit_ls; prio_hleft_ls; prio_hright_ls; std_gst_ls; prio_apphyp_ls; prio_apply_ls; std_apphyp_ls; std_apply_ls; std_hsplit_ls; std_hleft_ls; std_hright_ls; not_prio_gst_ls];;
 
 (* Algorithme du backtrack *)
 type state = {visited: Proof.t list; backnum: int; depth: int};;
