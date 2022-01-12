@@ -10,7 +10,7 @@ open Fileio;;
 
 (* On peut utiliser le module Uchar pour avoir les caractères unicode mathématiques*)
 
-let version_code = "1.2";;
+let version_code = "1.3";;
 
 let c_name = fun n -> n ;;
 let c_true = "⊤";;
