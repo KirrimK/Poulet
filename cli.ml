@@ -168,6 +168,7 @@ let traiter_input = fun str state->
   | ["help"] ->
     let () = print_help () in
     {proof=state.proof; history=state.history; has_ended=false}
+  | ["easter"] -> let () = Printf.printf "Here's a chicken in a very early state :\n  _--_\n /    \\\n|      |\n|      |\n \\____/ \n" in state
   | ["back"] ->
     begin
       match state.history with
