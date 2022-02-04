@@ -1,6 +1,9 @@
-Code du Projet OCaml-IA
+# Poulet
 
-Auteurs : BRÉVART Rémy, COURTADON Hugo, de CREVOISIER Victor, DUTAU Charles
+Un assistant de preuve minimaliste, programmé en OCaml.
+
+Code du Projet OCaml-IA développé par
+BRÉVART Rémy, COURTADON Hugo, de CREVOISIER Victor, DUTAU Charles
 
 Dépendances: opam, dune, menhir
 
