@@ -1,0 +1,1 @@
+g 0: (((((P_0 => FALSE) | (P_0 => FALSE)) => ((P_1 => FALSE) ^ P_4)) | (((FALSE => P_5) ^ (FALSE => FALSE)) => FALSE)) | ((((FALSE ^ P_5) => (P_2 | P_12)) | ((FALSE => P_6) | (P_15 ^ P_18))) | (((P_20 | P_6) | (P_15 => P_3)) | ((FALSE | FALSE) => FALSE))))
