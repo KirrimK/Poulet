@@ -1,0 +1,11 @@
+compile = "dune build"
+run = "dune exec ./main.exe"
+entrypoint = "main.ml"
+
+hidden = ["_build/*"]
+
+[languages.ml]
+pattern = "**/*.{ml,mli}"
+
+[nix]
+channel = "stable-21_11"

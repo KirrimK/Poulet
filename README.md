@@ -1,5 +1,7 @@
 # Poulet
 
+[![Run on Repl.it](https://replit.com/badge/github/KirrimK/Poulet)](https://replit.com/@KirrimK/Poulet)
+
 Un assistant de preuve minimaliste, programmé en OCaml.
 
 Code du Projet OCaml-IA développé par
