@@ -117,7 +117,7 @@ let backtrack = fun prints hpf proof->
     (* Vérifier appartenance à la liste des états déjà visités *)
     let () = if (prints < 2) then (Printf.printf "\r-> %d|%d  %!" stateacc.backnum stateacc.depth) else () in
     if List.mem norm_proo (stateacc.visited) then (* L'état a déjà été visité *)
-      let () = if prints = 2 then Printf.printf "%s| Already visited." (String.make stateacc.depth '-') (*nameacc*) else () in
+      let () = if prints = 2 then Printf.printf "%s| Already visited.\n" (String.make stateacc.depth '-') (*nameacc*) else () in
       ((false, norm_proo), stateacc)
     else (* L'état n'a jamais été visité *)
       begin
