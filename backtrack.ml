@@ -117,7 +117,7 @@ let backtrack = fun prints hpf proof->
     (* Vérifier appartenance à la liste des états déjà visités *)
     let () = if (prints < 2) then (Printf.printf "\r-> %d|%d  %!" stateacc.backnum stateacc.depth) else () in
     if List.mem norm_proo (stateacc.visited) then (* L'état a déjà été visité *)
-      let () = if prints = 2 then Printf.printf "%s | Already visited." nameacc else () in
+      let () = if prints = 2 then Printf.printf "%s| Already visited." (String.make stateacc.depth '-') (*nameacc*) else () in
       ((false, norm_proo), stateacc)
     else (* L'état n'a jamais été visité *)
       begin
@@ -133,20 +133,20 @@ let backtrack = fun prints hpf proof->
               let newnameacc = String.concat (if prints = 2 then " > " else "\n> ") [nameacc;stratname] in
               if result then (* La stratégie à fait progresser la preuve*)
                 if is_proven norm_resproof then (* Est-ce que la preuve est finie *)
-                  let () = if prints > 0 then  Printf.printf "%s | Proof done\n" newnameacc else () in
+                  let () = if prints > 0 then  Printf.printf "%s%s (Proven)\n%s | Proof done\n" (String.make stateacc.depth '-') stratname newnameacc else () in
                   ((true, norm_resproof), recstateacc)
                 else (* La preuve n'est pas encore finie, explorer le nouveau noeud de l'arbre*)
-                  let () = if prints = 2 then (Printf.printf "%s (progress)" newnameacc) else () in
+                  let () = if prints = 2 then (Printf.printf "%s%s (progress)\n" (String.make stateacc.depth '-') stratname) else () in
                   let backresult = backrec norm_resproof newnameacc recstateacc in
                   match backresult with
                     ((true, backres), state) -> ((true, backres), state) (* Le backtrack a réussi à prouver *)
                   | ((false, _), state)  -> explore rest state (* Essayer les autres possibilités *)
               else (* La stratégie à échoué *)
-                let () = if prints = 2 then Printf.printf "%s (fail)" newnameacc else () in
+                let () = if prints = 2 then Printf.printf "%s%s (fail)" (String.make stateacc.depth '-') stratname else () in
                 explore rest {visited=(recstateacc.visited); backnum=(recstateacc.backnum + 1); depth=(recstateacc.depth)} (* Essayer le reste des stratégies à ce niveau *)
           | [] -> (* Plus de stratégies à tester à ce stage *)
               if prints = 2 then
-                (Printf.printf "%s | No more applicable strategies." nameacc);
+                (Printf.printf "%s| No more applicable strategies.\n" (String.make stateacc.depth '-') (*nameacc*));
               ((false, norm_proo), {visited=recstateacc.visited; backnum=(recstateacc.backnum + 1); depth=(recstateacc.depth - 1)}) in
         explore stratList newstateacc
       end in
